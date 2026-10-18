@@ -26,6 +26,7 @@ export const QuizPanel: React.FC<QuizPanelProps> = ({
   const [isAnswered, setIsAnswered] = useState(false);
   const [score, setScore] = useState(0);
   const [quizFinished, setQuizFinished] = useState(false);
+  const [hasAwardedXP, setHasAwardedXP] = useState(false);
 
   const { addXP, recordMistake } = useUserStore();
 
@@ -61,11 +62,13 @@ export const QuizPanel: React.FC<QuizPanelProps> = ({
       setIsAnswered(false);
     } else {
       setQuizFinished(true);
-      if (score + (selectedOptionId ? 1 : 0) === questions.length) {
+      const passed = score >= Math.ceil(questions.length * 0.7);
+      if (passed && !hasAwardedXP) {
+        setHasAwardedXP(true);
         addXP(xpReward);
         confetti({ particleCount: 70, spread: 60 });
+        onComplete?.();
       }
-      onComplete?.();
     }
   };
 

@@ -1,16 +1,39 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Navbar } from './components/layout/Navbar';
 import { Footer } from './components/layout/Footer';
 import { MobileBottomNav } from './components/layout/MobileBottomNav';
 import { AudioVoiceController } from './components/audio/AudioVoiceController';
-import { LandingPage } from './pages/LandingPage';
-import { DashboardPage } from './pages/DashboardPage';
-import { WorldMapPage } from './pages/WorldMapPage';
-import { LessonPage } from './pages/LessonPage';
-import { CodingPlaygroundPage } from './pages/CodingPlaygroundPage';
-import { ErrorNotebookPage } from './pages/ErrorNotebookPage';
 import { useUserStore } from './stores/userStore';
+
+// Code-split route pages for high performance and low initial bundle size
+const LandingPage = React.lazy(() =>
+  import('./pages/LandingPage').then((m) => ({ default: m.LandingPage }))
+);
+const DashboardPage = React.lazy(() =>
+  import('./pages/DashboardPage').then((m) => ({ default: m.DashboardPage }))
+);
+const WorldMapPage = React.lazy(() =>
+  import('./pages/WorldMapPage').then((m) => ({ default: m.WorldMapPage }))
+);
+const LessonPage = React.lazy(() =>
+  import('./pages/LessonPage').then((m) => ({ default: m.LessonPage }))
+);
+const CodingPlaygroundPage = React.lazy(() =>
+  import('./pages/CodingPlaygroundPage').then((m) => ({ default: m.CodingPlaygroundPage }))
+);
+const ErrorNotebookPage = React.lazy(() =>
+  import('./pages/ErrorNotebookPage').then((m) => ({ default: m.ErrorNotebookPage }))
+);
+
+const PageLoadingFallback: React.FC = () => (
+  <div className="min-h-[70vh] flex flex-col items-center justify-center p-8" aria-busy="true" aria-label="Loading page">
+    <div className="w-16 h-16 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center animate-pulse mb-4 shadow-[0_0_24px_rgba(32,178,170,0.3)]">
+      <div className="w-8 h-8 rounded-full border-2 border-cyan-400 border-t-transparent animate-spin" />
+    </div>
+    <p className="text-sm font-medium tracking-wide text-cyan-400 animate-pulse">Loading Quest...</p>
+  </div>
+);
 
 export const App: React.FC = () => {
   const theme = useUserStore((s) => s.theme);
@@ -21,7 +44,6 @@ export const App: React.FC = () => {
       document.body.classList.add('dark');
     } else {
       document.documentElement.classList.remove('dark');
-      document.body.classList.remove('dark');
     }
   }, [theme]);
 
@@ -48,15 +70,17 @@ export const App: React.FC = () => {
         <div className="relative z-10 flex flex-col flex-1">
           <Navbar />
           <main className="flex-1">
-            <Routes>
-              <Route path="/" element={<LandingPage />} />
-              <Route path="/dashboard" element={<DashboardPage />} />
-              <Route path="/map" element={<WorldMapPage />} />
-              <Route path="/lesson/:topicId" element={<LessonPage />} />
-              <Route path="/playground" element={<CodingPlaygroundPage />} />
-              <Route path="/notebook" element={<ErrorNotebookPage />} />
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
+            <Suspense fallback={<PageLoadingFallback />}>
+              <Routes>
+                <Route path="/" element={<LandingPage />} />
+                <Route path="/dashboard" element={<DashboardPage />} />
+                <Route path="/map" element={<WorldMapPage />} />
+                <Route path="/lesson/:topicId" element={<LessonPage />} />
+                <Route path="/playground" element={<CodingPlaygroundPage />} />
+                <Route path="/notebook" element={<ErrorNotebookPage />} />
+                <Route path="*" element={<Navigate to="/" replace />} />
+              </Routes>
+            </Suspense>
           </main>
           <Footer />
         </div>

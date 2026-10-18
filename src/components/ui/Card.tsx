@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { cn } from '../../utils/cn';
 
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -12,13 +12,29 @@ export const Card: React.FC<CardProps> = ({
   glow = 'none',
   interactive = false,
   onMouseMove,
+  onMouseEnter,
+  onMouseLeave,
   ...props
 }) => {
+  const rectRef = useRef<DOMRect | null>(null);
+
+  const handleMouseEnter = (e: React.MouseEvent<HTMLDivElement>) => {
+    rectRef.current = e.currentTarget.getBoundingClientRect();
+    onMouseEnter?.(e);
+  };
+
+  const handleMouseLeave = (e: React.MouseEvent<HTMLDivElement>) => {
+    rectRef.current = null;
+    onMouseLeave?.(e);
+  };
+
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    // Efficiently set CSS variables for mouse-following light without triggering React re-renders
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    // Avoid layout thrashing by reusing cached bounding rect computed on mouseEnter
+    if (!rectRef.current) {
+      rectRef.current = e.currentTarget.getBoundingClientRect();
+    }
+    const x = e.clientX - rectRef.current.left;
+    const y = e.clientY - rectRef.current.top;
     e.currentTarget.style.setProperty('--mouse-x', `${x}px`);
     e.currentTarget.style.setProperty('--mouse-y', `${y}px`);
     onMouseMove?.(e);
@@ -39,6 +55,8 @@ export const Card: React.FC<CardProps> = ({
 
   return (
     <div
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
       onMouseMove={handleMouseMove}
       className={cn(
         'glass-card p-5 text-slate-800 dark:text-slate-100',

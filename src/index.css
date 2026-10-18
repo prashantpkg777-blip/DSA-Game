@@ -222,6 +222,8 @@
   pointer-events: none;
   z-index: 0;
   overflow: hidden;
+  contain: strict;
+  transform: translate3d(0, 0, 0);
   background: radial-gradient(circle at 50% 50%, rgba(241, 245, 249, 0.4) 0%, #F1F5F9 100%);
   transition: background 0.3s ease;
 }
@@ -233,6 +235,7 @@
 .bokeh-orb-1, .bokeh-orb-2, .bokeh-orb-3, .bokeh-orb-4 {
   opacity: 0.6;
   transition: opacity 0.3s ease;
+  transform: translate3d(0, 0, 0);
 }
 
 .dark .bokeh-orb-1, .dark .bokeh-orb-2, .dark .bokeh-orb-3, .dark .bokeh-orb-4 {
@@ -250,7 +253,7 @@
   max-width: 720px;
   max-height: 720px;
   background: radial-gradient(circle, rgba(0, 128, 255, 0.28) 0%, rgba(139, 0, 255, 0.16) 45%, transparent 70%);
-  filter: blur(85px);
+  filter: blur(52px);
   animation: float 12s cubic-bezier(0.22, 1, 0.36, 1) infinite, ambientPulse 9s ease-in-out infinite;
   will-change: transform, opacity;
 }
@@ -265,7 +268,7 @@
   max-width: 680px;
   max-height: 680px;
   background: radial-gradient(circle, rgba(139, 0, 255, 0.26) 0%, rgba(255, 20, 147, 0.18) 50%, transparent 72%);
-  filter: blur(95px);
+  filter: blur(56px);
   animation: float-reverse 15s cubic-bezier(0.22, 1, 0.36, 1) infinite 1s, ambientPulse 11s ease-in-out infinite;
   will-change: transform, opacity;
 }
@@ -280,7 +283,7 @@
   max-width: 620px;
   max-height: 620px;
   background: radial-gradient(circle, rgba(255, 20, 147, 0.22) 0%, rgba(0, 128, 255, 0.14) 48%, transparent 70%);
-  filter: blur(85px);
+  filter: blur(48px);
   animation: float 18s cubic-bezier(0.22, 1, 0.36, 1) infinite 2s;
   will-change: transform;
 }
@@ -295,7 +298,7 @@
   max-width: 660px;
   max-height: 660px;
   background: radial-gradient(circle, rgba(32, 178, 170, 0.22) 0%, rgba(0, 128, 255, 0.14) 50%, transparent 72%);
-  filter: blur(95px);
+  filter: blur(54px);
   animation: float-reverse 21s cubic-bezier(0.22, 1, 0.36, 1) infinite 3s, ambientPulse 12s ease-in-out infinite;
   will-change: transform, opacity;
 }
@@ -398,6 +401,34 @@
     left: 200%;
   }
 }
+
+@keyframes float {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(24px, -28px, 0) scale(1.04);
+  }
+}
+
+@keyframes float-reverse {
+  0%, 100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  50% {
+    transform: translate3d(-28px, 24px, 0) scale(0.96);
+  }
+}
+
+@keyframes ambientPulse {
+  0%, 100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+
 
 /* Subtle Glass Grid Refraction */
 .glass-grid-overlay {
