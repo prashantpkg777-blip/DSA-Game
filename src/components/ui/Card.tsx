@@ -34,14 +34,14 @@ export const Card: React.FC<CardProps> = ({
     amber: 'border-amber-400/35 hover:border-amber-400/70 hover:shadow-glass-amber',
     emerald: 'border-emerald-400/35 hover:border-emerald-400/70 hover:shadow-glass-emerald',
     rose: 'border-[#FF1493]/35 hover:border-[#FF1493]/70 hover:shadow-glass-pink',
-    none: 'border-white/[0.18] hover:border-white/[0.3]',
+    none: 'border-slate-200/90 dark:border-white/[0.18] hover:border-slate-300 dark:hover:border-white/[0.3]',
   };
 
   return (
     <div
       onMouseMove={handleMouseMove}
       className={cn(
-        'glass-card p-5 text-slate-100',
+        'glass-card p-5 text-slate-800 dark:text-slate-100',
         glowClasses[glow],
         interactive && 'cursor-pointer glass-card-hover active:scale-[0.99] active:translate-y-0',
         className

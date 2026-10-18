@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Swords, ShieldAlert, Trophy, X, CheckCircle2, ArrowRight } from 'lucide-react';
+import { Swords, ShieldAlert, Trophy, X, CheckCircle2, ArrowRight, Mic, Square } from 'lucide-react';
 import { BossBattle } from '../../types/curriculum';
 import { useUserStore } from '../../stores/userStore';
 import { Button } from '../ui/Button';
 import { Badge } from '../ui/Badge';
 import { ProgressBar } from '../ui/ProgressBar';
 import { CodeEditorPanel } from '../code/CodeEditorPanel';
+import { audioService } from '../../services/audioService';
 import confetti from 'canvas-confetti';
 
 export interface BossBattleModalProps {
@@ -21,13 +22,24 @@ export const BossBattleModal: React.FC<BossBattleModalProps> = ({ boss, isOpen, 
   const [selectedOptionId, setSelectedOptionId] = useState<string | null>(null);
   const [isStageSolved, setIsStageSolved] = useState(false);
   const [isVictory, setIsVictory] = useState(false);
+  const [isSpeakingTaunt, setIsSpeakingTaunt] = useState(false);
 
-  const { defeatBoss, defeatedBosses } = useUserStore();
+  const { defeatBoss, defeatedBosses, soundEnabled, voiceEnabled, speechRate } = useUserStore();
   const isAlreadyDefeated = defeatedBosses.includes(boss.id);
+
+  useEffect(() => {
+    if (isOpen) {
+      audioService.playBossRoar(soundEnabled);
+    }
+    return () => {
+      audioService.stop();
+    };
+  }, [isOpen]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen) {
+        audioService.stop();
         onClose();
       }
     };
@@ -40,18 +52,38 @@ export const BossBattleModal: React.FC<BossBattleModalProps> = ({ boss, isOpen, 
   const currentStage = boss.stages[currentStageIdx];
   const healthPercent = Math.max(0, Math.round((bossHealth / boss.health) * 100));
 
+  const handleVoiceBossTaunt = () => {
+    if (isSpeakingTaunt) {
+      audioService.stop();
+      setIsSpeakingTaunt(false);
+    } else {
+      setIsSpeakingTaunt(true);
+      const script = `I am ${boss.name}, ${boss.title}! You dare enter my realm? Prepare yourself for Stage ${currentStage.stageNumber}: ${currentStage.title}!`;
+      audioService.speak(script, {
+        voiceEnabled: true,
+        rate: Math.max(0.85, speechRate * 0.9),
+        pitch: 0.8,
+        onEnd: () => setIsSpeakingTaunt(false),
+      });
+    }
+  };
+
   const handleConceptAnswer = (optionId: string) => {
     setSelectedOptionId(optionId);
     const option = currentStage.question?.options.find((o) => o.id === optionId);
 
     if (option?.isCorrect) {
+      audioService.playSwap(soundEnabled);
       setIsStageSolved(true);
       const damage = Math.round(boss.health / boss.stages.length);
       setBossHealth((h) => Math.max(0, h - damage));
+    } else {
+      audioService.playError(soundEnabled);
     }
   };
 
   const handleNextStage = () => {
+    audioService.playClick(soundEnabled);
     if (currentStageIdx < boss.stages.length - 1) {
       setCurrentStageIdx((s) => s + 1);
       setSelectedOptionId(null);
@@ -61,11 +93,13 @@ export const BossBattleModal: React.FC<BossBattleModalProps> = ({ boss, isOpen, 
       setBossHealth(0);
       setIsVictory(true);
       defeatBoss(boss.id, boss.xpReward);
+      audioService.playLevelUp(soundEnabled);
       confetti({ particleCount: 150, spread: 100, origin: { y: 0.5 } });
     }
   };
 
   const handleCodingSuccess = () => {
+    audioService.playSuccess(soundEnabled);
     setIsStageSolved(true);
     const damage = Math.round(boss.health / boss.stages.length);
     setBossHealth((h) => Math.max(0, h - damage));
@@ -78,8 +112,11 @@ export const BossBattleModal: React.FC<BossBattleModalProps> = ({ boss, isOpen, 
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.25 }}
-        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xl"
-        onClick={onClose}
+        className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-xl"
+        onClick={() => {
+          audioService.stop();
+          onClose();
+        }}
       >
         <motion.div 
           initial={{ scale: 0.96, y: 24, opacity: 0 }}
@@ -87,143 +124,159 @@ export const BossBattleModal: React.FC<BossBattleModalProps> = ({ boss, isOpen, 
           exit={{ scale: 0.96, y: 16, opacity: 0 }}
           transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
           onClick={(e) => e.stopPropagation()}
-          className="relative w-full max-w-4xl max-h-[90vh] bg-[#080B18]/90 backdrop-blur-2xl border border-white/[0.2] rounded-[24px] overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.65)] flex flex-col"
+          className="relative w-full max-w-4xl max-h-[92vh] bg-white/95 dark:bg-[#080B18]/90 backdrop-blur-2xl border border-slate-200/90 dark:border-white/[0.2] rounded-[24px] overflow-hidden shadow-2xl flex flex-col text-slate-800 dark:text-slate-100"
         >
-        {/* Boss Header */}
-        <div className="p-6 bg-white/[0.04] backdrop-blur-md border-b border-white/[0.1] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <div className="text-4xl p-3 bg-rose-500/15 rounded-2xl border border-rose-400/30 shadow-glass-rose backdrop-blur-md">
-              {boss.avatar}
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <Badge variant="rose">BOSS BATTLE</Badge>
-                {isAlreadyDefeated && <Badge variant="emerald">DEFEATED</Badge>}
+          {/* Boss Header */}
+          <div className="p-5 sm:p-6 bg-slate-100/80 dark:bg-white/[0.04] backdrop-blur-md border-b border-slate-200/80 dark:border-white/[0.1] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <div className="text-4xl p-3 bg-rose-500/15 rounded-2xl border border-rose-400/30 shadow-glass-rose backdrop-blur-md">
+                {boss.avatar}
               </div>
-              <h2 className="text-2xl font-black text-rose-100 tracking-tight mt-1">
-                {boss.name}
-              </h2>
-              <p className="text-xs text-rose-300 font-mono">{boss.title}</p>
-            </div>
-          </div>
-
-          <button
-            onClick={onClose}
-            className="p-2 rounded-xl text-slate-300 hover:text-white hover:bg-white/[0.1] border border-transparent hover:border-white/[0.1] backdrop-blur-md transition-colors"
-          >
-            <X className="w-5 h-5" />
-          </button>
-        </div>
-
-        {/* Boss Health Bar */}
-        <div className="px-6 py-3 bg-white/[0.02] border-b border-white/[0.08] flex items-center gap-4 backdrop-blur-md">
-          <div className="text-xs font-mono font-bold text-rose-400 flex items-center gap-1.5 shrink-0">
-            <ShieldAlert className="w-4 h-4 text-rose-400" />
-            BOSS HP: {bossHealth}/{boss.health}
-          </div>
-          <div className="flex-1">
-            <ProgressBar value={healthPercent} barColor="violet" height="md" />
-          </div>
-          <div className="text-xs font-mono text-slate-300 shrink-0">
-            Stage {currentStageIdx + 1}/{boss.stages.length}
-          </div>
-        </div>
-
-        {/* Battle Arena Body */}
-        <div className="flex-1 p-6 overflow-y-auto">
-          {isVictory ? (
-            <div className="py-12 flex flex-col items-center text-center gap-4">
-              <div className="w-20 h-20 rounded-3xl bg-amber-500/20 border-2 border-amber-400 flex items-center justify-center text-amber-400 shadow-glow-amber">
-                <Trophy className="w-10 h-10" />
-              </div>
-              <h3 className="text-3xl font-black text-slate-100 tracking-tight">
-                BOSS DEFEATED!
-              </h3>
-              <p className="text-sm text-slate-300 max-w-md">
-                You shattered the defenses of {boss.name} and conquered this realm!
-              </p>
-              <div className="flex items-center gap-3">
-                <Badge variant="amber" size="md">
-                  +{boss.xpReward} XP AWARDED
-                </Badge>
-                <Badge variant="violet" size="md">
-                  🏆 BADGE UNLOCKED
-                </Badge>
-              </div>
-              <Button variant="neon" size="lg" onClick={onClose} className="mt-4">
-                Claim Victory & Return
-              </Button>
-            </div>
-          ) : (
-            <div className="flex flex-col gap-6">
               <div>
-                <span className="text-xs font-mono font-semibold text-rose-400 uppercase tracking-wider">
-                  Stage {currentStage.stageNumber}: {currentStage.title}
-                </span>
-                <h4 className="text-lg font-bold text-slate-100 mt-1">
-                  {currentStage.description}
-                </h4>
+                <div className="flex items-center gap-2">
+                  <Badge variant="rose">BOSS BATTLE</Badge>
+                  {isAlreadyDefeated && <Badge variant="emerald">DEFEATED</Badge>}
+                  <button
+                    onClick={handleVoiceBossTaunt}
+                    className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold transition-all ${
+                      isSpeakingTaunt
+                        ? 'bg-rose-600 text-white animate-pulse'
+                        : 'bg-rose-500/15 text-rose-600 dark:text-rose-300 hover:bg-rose-500/25'
+                    }`}
+                    title="Listen to Boss Speech"
+                  >
+                    {isSpeakingTaunt ? <Square className="w-3 h-3 fill-current" /> : <Mic className="w-3 h-3" />}
+                    <span>{isSpeakingTaunt ? 'Speaking' : 'Boss Voice'}</span>
+                  </button>
+                </div>
+                <h2 className="text-2xl font-black text-rose-700 dark:text-rose-100 tracking-tight mt-1">
+                  {boss.name}
+                </h2>
+                <p className="text-xs text-rose-600 dark:text-rose-300 font-mono">{boss.title}</p>
               </div>
-
-              {/* Stage Type: Concept */}
-              {currentStage.type === 'concept' && currentStage.question && (
-                <div className="flex flex-col gap-4">
-                  <p className="text-sm text-slate-200">
-                    {currentStage.question.question}
-                  </p>
-                  <div className="grid grid-cols-1 gap-2.5">
-                    {currentStage.question.options.map((opt) => {
-                      const isSelected = selectedOptionId === opt.id;
-                      let style = 'bg-slate-950 border-slate-800 text-slate-200 hover:border-slate-700';
-                      if (isSelected) {
-                        style = opt.isCorrect
-                          ? 'bg-emerald-950/40 border-emerald-500 text-emerald-300'
-                          : 'bg-rose-950/40 border-rose-500 text-rose-300';
-                      }
-
-                      return (
-                        <button
-                          key={opt.id}
-                          onClick={() => handleConceptAnswer(opt.id)}
-                          disabled={isStageSolved}
-                          className={`p-3.5 rounded-2xl border text-left text-xs font-medium transition-all ${style}`}
-                        >
-                          {opt.text}
-                        </button>
-                      );
-                    })}
-                  </div>
-
-                  {isStageSolved && (
-                    <div className="p-3 bg-emerald-950/40 border border-emerald-500/40 rounded-xl flex items-center justify-between text-xs text-emerald-300">
-                      <span>Critical Hit! Boss defenses weakened.</span>
-                      <Button variant="primary" size="sm" onClick={handleNextStage}>
-                        Advance <ArrowRight className="w-3.5 h-3.5 ml-1" />
-                      </Button>
-                    </div>
-                  )}
-                </div>
-              )}
-
-              {/* Stage Type: Coding Challenge */}
-              {currentStage.type === 'coding' && currentStage.codeProblem && (
-                <div className="flex flex-col gap-4">
-                  <CodeEditorPanel
-                    problem={currentStage.codeProblem}
-                    onSuccess={handleCodingSuccess}
-                  />
-                  {isStageSolved && (
-                    <Button variant="neon" size="lg" onClick={handleNextStage} className="self-end">
-                      Deliver Final Blow! <Swords className="w-4 h-4 ml-2" />
-                    </Button>
-                  )}
-                </div>
-              )}
             </div>
-          )}
-        </div>
+
+            <button
+              onClick={() => {
+                audioService.stop();
+                onClose();
+              }}
+              className="p-2 rounded-xl text-slate-500 dark:text-slate-300 hover:text-slate-800 dark:hover:text-white hover:bg-slate-200/70 dark:hover:bg-white/[0.1] transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+
+          {/* Boss Health Bar */}
+          <div className="px-5 sm:px-6 py-3 bg-slate-50 dark:bg-white/[0.02] border-b border-slate-200/80 dark:border-white/[0.08] flex items-center gap-4 backdrop-blur-md">
+            <div className="text-xs font-mono font-bold text-rose-600 dark:text-rose-400 flex items-center gap-1.5 shrink-0">
+              <ShieldAlert className="w-4 h-4 text-rose-500 dark:text-rose-400" />
+              BOSS HP: {bossHealth}/{boss.health}
+            </div>
+            <div className="flex-1">
+              <ProgressBar value={healthPercent} barColor="violet" height="md" />
+            </div>
+            <div className="text-xs font-mono text-slate-500 dark:text-slate-300 shrink-0">
+              Stage {currentStageIdx + 1}/{boss.stages.length}
+            </div>
+          </div>
+
+          {/* Battle Arena Body */}
+          <div className="flex-1 p-5 sm:p-6 overflow-y-auto">
+            {isVictory ? (
+              <div className="py-12 flex flex-col items-center text-center gap-4">
+                <div className="w-20 h-20 rounded-3xl bg-amber-500/20 border-2 border-amber-400 flex items-center justify-center text-amber-500 dark:text-amber-400 shadow-glow-amber">
+                  <Trophy className="w-10 h-10" />
+                </div>
+                <h3 className="text-3xl font-black text-slate-900 dark:text-slate-100 tracking-tight">
+                  BOSS DEFEATED!
+                </h3>
+                <p className="text-sm text-slate-600 dark:text-slate-300 max-w-md">
+                  You shattered the defenses of {boss.name} and conquered this realm!
+                </p>
+                <div className="flex items-center gap-3">
+                  <Badge variant="amber" size="md">
+                    +{boss.xpReward} XP AWARDED
+                  </Badge>
+                  <Badge variant="violet" size="md">
+                    🏆 BADGE UNLOCKED
+                  </Badge>
+                </div>
+                <Button variant="neon" size="lg" onClick={onClose} className="mt-4">
+                  Claim Victory & Return
+                </Button>
+              </div>
+            ) : (
+              <div className="flex flex-col gap-6">
+                <div>
+                  <span className="text-xs font-mono font-semibold text-rose-600 dark:text-rose-400 uppercase tracking-wider">
+                    Stage {currentStage.stageNumber}: {currentStage.title}
+                  </span>
+                  <h4 className="text-lg font-bold text-slate-900 dark:text-slate-100 mt-1">
+                    {currentStage.description}
+                  </h4>
+                </div>
+
+                {/* Stage Type: Concept */}
+                {currentStage.type === 'concept' && currentStage.question && (
+                  <div className="flex flex-col gap-4">
+                    <p className="text-sm text-slate-700 dark:text-slate-200">
+                      {currentStage.question.question}
+                    </p>
+                    <div className="grid grid-cols-1 gap-2.5">
+                      {currentStage.question.options.map((opt) => {
+                        const isSelected = selectedOptionId === opt.id;
+                        let style = 'bg-slate-100 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 hover:border-slate-400 dark:hover:border-slate-700';
+                        if (isSelected) {
+                          style = opt.isCorrect
+                            ? 'bg-emerald-500/15 border-emerald-500 text-emerald-800 dark:text-emerald-300 font-bold'
+                            : 'bg-rose-500/15 border-rose-500 text-rose-800 dark:text-rose-300 font-bold';
+                        }
+                        return (
+                          <button
+                            key={opt.id}
+                            disabled={isStageSolved}
+                            onClick={() => handleConceptAnswer(opt.id)}
+                            className={`p-3.5 rounded-2xl border text-left text-xs font-medium transition-all ${style}`}
+                          >
+                            <span className="font-mono mr-2 uppercase text-slate-500">
+                              {opt.id.toUpperCase()}:
+                            </span>
+                            {opt.text}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+
+                {/* Stage Type: Code */}
+                {currentStage.type === 'code' && currentStage.codeProblem && (
+                  <div className="mt-2">
+                    <CodeEditorPanel
+                      problem={currentStage.codeProblem}
+                      onSuccess={handleCodingSuccess}
+                    />
+                  </div>
+                )}
+
+                {/* Stage Cleared CTA */}
+                {isStageSolved && (
+                  <div className="p-4 rounded-2xl bg-emerald-500/15 border border-emerald-400/40 flex items-center justify-between text-xs text-emerald-800 dark:text-emerald-300">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle2 className="w-5 h-5 text-emerald-500" />
+                      <span className="font-bold">Stage Passed! Boss took heavy damage!</span>
+                    </div>
+                    <Button variant="primary" size="sm" onClick={handleNextStage}>
+                      Next Stage <ArrowRight className="w-4 h-4 ml-1" />
+                    </Button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        </motion.div>
       </motion.div>
-    </motion.div>
-  </AnimatePresence>
+    </AnimatePresence>
   );
 };

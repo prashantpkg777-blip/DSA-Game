@@ -126,6 +126,9 @@ interface UserState {
   dailyQuests: DailyQuest[];
   mistakes: MistakeRecord[];
   soundEnabled: boolean;
+  voiceEnabled: boolean;
+  autoVoiceNarrate: boolean;
+  speechRate: number;
   theme: 'dark' | 'light';
 
   // Actions
@@ -138,6 +141,9 @@ interface UserState {
   progressDailyQuest: (category: DailyQuest['category']) => void;
   toggleTheme: () => void;
   toggleSound: () => void;
+  toggleVoice: () => void;
+  toggleAutoVoice: () => void;
+  setSpeechRate: (rate: number) => void;
   resetProgress: () => void;
 }
 
@@ -180,6 +186,9 @@ export const useUserStore = create<UserState>()(
       dailyQuests: getDailyQuestsForToday(getTodayString()),
       mistakes: [],
       soundEnabled: true,
+      voiceEnabled: true,
+      autoVoiceNarrate: false,
+      speechRate: 1.0,
       theme: 'dark',
 
       addXP: (amount: number) => {
@@ -395,6 +404,18 @@ export const useUserStore = create<UserState>()(
 
       toggleSound: () => {
         set((state) => ({ soundEnabled: !state.soundEnabled }));
+      },
+
+      toggleVoice: () => {
+        set((state) => ({ voiceEnabled: !state.voiceEnabled }));
+      },
+
+      toggleAutoVoice: () => {
+        set((state) => ({ autoVoiceNarrate: !state.autoVoiceNarrate }));
+      },
+
+      setSpeechRate: (rate: number) => {
+        set({ speechRate: rate });
       },
 
       resetProgress: () => {

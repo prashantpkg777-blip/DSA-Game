@@ -1,5 +1,6 @@
 import React from 'react';
 import { cn } from '../../utils/cn';
+import { audioService } from '../../services/audioService';
 import { useUserStore } from '../../stores/userStore';
 
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
@@ -24,33 +25,16 @@ export const Button: React.FC<ButtonProps> = ({
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (disabled) return;
-    if (soundEnabled) {
-      // Gentle synthetic audio click using Web Audio API
-      try {
-        const ctx = new (window.AudioContext || (window as any).webkitAudioContext)();
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.type = 'sine';
-        osc.frequency.setValueAtTime(variant === 'neon' ? 880 : 540, ctx.currentTime);
-        gain.gain.setValueAtTime(0.04, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.08);
-        osc.start();
-        osc.stop(ctx.currentTime + 0.08);
-      } catch {
-        // AudioContext not allowed or not supported
-      }
-    }
+    audioService.playClick(soundEnabled);
     onClick?.(e);
   };
 
   const variants = {
     primary: 'bg-gradient-to-r from-[#0080FF] via-[#0099FF] to-[#20B2AA] text-white font-semibold shadow-glass-electric hover:brightness-110 active:brightness-95 border border-white/30',
-    secondary: 'bg-white/[0.08] hover:bg-white/[0.15] text-slate-100 border border-white/[0.2] backdrop-blur-md shadow-glass hover:border-white/[0.35]',
+    secondary: 'bg-slate-900/10 dark:bg-white/[0.08] hover:bg-slate-900/15 dark:hover:bg-white/[0.15] text-slate-800 dark:text-slate-100 border border-slate-300/80 dark:border-white/[0.2] backdrop-blur-md shadow-sm dark:shadow-glass hover:border-slate-400 dark:hover:border-white/[0.35]',
     neon: 'bg-gradient-to-r from-[#0080FF] via-[#8B00FF] to-[#FF1493] text-white font-bold shadow-glass-royal hover:brightness-115 active:scale-[0.97] border border-white/40',
     amber: 'bg-gradient-to-r from-amber-400 to-amber-600 text-slate-950 font-semibold shadow-glow-amber hover:brightness-110 border-t border-amber-200/50',
-    ghost: 'bg-transparent hover:bg-white/[0.1] text-slate-300 hover:text-white border border-transparent hover:border-white/[0.18]',
+    ghost: 'bg-transparent hover:bg-slate-900/10 dark:hover:bg-white/[0.1] text-slate-700 dark:text-slate-300 hover:text-slate-950 dark:hover:text-white border border-transparent hover:border-slate-300 dark:hover:border-white/[0.18]',
     danger: 'bg-gradient-to-r from-[#FF1493] to-rose-600 text-white font-semibold border border-rose-400/40 shadow-glass-pink hover:brightness-110',
   };
 
