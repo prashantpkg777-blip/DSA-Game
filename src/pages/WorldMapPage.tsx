@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { 
   Map, 
   Swords, 
@@ -29,12 +30,12 @@ export const WorldMapPage: React.FC = () => {
 
   const getRegionIcon = (name: string) => {
     switch (name) {
-      case 'Coding Village': return <Compass className="w-5 h-5 text-cyan-400" />;
-      case 'Array Kingdom': return <Grid className="w-5 h-5 text-emerald-400" />;
+      case 'Coding Village': return <Compass className="w-5 h-5 text-[#0080FF]" />;
+      case 'Array Kingdom': return <Grid className="w-5 h-5 text-[#20B2AA]" />;
       case 'Sorting Desert': return <ArrowUpDown className="w-5 h-5 text-amber-400" />;
-      case 'Linked List Forest': return <Link2 className="w-5 h-5 text-purple-400" />;
-      case 'Stack & Queue Citadel': return <Layers className="w-5 h-5 text-rose-400" />;
-      default: return <Network className="w-5 h-5 text-cyan-400" />;
+      case 'Linked List Forest': return <Link2 className="w-5 h-5 text-[#8B00FF]" />;
+      case 'Stack & Queue Citadel': return <Layers className="w-5 h-5 text-[#FF1493]" />;
+      default: return <Network className="w-5 h-5 text-[#0080FF]" />;
     }
   };
 
@@ -42,11 +43,16 @@ export const WorldMapPage: React.FC = () => {
     <div className="min-h-screen bg-transparent text-slate-100 py-10 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto flex flex-col gap-8">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/[0.1] pb-6">
+        <motion.div 
+          initial={{ opacity: 0, y: -16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/[0.1] pb-6"
+        >
           <div>
             <div className="flex items-center gap-2 mb-1">
-              <Badge variant="cyan">ALGORITHM QUEST OVERWORLD</Badge>
-              {freeExploration && <Badge variant="emerald">Free Exploration Active</Badge>}
+              <Badge variant="electric">ALGORITHM QUEST OVERWORLD</Badge>
+              {freeExploration && <Badge variant="teal">Free Exploration Active</Badge>}
             </div>
             <h1 className="text-3xl sm:text-4xl font-black text-slate-100 tracking-tight">
               The World of Data Structures & Algorithms
@@ -58,26 +64,29 @@ export const WorldMapPage: React.FC = () => {
 
           <button
             onClick={() => setFreeExploration(!freeExploration)}
-            className="self-start sm:self-auto px-4 py-2 rounded-xl text-xs font-mono font-bold bg-white/[0.08] border border-white/[0.18] backdrop-blur-md hover:bg-white/[0.14] text-slate-200 transition-all shadow-glass"
+            className="self-start sm:self-auto px-4 py-2 rounded-xl text-xs font-mono font-bold bg-white/[0.08] border border-white/[0.2] backdrop-blur-md hover:bg-white/[0.16] hover:border-white/[0.3] text-slate-200 transition-all shadow-glass active:scale-95"
           >
             {freeExploration ? '🔓 Mode: Free Exploration' : '🔒 Mode: Strict RPG Unlock'}
           </button>
-        </div>
+        </motion.div>
 
         {/* Regions Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {WORLD_REGIONS.map((region) => {
+          {WORLD_REGIONS.map((region, idx) => {
             const isUnlocked = freeExploration || profile.level >= region.requiredLevel || region.unlockedByDefault;
             const isBossDefeated = defeatedBosses.includes(region.bossBattle.id);
             const completedCount = region.topics.filter(t => completedLessons.includes(t.id)).length;
             const isRegionMastered = completedCount === region.topics.length && isBossDefeated;
 
             return (
-              <div
+              <motion.div
                 key={region.id}
-                className={`relative rounded-3xl border transition-all duration-300 flex flex-col justify-between overflow-hidden p-6 ${
+                initial={{ opacity: 0, y: 24 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: idx * 0.05, ease: [0.22, 1, 0.36, 1] }}
+                className={`relative rounded-[24px] border transition-all duration-300 flex flex-col justify-between overflow-hidden p-6 ${
                   isUnlocked
-                    ? 'bg-white/[0.05] border-white/[0.16] backdrop-blur-2xl hover:bg-white/[0.08] hover:border-white/[0.28] hover:-translate-y-1 shadow-glass'
+                    ? 'bg-white/[0.06] border-white/[0.18] backdrop-blur-2xl hover:bg-white/[0.1] hover:border-white/[0.32] hover:-translate-y-1.5 shadow-glass'
                     : 'bg-white/[0.02] border-white/[0.08] backdrop-blur-md opacity-60'
                 }`}
               >
@@ -171,7 +180,7 @@ export const WorldMapPage: React.FC = () => {
                     {isBossDefeated ? 'Replay Boss' : 'Fight Boss'}
                   </Button>
                 </div>
-              </div>
+              </motion.div>
             );
           })}
         </div>

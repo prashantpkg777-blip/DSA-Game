@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { 
   Trophy, 
   Flame, 
@@ -37,10 +38,15 @@ export const DashboardPage: React.FC = () => {
     <div className="min-h-screen bg-transparent text-slate-100 py-10 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto flex flex-col gap-8">
         {/* Top Profile Banner */}
-        <div className="p-8 rounded-3xl bg-white/[0.05] border border-white/[0.16] backdrop-blur-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-glass relative overflow-hidden">
+        <motion.div 
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          className="p-8 rounded-[24px] bg-white/[0.06] border border-white/[0.2] backdrop-blur-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-glass relative overflow-hidden"
+        >
           <div className="flex items-center gap-5 z-10">
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-tr from-cyan-400 via-sky-500 to-violet-600 p-1 flex items-center justify-center text-4xl shadow-glass-cyan border border-white/30 backdrop-blur-md">
-              <div className="w-full h-full bg-[#070c1a]/80 backdrop-blur-md rounded-xl flex items-center justify-center">
+            <div className="w-20 h-20 rounded-2xl bg-gradient-to-tr from-[#0080FF] via-[#8B00FF] to-[#FF1493] p-1 flex items-center justify-center text-4xl shadow-glass-electric border border-white/30 backdrop-blur-md">
+              <div className="w-full h-full bg-[#080B18]/80 backdrop-blur-md rounded-xl flex items-center justify-center">
                 {profile.avatar}
               </div>
             </div>
@@ -49,11 +55,11 @@ export const DashboardPage: React.FC = () => {
                 <h1 className="text-2xl font-black tracking-tight text-slate-100">
                   {profile.username}
                 </h1>
-                <Badge variant="cyan">LVL {profile.level}</Badge>
+                <Badge variant="electric">LVL {profile.level}</Badge>
                 {profile.isGuest && <Badge variant="slate">Guest Mode</Badge>}
               </div>
-              <p className="text-sm text-cyan-300 font-mono">{profile.title}</p>
-              <p className="text-xs text-slate-400 mt-1">
+              <p className="text-sm text-[#20B2AA] font-mono font-medium">{profile.title}</p>
+              <p className="text-xs text-slate-300 mt-1">
                 Joined on {profile.joinedDate} • {profile.streakDays} day streak
               </p>
             </div>
@@ -72,67 +78,96 @@ export const DashboardPage: React.FC = () => {
               {profile.xpToNextLevel - profile.xp} XP to Level {profile.level + 1}
             </div>
           </div>
-        </div>
+        </motion.div>
 
-        {/* Stats Grid */}
+        {/* Stats Grid with Staggered Entrance */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <Card glow="cyan" className="p-5 flex flex-col gap-1">
-            <div className="flex items-center justify-between text-slate-400 text-xs font-mono">
-              <span>Problems Solved</span>
-              <Target className="w-4 h-4 text-cyan-400" />
-            </div>
-            <div className="text-3xl font-black text-slate-100 font-mono">
-              {stats.problemsSolved}
-            </div>
-            <div className="text-[11px] text-slate-500">
-              {stats.correctSubmissions} correct submissions
-            </div>
-          </Card>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <Card glow="electric" className="p-5 flex flex-col gap-1 h-full">
+              <div className="flex items-center justify-between text-slate-300 text-xs font-mono">
+                <span>Problems Solved</span>
+                <Target className="w-4 h-4 text-[#0080FF]" />
+              </div>
+              <div className="text-3xl font-black text-slate-100 font-mono">
+                {stats.problemsSolved}
+              </div>
+              <div className="text-[11px] text-slate-400">
+                {stats.correctSubmissions} correct submissions
+              </div>
+            </Card>
+          </motion.div>
 
-          <Card glow="amber" className="p-5 flex flex-col gap-1">
-            <div className="flex items-center justify-between text-slate-400 text-xs font-mono">
-              <span>Current Streak</span>
-              <Flame className="w-4 h-4 text-amber-400" />
-            </div>
-            <div className="text-3xl font-black text-amber-400 font-mono flex items-center gap-1">
-              {profile.streakDays} <span className="text-base text-slate-400">days</span>
-            </div>
-            <div className="text-[11px] text-slate-500">
-              Longest: {stats.longestStreak} days
-            </div>
-          </Card>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.18, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <Card glow="amber" className="p-5 flex flex-col gap-1 h-full">
+              <div className="flex items-center justify-between text-slate-300 text-xs font-mono">
+                <span>Current Streak</span>
+                <Flame className="w-4 h-4 text-amber-400" />
+              </div>
+              <div className="text-3xl font-black text-amber-400 font-mono flex items-center gap-1">
+                {profile.streakDays} <span className="text-base text-slate-400">days</span>
+              </div>
+              <div className="text-[11px] text-slate-400">
+                Longest: {stats.longestStreak} days
+              </div>
+            </Card>
+          </motion.div>
 
-          <Card glow="emerald" className="p-5 flex flex-col gap-1">
-            <div className="flex items-center justify-between text-slate-400 text-xs font-mono">
-              <span>Accuracy</span>
-              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-            </div>
-            <div className="text-3xl font-black text-emerald-400 font-mono">
-              {stats.accuracy}%
-            </div>
-            <div className="text-[11px] text-slate-500">
-              {stats.totalSubmissions} total attempts
-            </div>
-          </Card>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.26, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <Card glow="teal" className="p-5 flex flex-col gap-1 h-full">
+              <div className="flex items-center justify-between text-slate-300 text-xs font-mono">
+                <span>Accuracy</span>
+                <CheckCircle2 className="w-4 h-4 text-[#20B2AA]" />
+              </div>
+              <div className="text-3xl font-black text-[#20B2AA] font-mono">
+                {stats.accuracy}%
+              </div>
+              <div className="text-[11px] text-slate-400">
+                {stats.totalSubmissions} total attempts
+              </div>
+            </Card>
+          </motion.div>
 
-          <Card glow="violet" className="p-5 flex flex-col gap-1">
-            <div className="flex items-center justify-between text-slate-400 text-xs font-mono">
-              <span>Topics Mastered</span>
-              <Trophy className="w-4 h-4 text-violet-400" />
-            </div>
-            <div className="text-3xl font-black text-violet-400 font-mono">
-              {completedLessons.length}
-            </div>
-            <div className="text-[11px] text-slate-500">
-              {stats.bossesDefeated} bosses defeated
-            </div>
-          </Card>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.34, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <Card glow="royal" className="p-5 flex flex-col gap-1 h-full">
+              <div className="flex items-center justify-between text-slate-300 text-xs font-mono">
+                <span>Topics Mastered</span>
+                <Trophy className="w-4 h-4 text-[#8B00FF]" />
+              </div>
+              <div className="text-3xl font-black text-[#8B00FF] font-mono">
+                {completedLessons.length}
+              </div>
+              <div className="text-[11px] text-slate-400">
+                {stats.bossesDefeated} bosses defeated
+              </div>
+            </Card>
+          </motion.div>
         </div>
 
         {/* Continue Learning Callout */}
-        <div className="p-6 rounded-3xl bg-white/[0.05] border border-cyan-400/30 backdrop-blur-2xl shadow-glass-cyan flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.55, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
+          className="p-6 rounded-[24px] bg-white/[0.05] border border-[#0080FF]/35 backdrop-blur-2xl shadow-glass-electric flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+        >
           <div>
-            <Badge variant="cyan" className="mb-2">RECOMMENDED NEXT MISSION</Badge>
+            <Badge variant="teal" className="mb-2">RECOMMENDED NEXT MISSION</Badge>
             <h2 className="text-xl font-bold text-slate-100">
               {nextLesson.title}
             </h2>
@@ -145,7 +180,7 @@ export const DashboardPage: React.FC = () => {
               Continue Quest <ArrowRight className="w-4 h-4 ml-1.5" />
             </Button>
           </Link>
-        </div>
+        </motion.div>
 
         {/* Middle Two-Column Section: Weekly Activity & Daily Quests */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">

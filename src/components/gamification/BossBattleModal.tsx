@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Swords, ShieldAlert, Trophy, X, CheckCircle2, ArrowRight } from 'lucide-react';
 import { BossBattle } from '../../types/curriculum';
 import { useUserStore } from '../../stores/userStore';
@@ -23,6 +24,16 @@ export const BossBattleModal: React.FC<BossBattleModalProps> = ({ boss, isOpen, 
 
   const { defeatBoss, defeatedBosses } = useUserStore();
   const isAlreadyDefeated = defeatedBosses.includes(boss.id);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen) {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
@@ -61,8 +72,23 @@ export const BossBattleModal: React.FC<BossBattleModalProps> = ({ boss, isOpen, 
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xl animate-fade-in">
-      <div className="relative w-full max-w-4xl max-h-[90vh] bg-[#090d1f]/85 backdrop-blur-2xl border border-white/[0.18] rounded-3xl overflow-hidden shadow-[0_16px_50px_rgba(0,0,0,0.6)] flex flex-col">
+    <AnimatePresence>
+      <motion.div 
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        transition={{ duration: 0.25 }}
+        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xl"
+        onClick={onClose}
+      >
+        <motion.div 
+          initial={{ scale: 0.96, y: 24, opacity: 0 }}
+          animate={{ scale: 1, y: 0, opacity: 1 }}
+          exit={{ scale: 0.96, y: 16, opacity: 0 }}
+          transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+          onClick={(e) => e.stopPropagation()}
+          className="relative w-full max-w-4xl max-h-[90vh] bg-[#080B18]/90 backdrop-blur-2xl border border-white/[0.2] rounded-[24px] overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.65)] flex flex-col"
+        >
         {/* Boss Header */}
         <div className="p-6 bg-white/[0.04] backdrop-blur-md border-b border-white/[0.1] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
@@ -196,7 +222,8 @@ export const BossBattleModal: React.FC<BossBattleModalProps> = ({ boss, isOpen, 
             </div>
           )}
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </motion.div>
+  </AnimatePresence>
   );
 };

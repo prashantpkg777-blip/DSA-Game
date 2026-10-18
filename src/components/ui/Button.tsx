@@ -6,6 +6,7 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
   variant?: 'primary' | 'secondary' | 'neon' | 'ghost' | 'danger' | 'amber';
   size?: 'sm' | 'md' | 'lg';
   icon?: React.ReactNode;
+  shimmer?: boolean;
 }
 
 export const Button: React.FC<ButtonProps> = ({
@@ -14,6 +15,7 @@ export const Button: React.FC<ButtonProps> = ({
   variant = 'primary',
   size = 'md',
   icon,
+  shimmer,
   onClick,
   disabled,
   ...props
@@ -44,12 +46,12 @@ export const Button: React.FC<ButtonProps> = ({
   };
 
   const variants = {
-    primary: 'bg-gradient-to-r from-cyan-400 via-sky-500 to-blue-600 text-slate-950 font-semibold shadow-glass-cyan hover:brightness-110 active:brightness-95 border-t border-cyan-200/50',
-    secondary: 'bg-white/[0.07] hover:bg-white/[0.13] text-slate-200 border border-white/[0.18] backdrop-blur-md shadow-glass hover:border-white/[0.28]',
-    neon: 'bg-gradient-to-r from-cyan-400 via-indigo-500 to-violet-600 text-white font-bold shadow-glass-violet hover:brightness-115 active:scale-95 border-t border-white/40',
+    primary: 'bg-gradient-to-r from-[#0080FF] via-[#0099FF] to-[#20B2AA] text-white font-semibold shadow-glass-electric hover:brightness-110 active:brightness-95 border border-white/30',
+    secondary: 'bg-white/[0.08] hover:bg-white/[0.15] text-slate-100 border border-white/[0.2] backdrop-blur-md shadow-glass hover:border-white/[0.35]',
+    neon: 'bg-gradient-to-r from-[#0080FF] via-[#8B00FF] to-[#FF1493] text-white font-bold shadow-glass-royal hover:brightness-115 active:scale-[0.97] border border-white/40',
     amber: 'bg-gradient-to-r from-amber-400 to-amber-600 text-slate-950 font-semibold shadow-glow-amber hover:brightness-110 border-t border-amber-200/50',
-    ghost: 'bg-transparent hover:bg-white/[0.08] text-slate-300 hover:text-white border border-transparent hover:border-white/[0.12]',
-    danger: 'bg-gradient-to-r from-rose-600 to-rose-700 hover:from-rose-500 hover:to-rose-600 text-white font-semibold border border-rose-400/30 shadow-lg shadow-rose-950/40',
+    ghost: 'bg-transparent hover:bg-white/[0.1] text-slate-300 hover:text-white border border-transparent hover:border-white/[0.18]',
+    danger: 'bg-gradient-to-r from-[#FF1493] to-rose-600 text-white font-semibold border border-rose-400/40 shadow-glass-pink hover:brightness-110',
   };
 
   const sizes = {
@@ -58,10 +60,13 @@ export const Button: React.FC<ButtonProps> = ({
     lg: 'px-6 py-3 text-base rounded-2xl gap-2.5',
   };
 
+  const hasShimmer = shimmer ?? (variant === 'primary' || variant === 'neon');
+
   return (
     <button
       className={cn(
-        'inline-flex items-center justify-center font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-cyan-400/50 disabled:opacity-50 disabled:pointer-events-none active:scale-[0.98] glass-btn',
+        'inline-flex items-center justify-center font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-[#0080FF]/50 disabled:opacity-50 disabled:pointer-events-none active:scale-[0.97] hover:-translate-y-0.5 glass-btn',
+        hasShimmer && 'btn-light-sweep',
         variants[variant],
         sizes[size],
         className
@@ -71,7 +76,7 @@ export const Button: React.FC<ButtonProps> = ({
       {...props}
     >
       {icon && <span className="flex-shrink-0">{icon}</span>}
-      {children}
+      <span className="relative z-10 flex items-center gap-1.5">{children}</span>
     </button>
   );
 };

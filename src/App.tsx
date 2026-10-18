@@ -23,13 +23,20 @@ export const App: React.FC = () => {
 
   return (
     <BrowserRouter>
-      <div className="relative min-h-screen bg-[#060A16] text-slate-100 font-sans selection:bg-cyan-500 selection:text-slate-950 flex flex-col">
+      <div className="relative min-h-screen bg-[#080B18] text-slate-100 font-sans selection:bg-cyan-500 selection:text-slate-950 flex flex-col">
         {/* Global Glassmorphic Bokeh Atmosphere */}
         <div className="glass-bokeh-bg" aria-hidden="true">
           <div className="bokeh-orb-1" />
           <div className="bokeh-orb-2" />
           <div className="bokeh-orb-3" />
           <div className="bokeh-orb-4" />
+          <div className="bokeh-particles-container">
+            <div className="bokeh-particle bokeh-p1" />
+            <div className="bokeh-particle bokeh-p2" />
+            <div className="bokeh-particle bokeh-p3" />
+            <div className="bokeh-particle bokeh-p4" />
+            <div className="bokeh-particle bokeh-p5" />
+          </div>
         </div>
         <div className="glass-grid-overlay" aria-hidden="true" />
 
