@@ -6,7 +6,7 @@ import { MobileBottomNav } from './components/layout/MobileBottomNav';
 import { AudioVoiceController } from './components/audio/AudioVoiceController';
 import { useUserStore } from './stores/userStore';
 
-// Code-split route pages for high performance and low initial bundle size
+// Code-split route pages for maximum performance
 const LandingPage = React.lazy(() =>
   import('./pages/LandingPage').then((m) => ({ default: m.LandingPage }))
 );
@@ -28,10 +28,12 @@ const ErrorNotebookPage = React.lazy(() =>
 
 const PageLoadingFallback: React.FC = () => (
   <div className="min-h-[70vh] flex flex-col items-center justify-center p-8" aria-busy="true" aria-label="Loading page">
-    <div className="w-16 h-16 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center animate-pulse mb-4 shadow-[0_0_24px_rgba(32,178,170,0.3)]">
-      <div className="w-8 h-8 rounded-full border-2 border-cyan-400 border-t-transparent animate-spin" />
+    <div className="p-4 bg-[#C6FF00] text-[#111111] border-3 border-[#111111] shadow-[4px_4px_0px_#111111] -rotate-2 animate-bounce">
+      <div className="font-display font-black text-sm uppercase tracking-wider flex items-center gap-2">
+        <span className="animate-spin text-lg">✳</span>
+        <span>LOADING MAYHEM...</span>
+      </div>
     </div>
-    <p className="text-sm font-medium tracking-wide text-cyan-400 animate-pulse">Loading Quest...</p>
   </div>
 );
 
@@ -44,27 +46,15 @@ export const App: React.FC = () => {
       document.body.classList.add('dark');
     } else {
       document.documentElement.classList.remove('dark');
+      document.body.classList.remove('dark');
     }
   }, [theme]);
 
   return (
     <BrowserRouter>
-      <div className="relative min-h-screen bg-[#F1F5F9] dark:bg-[#080B18] text-slate-800 dark:text-slate-100 font-sans selection:bg-cyan-500 selection:text-slate-950 flex flex-col transition-colors duration-300 pb-16 md:pb-0">
-        {/* Global Glassmorphic Bokeh Atmosphere */}
-        <div className="glass-bokeh-bg" aria-hidden="true">
-          <div className="bokeh-orb-1" />
-          <div className="bokeh-orb-2" />
-          <div className="bokeh-orb-3" />
-          <div className="bokeh-orb-4" />
-          <div className="bokeh-particles-container">
-            <div className="bokeh-particle bokeh-p1" />
-            <div className="bokeh-particle bokeh-p2" />
-            <div className="bokeh-particle bokeh-p3" />
-            <div className="bokeh-particle bokeh-p4" />
-            <div className="bokeh-particle bokeh-p5" />
-          </div>
-        </div>
-        <div className="glass-grid-overlay" aria-hidden="true" />
+      <div className="relative min-h-screen bg-[#F5F0E8] dark:bg-[#111111] text-[#111111] dark:text-[#F5F0E8] font-sans selection:bg-[#C6FF00] selection:text-[#111111] flex flex-col transition-colors duration-200 pb-16 md:pb-0">
+        {/* Halftone Dot Pattern Atmosphere */}
+        <div className="chaos-halftone-bg" aria-hidden="true" />
 
         {/* Interactive App Shell */}
         <div className="relative z-10 flex flex-col flex-1">

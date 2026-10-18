@@ -2,39 +2,48 @@ import React from 'react';
 import { cn } from '../../utils/cn';
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
-  variant?: 'cyan' | 'violet' | 'emerald' | 'amber' | 'rose' | 'slate' | 'electric' | 'royal' | 'pink' | 'teal';
-  size?: 'sm' | 'md';
+  variant?: 'cyan' | 'violet' | 'emerald' | 'amber' | 'rose' | 'slate' | 'electric' | 'royal' | 'pink' | 'teal' | 'lime' | 'orange' | 'yellow' | 'lavender';
+  size?: 'sm' | 'md' | 'lg';
+  tilt?: boolean;
 }
 
 export const Badge: React.FC<BadgeProps> = ({
   children,
   className,
-  variant = 'cyan',
+  variant = 'lime',
   size = 'md',
+  tilt = false,
   ...props
 }) => {
   const variants = {
-    electric: 'bg-[#0080FF]/15 text-[#0060DF] dark:text-[#60A5FA] border-[#0080FF]/40 shadow-[0_0_14px_rgba(0,128,255,0.25)]',
-    royal: 'bg-[#8B00FF]/15 text-[#7000DF] dark:text-[#C084FC] border-[#8B00FF]/40 shadow-[0_0_14px_rgba(139,0,255,0.25)]',
-    pink: 'bg-[#FF1493]/15 text-[#DF0078] dark:text-[#F472B6] border-[#FF1493]/40 shadow-[0_0_14px_rgba(255,20,147,0.25)]',
-    teal: 'bg-[#20B2AA]/15 text-teal-700 dark:text-[#2DD4BF] border-[#20B2AA]/40 shadow-[0_0_14px_rgba(32,178,170,0.25)]',
-    cyan: 'bg-[#20B2AA]/15 text-teal-700 dark:text-[#2DD4BF] border-[#20B2AA]/40 shadow-[0_0_14px_rgba(32,178,170,0.25)]',
-    violet: 'bg-[#8B00FF]/15 text-[#7000DF] dark:text-[#C084FC] border-[#8B00FF]/40 shadow-[0_0_14px_rgba(139,0,255,0.25)]',
-    emerald: 'bg-emerald-500/15 text-emerald-800 dark:text-emerald-300 border-emerald-400/40 shadow-[0_0_14px_rgba(16,185,129,0.2)]',
-    amber: 'bg-amber-500/15 text-amber-800 dark:text-amber-300 border-amber-400/40 shadow-[0_0_14px_rgba(245,158,11,0.2)]',
-    rose: 'bg-[#FF1493]/15 text-[#DF0078] dark:text-[#F472B6] border-[#FF1493]/40 shadow-[0_0_14px_rgba(255,20,147,0.25)]',
-    slate: 'bg-slate-200/80 dark:bg-white/[0.08] text-slate-700 dark:text-slate-300 border-slate-300/80 dark:border-white/[0.18] shadow-sm',
+    lime: 'bg-[#C6FF00] text-[#111111] border-2 border-[#111111] shadow-[2px_2px_0px_#111111]',
+    teal: 'bg-[#C6FF00] text-[#111111] border-2 border-[#111111] shadow-[2px_2px_0px_#111111]',
+    cyan: 'bg-[#C6FF00] text-[#111111] border-2 border-[#111111] shadow-[2px_2px_0px_#111111]',
+    pink: 'bg-[#FF2DAA] text-[#111111] border-2 border-[#111111] shadow-[2px_2px_0px_#111111]',
+    rose: 'bg-[#FF2DAA] text-[#111111] border-2 border-[#111111] shadow-[2px_2px_0px_#111111]',
+    blue: 'bg-[#304FFE] text-[#F5F0E8] border-2 border-[#111111] shadow-[2px_2px_0px_#111111]',
+    electric: 'bg-[#304FFE] text-[#F5F0E8] border-2 border-[#111111] shadow-[2px_2px_0px_#111111]',
+    royal: 'bg-[#B9A0FF] text-[#111111] border-2 border-[#111111] shadow-[2px_2px_0px_#111111]',
+    violet: 'bg-[#B9A0FF] text-[#111111] border-2 border-[#111111] shadow-[2px_2px_0px_#111111]',
+    lavender: 'bg-[#B9A0FF] text-[#111111] border-2 border-[#111111] shadow-[2px_2px_0px_#111111]',
+    orange: 'bg-[#FF5C00] text-[#111111] border-2 border-[#111111] shadow-[2px_2px_0px_#111111]',
+    amber: 'bg-[#FFF200] text-[#111111] border-2 border-[#111111] shadow-[2px_2px_0px_#111111]',
+    yellow: 'bg-[#FFF200] text-[#111111] border-2 border-[#111111] shadow-[2px_2px_0px_#111111]',
+    emerald: 'bg-[#C6FF00] text-[#111111] border-2 border-[#111111] shadow-[2px_2px_0px_#111111]',
+    slate: 'bg-[#2c2c2c] text-[#F5F0E8] border-2 border-[#111111] shadow-[2px_2px_0px_#111111]',
   };
 
   const sizes = {
-    sm: 'text-[11px] px-2.5 py-0.5 rounded-full font-mono tracking-wide',
-    md: 'text-xs px-3 py-1 rounded-full font-medium',
+    sm: 'text-[10px] px-2 py-0.5 font-mono font-bold uppercase rounded-sm',
+    md: 'text-xs px-2.5 py-1 font-display font-extrabold uppercase rounded-sm tracking-wider',
+    lg: 'text-sm px-3.5 py-1.5 font-display font-black uppercase rounded-sm tracking-wider',
   };
 
   return (
     <span
       className={cn(
-        'inline-flex items-center gap-1.5 border uppercase tracking-wider backdrop-blur-md glass-badge',
+        'inline-flex items-center gap-1.5 transition-transform select-none',
+        tilt && 'rotate-[-2deg] hover:rotate-0',
         variants[variant],
         sizes[size],
         className

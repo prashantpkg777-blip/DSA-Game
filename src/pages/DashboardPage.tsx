@@ -9,11 +9,10 @@ import {
   ArrowRight, 
   RotateCcw, 
   Sparkles, 
-  BookOpen, 
-  Code2, 
   Activity,
-  Layers,
-  Award
+  Award,
+  Zap,
+  Swords
 } from 'lucide-react';
 import { useUserStore } from '../stores/userStore';
 import { WORLD_REGIONS } from '../curriculum/curriculumData';
@@ -27,185 +26,162 @@ export const DashboardPage: React.FC = () => {
 
   const xpPercent = Math.min(100, Math.round((profile.xp / profile.xpToNextLevel) * 100));
 
-  // Determine next recommended lesson
+  // Next recommended lesson
   const allLessons = WORLD_REGIONS.flatMap(r => r.topics);
   const nextLesson = allLessons.find(l => !completedLessons.includes(l.id)) || allLessons[0];
 
-  const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const daysOfWeek = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
   const maxWeeklyXP = Math.max(...stats.weeklyActivity, 100);
 
   return (
-    <div className="min-h-screen bg-transparent text-slate-800 dark:text-slate-100 py-6 sm:py-10 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen text-[#111111] dark:text-[#F5F0E8] py-8 sm:py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto flex flex-col gap-8">
-        {/* Top Profile Banner */}
-        <motion.div 
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-          className="p-6 sm:p-8 rounded-[24px] bg-white/85 dark:bg-white/[0.06] border border-slate-200/90 dark:border-white/[0.2] backdrop-blur-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-sm dark:shadow-glass relative overflow-hidden"
-        >
-          <div className="flex items-center gap-4 sm:gap-5 z-10">
-            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-tr from-[#0080FF] via-[#8B00FF] to-[#FF1493] p-1 flex items-center justify-center text-3xl sm:text-4xl shadow-glass-electric border border-white/30 backdrop-blur-md">
-              <div className="w-full h-full bg-white dark:bg-[#080B18]/80 backdrop-blur-md rounded-xl flex items-center justify-center">
-                {profile.avatar}
-              </div>
-            </div>
-            <div>
-              <div className="flex items-center gap-2 mb-1 flex-wrap">
-                <h1 className="text-xl sm:text-2xl font-black tracking-tight text-slate-900 dark:text-slate-100">
-                  {profile.username}
-                </h1>
-                <Badge variant="electric">LVL {profile.level}</Badge>
-                {profile.isGuest && <Badge variant="slate">Guest Mode</Badge>}
-              </div>
-              <p className="text-sm text-[#0080FF] dark:text-[#20B2AA] font-mono font-medium">{profile.title}</p>
-              <p className="text-xs text-slate-500 dark:text-slate-300 mt-1">
-                Joined on {profile.joinedDate} • {profile.streakDays} day streak
-              </p>
-            </div>
-          </div>
-
-          {/* XP Progress Card */}
-          <div className="w-full md:w-80 bg-slate-100/80 dark:bg-white/[0.07] backdrop-blur-md p-4 rounded-2xl border border-slate-200/80 dark:border-white/[0.16] shadow-sm dark:shadow-glass flex flex-col gap-2 z-10">
-            <div className="flex items-center justify-between text-xs font-mono">
-              <span className="text-slate-600 dark:text-slate-300">Level Progress</span>
-              <span className="text-[#0080FF] dark:text-cyan-300 font-bold">
-                {profile.xp} / {profile.xpToNextLevel} XP ({xpPercent}%)
-              </span>
-            </div>
-            <ProgressBar value={xpPercent} barColor="cyan" height="md" />
-            <div className="text-[11px] text-slate-500 dark:text-slate-400 font-mono text-right">
-              {profile.xpToNextLevel - profile.xp} XP to Level {profile.level + 1}
-            </div>
-          </div>
-        </motion.div>
-
-        {/* Stats Grid with Staggered Entrance */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-          >
-            <Card glow="electric" className="p-5 flex flex-col gap-1 h-full">
-              <div className="flex items-center justify-between text-slate-500 dark:text-slate-300 text-xs font-mono">
-                <span>Problems Solved</span>
-                <Target className="w-4 h-4 text-[#0080FF]" />
-              </div>
-              <div className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-slate-100 font-mono">
-                {stats.problemsSolved}
-              </div>
-              <div className="text-[11px] text-slate-500 dark:text-slate-400">
-                {stats.correctSubmissions} correct submissions
-              </div>
-            </Card>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.18, ease: [0.22, 1, 0.36, 1] }}
-          >
-            <Card glow="amber" className="p-5 flex flex-col gap-1 h-full">
-              <div className="flex items-center justify-between text-slate-500 dark:text-slate-300 text-xs font-mono">
-                <span>Current Streak</span>
-                <Flame className="w-4 h-4 text-amber-500" />
-              </div>
-              <div className="text-2xl sm:text-3xl font-black text-amber-500 dark:text-amber-400 font-mono flex items-center gap-1">
-                {profile.streakDays} <span className="text-base text-slate-500 dark:text-slate-400">days</span>
-              </div>
-              <div className="text-[11px] text-slate-500 dark:text-slate-400">
-                Longest: {stats.longestStreak} days
-              </div>
-            </Card>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.26, ease: [0.22, 1, 0.36, 1] }}
-          >
-            <Card glow="teal" className="p-5 flex flex-col gap-1 h-full">
-              <div className="flex items-center justify-between text-slate-500 dark:text-slate-300 text-xs font-mono">
-                <span>Accuracy</span>
-                <CheckCircle2 className="w-4 h-4 text-[#20B2AA]" />
-              </div>
-              <div className="text-2xl sm:text-3xl font-black text-[#20B2AA] font-mono">
-                {stats.accuracy}%
-              </div>
-              <div className="text-[11px] text-slate-500 dark:text-slate-400">
-                {stats.totalSubmissions} total attempts
-              </div>
-            </Card>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.34, ease: [0.22, 1, 0.36, 1] }}
-          >
-            <Card glow="royal" className="p-5 flex flex-col gap-1 h-full">
-              <div className="flex items-center justify-between text-slate-500 dark:text-slate-300 text-xs font-mono">
-                <span>Topics Mastered</span>
-                <Trophy className="w-4 h-4 text-[#8B00FF]" />
-              </div>
-              <div className="text-2xl sm:text-3xl font-black text-[#8B00FF] font-mono">
-                {completedLessons.length}
-              </div>
-              <div className="text-[11px] text-slate-500 dark:text-slate-400">
-                {stats.bossesDefeated} bosses defeated
-              </div>
-            </Card>
-          </motion.div>
-        </div>
-
-        {/* Continue Learning Callout */}
+        
+        {/* Welcome Header: YO, CODER! READY TO COOK? */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.55, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
-          className="p-6 rounded-[24px] bg-white/85 dark:bg-white/[0.05] border border-[#0080FF]/35 backdrop-blur-2xl shadow-sm dark:shadow-glass-electric flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+          transition={{ duration: 0.4 }}
+          className="p-6 sm:p-8 bg-[#C6FF00] text-[#111111] border-3 md:border-4 border-[#111111] shadow-[8px_8px_0px_#111111] -rotate-1 relative overflow-hidden"
         >
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 relative z-10">
+            <div className="flex items-center gap-4 sm:gap-5">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 bg-[#FF2DAA] border-3 border-[#111111] shadow-[4px_4px_0px_#111111] flex items-center justify-center text-3xl sm:text-4xl rotate-3">
+                {profile.avatar}
+              </div>
+              <div>
+                <div className="font-mono text-xs font-black uppercase text-[#111111] bg-[#FFF200] px-2 py-0.5 border border-[#111111] inline-block mb-1">
+                  STATUS: HIGH COOKING ENERGY 👨‍🍳
+                </div>
+                <h1 className="text-2xl sm:text-4xl font-display font-black tracking-tight uppercase leading-none">
+                  YO, {profile.username}! READY TO COOK?
+                </h1>
+                <p className="font-mono text-xs font-bold text-[#111111] opacity-90 mt-1">
+                  {profile.title} • {profile.streakDays} DAY STREAK 🔥 • {completedLessons.length} TOPICS MASTERED
+                </p>
+              </div>
+            </div>
+
+            {/* XP Progress Badge Widget */}
+            <div className="w-full md:w-80 bg-[#111111] text-[#F5F0E8] p-4 border-3 border-[#111111] shadow-[4px_4px_0px_#111111]">
+              <div className="flex items-center justify-between font-mono text-xs font-black mb-1">
+                <span className="text-[#C6FF00]">LVL {profile.level} PROGRESS</span>
+                <span className="text-[#FFF200]">{profile.xp} / {profile.xpToNextLevel} XP</span>
+              </div>
+              <div className="w-full bg-[#2c2c2c] h-3 border border-[#F5F0E8] overflow-hidden">
+                <div 
+                  className="bg-[#C6FF00] h-full transition-all duration-300"
+                  style={{ width: `${xpPercent}%` }}
+                />
+              </div>
+              <div className="text-[10px] font-mono text-right text-[#C6FF00] mt-1 font-bold">
+                {profile.xpToNextLevel - profile.xp} XP TO LVL {profile.level + 1}
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* 4 Brutalist Key Stats Cards */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <Card className="p-4 border-3 border-[#111111] bg-[#F5F0E8] dark:bg-[#181818] shadow-[4px_4px_0px_#111111] dark:shadow-[4px_4px_0px_#304FFE] rotate-1">
+            <div className="flex items-center justify-between font-mono text-xs font-black mb-1">
+              <span>SOLVED</span>
+              <Target className="w-4 h-4 text-[#304FFE]" />
+            </div>
+            <div className="text-3xl font-display font-black">
+              {stats.problemsSolved}
+            </div>
+            <div className="font-mono text-[11px] opacity-70">
+              {stats.correctSubmissions} correct runs
+            </div>
+          </Card>
+
+          <Card className="p-4 border-3 border-[#111111] bg-[#F5F0E8] dark:bg-[#181818] shadow-[4px_4px_0px_#111111] dark:shadow-[4px_4px_0px_#FF5C00] -rotate-1">
+            <div className="flex items-center justify-between font-mono text-xs font-black text-[#FF5C00] mb-1">
+              <span>STREAK</span>
+              <Flame className="w-4 h-4 text-[#FF5C00] fill-[#FF5C00]" />
+            </div>
+            <div className="text-3xl font-display font-black text-[#FF5C00]">
+              {profile.streakDays}D
+            </div>
+            <div className="font-mono text-[11px] opacity-70">
+              Longest: {stats.longestStreak} days
+            </div>
+          </Card>
+
+          <Card className="p-4 border-3 border-[#111111] bg-[#F5F0E8] dark:bg-[#181818] shadow-[4px_4px_0px_#111111] dark:shadow-[4px_4px_0px_#C6FF00] rotate-1">
+            <div className="flex items-center justify-between font-mono text-xs font-black text-[#C6FF00] mb-1">
+              <span className="text-[#111111] dark:text-[#C6FF00]">ACCURACY</span>
+              <CheckCircle2 className="w-4 h-4 text-[#C6FF00]" />
+            </div>
+            <div className="text-3xl font-display font-black text-[#111111] dark:text-[#C6FF00]">
+              {stats.accuracy}%
+            </div>
+            <div className="font-mono text-[11px] opacity-70">
+              {stats.totalSubmissions} attempts
+            </div>
+          </Card>
+
+          <Card className="p-4 border-3 border-[#111111] bg-[#F5F0E8] dark:bg-[#181818] shadow-[4px_4px_0px_#111111] dark:shadow-[4px_4px_0px_#FF2DAA] -rotate-1">
+            <div className="flex items-center justify-between font-mono text-xs font-black text-[#FF2DAA] mb-1">
+              <span>BOSSES DEFEATED</span>
+              <Trophy className="w-4 h-4 text-[#FF2DAA]" />
+            </div>
+            <div className="text-3xl font-display font-black text-[#FF2DAA]">
+              {stats.bossesDefeated}
+            </div>
+            <div className="font-mono text-[11px] opacity-70">
+              {completedLessons.length} topics mastered
+            </div>
+          </Card>
+        </div>
+
+        {/* Continue Learning Callout Banner */}
+        <div className="p-6 bg-[#FF2DAA] text-[#111111] border-3 border-[#111111] shadow-[6px_6px_0px_#111111] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
-            <Badge variant="teal" className="mb-2">RECOMMENDED NEXT MISSION</Badge>
-            <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">
+            <div className="font-mono text-[11px] font-black uppercase bg-[#111111] text-[#FFF200] px-2 py-0.5 inline-block mb-1">
+              CURRENT QUEST OBJECTIVE
+            </div>
+            <h2 className="text-xl sm:text-2xl font-display font-black uppercase">
               {nextLesson.title}
             </h2>
-            <p className="text-xs text-slate-600 dark:text-slate-300 mt-0.5">
-              {nextLesson.subtitle} • +{nextLesson.xpReward} XP Reward
+            <p className="font-mono text-xs font-bold opacity-90 mt-0.5">
+              {nextLesson.subtitle} • REWARD: +{nextLesson.xpReward} XP
             </p>
           </div>
           <Link to={`/lesson/${nextLesson.id}`}>
-            <Button variant="neon" size="md">
-              Continue Quest <ArrowRight className="w-4 h-4 ml-1.5" />
+            <Button variant="lime" size="md" className="border-3 border-[#111111] shadow-[3px_3px_0px_#111111] hover:rotate-1">
+              CONTINUE THE MAYHEM <ArrowRight className="w-4 h-4 ml-1.5" />
             </Button>
           </Link>
-        </motion.div>
+        </div>
 
-        {/* Middle Two-Column Section: Weekly Activity & Daily Quests */}
+        {/* Two-Column Section: Weekly Activity & Daily Quests */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Weekly Activity Chart */}
-          <Card className="p-6 flex flex-col gap-6">
+          {/* Weekly Activity */}
+          <Card className="p-6 border-3 border-[#111111] shadow-[5px_5px_0px_#111111] flex flex-col gap-6">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Activity className="w-4 h-4 text-[#0080FF] dark:text-cyan-400" />
-                <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">Weekly XP Activity</h3>
+                <Activity className="w-5 h-5 text-[#304FFE]" />
+                <h3 className="font-display font-black text-lg uppercase">WEEKLY XP ACTIVITY</h3>
               </div>
-              <span className="text-xs font-mono text-slate-500 dark:text-slate-400">Past 7 Days</span>
+              <span className="font-mono text-xs font-bold px-2 py-0.5 bg-[#FFF200] text-[#111111] border border-[#111111]">
+                PAST 7 DAYS
+              </span>
             </div>
 
             {/* Bars */}
             <div className="h-44 flex items-end justify-between gap-3 pt-4 px-2">
               {stats.weeklyActivity.map((xpVal, idx) => {
-                const heightPercent = Math.max(10, Math.round((xpVal / maxWeeklyXP) * 100));
+                const heightPercent = Math.max(12, Math.round((xpVal / maxWeeklyXP) * 100));
                 return (
                   <div key={idx} className="flex-1 flex flex-col items-center gap-2 h-full justify-end">
-                    <span className="text-[10px] font-mono text-[#0080FF] dark:text-cyan-400 font-bold">{xpVal}</span>
+                    <span className="font-mono text-[10px] font-black">{xpVal}</span>
                     <div
                       style={{ height: `${heightPercent}%` }}
-                      className="w-full max-w-[32px] rounded-t-lg bg-gradient-to-t from-[#0080FF] to-sky-300 shadow-sm dark:shadow-glass-cyan transition-all duration-300"
+                      className="w-full max-w-[36px] bg-[#304FFE] border-2 border-[#111111] shadow-[2px_2px_0px_#111111]"
                     />
-                    <span className="text-xs font-mono text-slate-500 dark:text-slate-400">
+                    <span className="font-mono text-xs font-black">
                       {daysOfWeek[idx]}
                     </span>
                   </div>
@@ -215,53 +191,45 @@ export const DashboardPage: React.FC = () => {
           </Card>
 
           {/* Daily Quests */}
-          <Card className="p-6 flex flex-col gap-4">
+          <Card className="p-6 border-3 border-[#111111] shadow-[5px_5px_0px_#111111] flex flex-col gap-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-amber-500" />
-                <h3 className="text-base font-bold text-slate-900 dark:text-slate-100">Daily Quests</h3>
+                <Sparkles className="w-5 h-5 text-[#FF5C00]" />
+                <h3 className="font-display font-black text-lg uppercase">DAILY QUEST TRACKER</h3>
               </div>
-              <Badge variant="amber" size="sm">Refreshes Daily</Badge>
+              <Badge variant="orange" size="sm">REFRESHES DAILY</Badge>
             </div>
 
             <div className="flex flex-col gap-3">
               {dailyQuests.map((quest) => (
                 <div
                   key={quest.id}
-                  className={`p-4 rounded-2xl border flex items-center justify-between gap-4 transition-all backdrop-blur-md ${
+                  className={`p-3.5 border-2 border-[#111111] flex items-center justify-between gap-4 ${
                     quest.isCompleted
-                      ? 'bg-emerald-500/10 border-emerald-400/30'
-                      : 'bg-slate-100/70 dark:bg-white/[0.04] border-slate-200/80 dark:border-white/[0.12] hover:bg-slate-200/80 dark:hover:bg-white/[0.07]'
+                      ? 'bg-[#C6FF00] text-[#111111] shadow-[2px_2px_0px_#111111]'
+                      : 'bg-white dark:bg-[#202020] text-inherit'
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <div
-                      className={`w-8 h-8 rounded-xl flex items-center justify-center ${
-                        quest.isCompleted
-                          ? 'bg-emerald-500/20 text-emerald-500'
-                          : 'bg-slate-200 dark:bg-white/[0.08] text-slate-500'
-                      }`}
-                    >
-                      {quest.isCompleted ? <CheckCircle2 className="w-4 h-4" /> : <Target className="w-4 h-4" />}
+                    <div className="p-1.5 bg-[#111111] text-[#FFF200] border border-[#111111]">
+                      {quest.isCompleted ? <CheckCircle2 className="w-4 h-4 text-[#C6FF00]" /> : <Target className="w-4 h-4" />}
                     </div>
                     <div>
-                      <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200">
+                      <h4 className="font-display font-black text-xs uppercase">
                         {quest.title}
                       </h4>
-                      <p className="text-[11px] text-slate-500 dark:text-slate-400">
+                      <p className="font-sans text-[11px] opacity-80">
                         {quest.description}
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-2 font-mono text-xs">
-                    <span className="text-amber-600 dark:text-amber-400 font-bold">+{quest.xpReward} XP</span>
+                  <div className="flex items-center gap-2 font-mono text-xs font-black">
+                    <span className="text-[#FF5C00]">+{quest.xpReward} XP</span>
                     {quest.isCompleted ? (
-                      <Badge variant="emerald" size="sm">CLAIMED</Badge>
+                      <span className="px-2 py-0.5 bg-[#111111] text-[#C6FF00] text-[10px]">DONE</span>
                     ) : (
-                      <span className="text-slate-500 dark:text-slate-400 text-[11px]">
-                        {quest.currentCount}/{quest.targetCount}
-                      </span>
+                      <span className="opacity-70 text-[11px]">{quest.currentCount}/{quest.targetCount}</span>
                     )}
                   </div>
                 </div>
@@ -273,11 +241,11 @@ export const DashboardPage: React.FC = () => {
         {/* Achievements Showcase */}
         <div>
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 flex items-center gap-2">
-              <Award className="w-5 h-5 text-[#8B00FF]" /> Unlocked Achievements
+            <h3 className="font-display font-black text-xl uppercase flex items-center gap-2">
+              <Award className="w-6 h-6 text-[#FF2DAA]" /> UNLOCKED ACHIEVEMENTS
             </h3>
-            <span className="text-xs font-mono text-slate-500 dark:text-slate-400">
-              {achievements.filter(a => a.isUnlocked).length} / {achievements.length} Unlocked
+            <span className="font-mono text-xs font-bold px-2 py-1 bg-[#111111] text-[#C6FF00] border border-[#111111]">
+              {achievements.filter(a => a.isUnlocked).length} / {achievements.length} UNLOCKED
             </span>
           </div>
 
@@ -285,39 +253,20 @@ export const DashboardPage: React.FC = () => {
             {achievements.map((ach) => (
               <Card
                 key={ach.id}
-                className={`p-4 flex items-start gap-3.5 transition-all backdrop-blur-md ${
-                  ach.isUnlocked
-                    ? 'border-[#8B00FF]/35 bg-purple-500/10 dark:bg-violet-500/10 shadow-sm dark:shadow-glass-royal'
-                    : 'border-slate-200/80 dark:border-white/[0.08] bg-slate-100/50 dark:bg-white/[0.02] opacity-60'
+                className={`p-4 border-3 border-[#111111] shadow-[4px_4px_0px_#111111] ${
+                  ach.isUnlocked ? 'bg-[#FFF200] text-[#111111]' : 'opacity-60 bg-white dark:bg-[#1f1f1f]'
                 }`}
               >
-                <div
-                  className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${
-                    ach.isUnlocked
-                      ? 'bg-[#8B00FF]/20 text-[#8B00FF] dark:text-violet-300 border border-[#8B00FF]/30'
-                      : 'bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-500'
-                  }`}
-                >
-                  <Trophy className="w-5 h-5" />
-                </div>
-                <div className="flex-1">
-                  <div className="flex items-center justify-between">
-                    <h4 className="text-xs font-bold text-slate-800 dark:text-slate-200">
-                      {ach.title}
-                    </h4>
-                    <span className="text-[11px] font-mono text-amber-600 dark:text-amber-400 font-bold">
-                      +{ach.xpReward} XP
-                    </span>
+                <div className="flex items-start gap-3">
+                  <div className="w-10 h-10 bg-[#111111] text-[#C6FF00] border-2 border-[#111111] flex items-center justify-center shrink-0">
+                    <Trophy className="w-5 h-5" />
                   </div>
-                  <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
-                    {ach.description}
-                  </p>
-                  <div className="mt-2">
-                    <ProgressBar
-                      value={Math.round((ach.progress / ach.maxProgress) * 100)}
-                      barColor="violet"
-                      height="sm"
-                    />
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between">
+                      <h4 className="font-display font-black text-xs uppercase">{ach.title}</h4>
+                      <span className="font-mono text-xs font-black text-[#FF2DAA]">+{ach.xpReward} XP</span>
+                    </div>
+                    <p className="font-sans text-[11px] opacity-80 mt-0.5">{ach.description}</p>
                   </div>
                 </div>
               </Card>
@@ -326,20 +275,22 @@ export const DashboardPage: React.FC = () => {
         </div>
 
         {/* Reset Progress Helper for Testing */}
-        <div className="pt-8 border-t border-slate-200/80 dark:border-slate-900 flex justify-between items-center text-xs text-slate-500">
-          <span>Guest progress is persisted automatically in local storage.</span>
+        <div className="pt-6 border-t-2 border-[#111111] dark:border-[#333] flex justify-between items-center font-mono text-xs opacity-75">
+          <span>PROGRESS PERSISTED AUTOMATICALLY IN LOCAL STORAGE.</span>
           <button
             onClick={() => {
               if (window.confirm('Reset all user progress, XP, and achievements to zero?')) {
                 resetProgress();
               }
             }}
-            className="text-rose-500 hover:text-rose-600 dark:text-rose-400 dark:hover:text-rose-300 flex items-center gap-1"
+            className="text-[#FF2DAA] hover:underline flex items-center gap-1 font-bold"
           >
-            <RotateCcw className="w-3.5 h-3.5" /> Reset Demo Progress
+            <RotateCcw className="w-3.5 h-3.5" /> RESET DEMO DATA
           </button>
         </div>
       </div>
     </div>
   );
 };
+
+export default DashboardPage;

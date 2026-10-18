@@ -2,8 +2,9 @@ import React, { useRef } from 'react';
 import { cn } from '../../utils/cn';
 
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
-  glow?: 'cyan' | 'violet' | 'amber' | 'emerald' | 'rose' | 'electric' | 'royal' | 'pink' | 'teal' | 'none';
+  glow?: 'cyan' | 'violet' | 'amber' | 'emerald' | 'rose' | 'electric' | 'royal' | 'pink' | 'teal' | 'lime' | 'orange' | 'yellow' | 'none';
   interactive?: boolean;
+  tilt?: boolean;
 }
 
 export const Card: React.FC<CardProps> = ({
@@ -11,6 +12,7 @@ export const Card: React.FC<CardProps> = ({
   className,
   glow = 'none',
   interactive = false,
+  tilt = false,
   onMouseMove,
   onMouseEnter,
   onMouseLeave,
@@ -29,7 +31,6 @@ export const Card: React.FC<CardProps> = ({
   };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    // Avoid layout thrashing by reusing cached bounding rect computed on mouseEnter
     if (!rectRef.current) {
       rectRef.current = e.currentTarget.getBoundingClientRect();
     }
@@ -41,16 +42,19 @@ export const Card: React.FC<CardProps> = ({
   };
 
   const glowClasses = {
-    electric: 'border-[#0080FF]/35 hover:border-[#0080FF]/70 hover:shadow-glass-electric',
-    royal: 'border-[#8B00FF]/35 hover:border-[#8B00FF]/70 hover:shadow-glass-royal',
-    pink: 'border-[#FF1493]/35 hover:border-[#FF1493]/70 hover:shadow-glass-pink',
-    teal: 'border-[#20B2AA]/35 hover:border-[#20B2AA]/70 hover:shadow-glass-teal',
-    cyan: 'border-[#20B2AA]/35 hover:border-[#20B2AA]/70 hover:shadow-glass-teal',
-    violet: 'border-[#8B00FF]/35 hover:border-[#8B00FF]/70 hover:shadow-glass-royal',
-    amber: 'border-amber-400/35 hover:border-amber-400/70 hover:shadow-glass-amber',
-    emerald: 'border-emerald-400/35 hover:border-emerald-400/70 hover:shadow-glass-emerald',
-    rose: 'border-[#FF1493]/35 hover:border-[#FF1493]/70 hover:shadow-glass-pink',
-    none: 'border-slate-200/90 dark:border-white/[0.18] hover:border-slate-300 dark:hover:border-white/[0.3]',
+    electric: 'border-[#304FFE] shadow-[5px_5px_0px_#304FFE] dark:shadow-[5px_5px_0px_#304FFE]',
+    royal: 'border-[#B9A0FF] shadow-[5px_5px_0px_#B9A0FF] dark:shadow-[5px_5px_0px_#B9A0FF]',
+    pink: 'border-[#FF2DAA] shadow-[5px_5px_0px_#FF2DAA] dark:shadow-[5px_5px_0px_#FF2DAA]',
+    teal: 'border-[#C6FF00] shadow-[5px_5px_0px_#C6FF00] dark:shadow-[5px_5px_0px_#C6FF00]',
+    cyan: 'border-[#C6FF00] shadow-[5px_5px_0px_#C6FF00] dark:shadow-[5px_5px_0px_#C6FF00]',
+    lime: 'border-[#C6FF00] shadow-[5px_5px_0px_#C6FF00] dark:shadow-[5px_5px_0px_#C6FF00]',
+    violet: 'border-[#B9A0FF] shadow-[5px_5px_0px_#B9A0FF] dark:shadow-[5px_5px_0px_#B9A0FF]',
+    amber: 'border-[#FFF200] shadow-[5px_5px_0px_#FFF200] dark:shadow-[5px_5px_0px_#FFF200]',
+    yellow: 'border-[#FFF200] shadow-[5px_5px_0px_#FFF200] dark:shadow-[5px_5px_0px_#FFF200]',
+    orange: 'border-[#FF5C00] shadow-[5px_5px_0px_#FF5C00] dark:shadow-[5px_5px_0px_#FF5C00]',
+    emerald: 'border-[#C6FF00] shadow-[5px_5px_0px_#C6FF00] dark:shadow-[5px_5px_0px_#C6FF00]',
+    rose: 'border-[#FF2DAA] shadow-[5px_5px_0px_#FF2DAA] dark:shadow-[5px_5px_0px_#FF2DAA]',
+    none: 'border-[#111111] dark:border-[#F5F0E8] shadow-[5px_5px_0px_#111111] dark:shadow-[5px_5px_0px_#F5F0E8]',
   };
 
   return (
@@ -59,9 +63,10 @@ export const Card: React.FC<CardProps> = ({
       onMouseLeave={handleMouseLeave}
       onMouseMove={handleMouseMove}
       className={cn(
-        'glass-card p-5 text-slate-800 dark:text-slate-100',
+        'p-5 bg-[#F5F0E8] dark:bg-[#181818] text-[#111111] dark:text-[#F5F0E8] border-2 md:border-3 rounded-xl transition-all duration-150',
+        tilt && 'rotate-[-0.5deg] hover:rotate-0',
         glowClasses[glow],
-        interactive && 'cursor-pointer glass-card-hover active:scale-[0.99] active:translate-y-0',
+        interactive && 'cursor-pointer hover:-translate-x-1 hover:-translate-y-1 hover:shadow-[7px_7px_0px_#C6FF00] dark:hover:shadow-[7px_7px_0px_#FF2DAA] active:translate-x-0.5 active:translate-y-0.5 active:shadow-[2px_2px_0px_#111111]',
         className
       )}
       {...props}

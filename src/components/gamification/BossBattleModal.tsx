@@ -89,7 +89,6 @@ export const BossBattleModal: React.FC<BossBattleModalProps> = ({ boss, isOpen, 
       setSelectedOptionId(null);
       setIsStageSolved(false);
     } else {
-      // Victory!
       setBossHealth(0);
       setIsVictory(true);
       defeatBoss(boss.id, boss.xpReward);
@@ -111,48 +110,47 @@ export const BossBattleModal: React.FC<BossBattleModalProps> = ({ boss, isOpen, 
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        transition={{ duration: 0.25 }}
-        className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/75 backdrop-blur-xl"
+        className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md"
         onClick={() => {
           audioService.stop();
           onClose();
         }}
       >
         <motion.div 
-          initial={{ scale: 0.96, y: 24, opacity: 0 }}
-          animate={{ scale: 1, y: 0, opacity: 1 }}
-          exit={{ scale: 0.96, y: 16, opacity: 0 }}
-          transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+          initial={{ scale: 0.96, y: 24 }}
+          animate={{ scale: 1, y: 0 }}
+          exit={{ scale: 0.96, y: 16 }}
           onClick={(e) => e.stopPropagation()}
-          className="relative w-full max-w-4xl max-h-[92vh] bg-white/95 dark:bg-[#080B18]/90 backdrop-blur-2xl border border-slate-200/90 dark:border-white/[0.2] rounded-[24px] overflow-hidden shadow-2xl flex flex-col text-slate-800 dark:text-slate-100"
+          className="relative w-full max-w-4xl max-h-[92vh] bg-[#F5F0E8] dark:bg-[#181818] border-4 border-[#111111] dark:border-[#F5F0E8] shadow-[12px_12px_0px_#111111] dark:shadow-[12px_12px_0px_#FF2DAA] flex flex-col text-[#111111] dark:text-[#F5F0E8] overflow-hidden"
         >
           {/* Boss Header */}
-          <div className="p-5 sm:p-6 bg-slate-100/80 dark:bg-white/[0.04] backdrop-blur-md border-b border-slate-200/80 dark:border-white/[0.1] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="p-5 sm:p-6 bg-[#FF2DAA] text-[#111111] border-b-3 border-[#111111] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex items-center gap-4">
-              <div className="text-4xl p-3 bg-rose-500/15 rounded-2xl border border-rose-400/30 shadow-glass-rose backdrop-blur-md">
+              <div className="text-4xl p-2 bg-[#111111] text-[#C6FF00] border-2 border-[#111111] shadow-[3px_3px_0px_#111111] -rotate-3">
                 {boss.avatar}
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <Badge variant="rose">BOSS BATTLE</Badge>
-                  {isAlreadyDefeated && <Badge variant="emerald">DEFEATED</Badge>}
+                  <span className="px-2 py-0.5 bg-[#111111] text-[#FFF200] font-display font-black text-xs uppercase">
+                    BOSS BATTLE
+                  </span>
+                  {isAlreadyDefeated && (
+                    <span className="px-2 py-0.5 bg-[#C6FF00] text-[#111111] font-display font-black text-xs uppercase">
+                      DEFEATED
+                    </span>
+                  )}
                   <button
                     onClick={handleVoiceBossTaunt}
-                    className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold transition-all ${
-                      isSpeakingTaunt
-                        ? 'bg-rose-600 text-white animate-pulse'
-                        : 'bg-rose-500/15 text-rose-600 dark:text-rose-300 hover:bg-rose-500/25'
-                    }`}
-                    title="Listen to Boss Speech"
+                    className="px-2 py-0.5 bg-[#FFF200] text-[#111111] border border-[#111111] font-display font-black text-xs uppercase flex items-center gap-1"
                   >
                     {isSpeakingTaunt ? <Square className="w-3 h-3 fill-current" /> : <Mic className="w-3 h-3" />}
-                    <span>{isSpeakingTaunt ? 'Speaking' : 'Boss Voice'}</span>
+                    <span>{isSpeakingTaunt ? 'STOP TAUNT' : 'BOSS TAUNT'}</span>
                   </button>
                 </div>
-                <h2 className="text-2xl font-black text-rose-700 dark:text-rose-100 tracking-tight mt-1">
+                <h2 className="text-2xl sm:text-3xl font-display font-black uppercase tracking-tight mt-1">
                   {boss.name}
                 </h2>
-                <p className="text-xs text-rose-600 dark:text-rose-300 font-mono">{boss.title}</p>
+                <p className="font-mono text-xs font-bold opacity-80">{boss.title}</p>
               </div>
             </div>
 
@@ -161,23 +159,26 @@ export const BossBattleModal: React.FC<BossBattleModalProps> = ({ boss, isOpen, 
                 audioService.stop();
                 onClose();
               }}
-              className="p-2 rounded-xl text-slate-500 dark:text-slate-300 hover:text-slate-800 dark:hover:text-white hover:bg-slate-200/70 dark:hover:bg-white/[0.1] transition-colors"
+              className="p-1.5 bg-[#111111] text-[#F5F0E8] border-2 border-[#111111] hover:bg-[#FFF200] hover:text-[#111111] transition-colors"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
 
           {/* Boss Health Bar */}
-          <div className="px-5 sm:px-6 py-3 bg-slate-50 dark:bg-white/[0.02] border-b border-slate-200/80 dark:border-white/[0.08] flex items-center gap-4 backdrop-blur-md">
-            <div className="text-xs font-mono font-bold text-rose-600 dark:text-rose-400 flex items-center gap-1.5 shrink-0">
-              <ShieldAlert className="w-4 h-4 text-rose-500 dark:text-rose-400" />
+          <div className="px-5 py-3 bg-[#111111] text-[#F5F0E8] border-b-3 border-[#111111] flex items-center gap-4 font-mono text-xs font-black">
+            <div className="text-[#FF5C00] flex items-center gap-1.5 shrink-0">
+              <ShieldAlert className="w-4 h-4 text-[#FF5C00]" />
               BOSS HP: {bossHealth}/{boss.health}
             </div>
-            <div className="flex-1">
-              <ProgressBar value={healthPercent} barColor="violet" height="md" />
+            <div className="flex-1 bg-[#2c2c2c] h-3 border border-[#F5F0E8]">
+              <div 
+                className="bg-[#FF2DAA] h-full transition-all duration-300"
+                style={{ width: `${healthPercent}%` }}
+              />
             </div>
-            <div className="text-xs font-mono text-slate-500 dark:text-slate-300 shrink-0">
-              Stage {currentStageIdx + 1}/{boss.stages.length}
+            <div className="text-[#FFF200] shrink-0">
+              STAGE {currentStageIdx + 1}/{boss.stages.length}
             </div>
           </div>
 
@@ -185,64 +186,69 @@ export const BossBattleModal: React.FC<BossBattleModalProps> = ({ boss, isOpen, 
           <div className="flex-1 p-5 sm:p-6 overflow-y-auto">
             {isVictory ? (
               <div className="py-12 flex flex-col items-center text-center gap-4">
-                <div className="w-20 h-20 rounded-3xl bg-amber-500/20 border-2 border-amber-400 flex items-center justify-center text-amber-500 dark:text-amber-400 shadow-glow-amber">
-                  <Trophy className="w-10 h-10" />
+                <div className="w-20 h-20 bg-[#FFF200] text-[#111111] border-3 border-[#111111] shadow-[6px_6px_0px_#111111] flex items-center justify-center text-amber-500 rotate-3">
+                  <Trophy className="w-10 h-10 text-[#111111]" />
                 </div>
-                <h3 className="text-3xl font-black text-slate-900 dark:text-slate-100 tracking-tight">
+                <h3 className="text-4xl font-display font-black uppercase tracking-tight">
                   BOSS DEFEATED!
                 </h3>
-                <p className="text-sm text-slate-600 dark:text-slate-300 max-w-md">
+                <p className="font-sans text-sm font-bold opacity-80 max-w-md">
                   You shattered the defenses of {boss.name} and conquered this realm!
                 </p>
                 <div className="flex items-center gap-3">
-                  <Badge variant="amber" size="md">
+                  <span className="px-3 py-1 bg-[#C6FF00] text-[#111111] border-2 border-[#111111] font-display font-black text-sm uppercase shadow-[3px_3px_0px_#111111]">
                     +{boss.xpReward} XP AWARDED
-                  </Badge>
-                  <Badge variant="violet" size="md">
-                    🏆 BADGE UNLOCKED
-                  </Badge>
+                  </span>
                 </div>
-                <Button variant="neon" size="lg" onClick={onClose} className="mt-4">
-                  Claim Victory & Return
+                <Button variant="lime" size="lg" onClick={onClose} className="mt-4">
+                  CLAIM REWARD & RETURN
                 </Button>
               </div>
             ) : (
               <div className="flex flex-col gap-6">
                 <div>
-                  <span className="text-xs font-mono font-semibold text-rose-600 dark:text-rose-400 uppercase tracking-wider">
-                    Stage {currentStage.stageNumber}: {currentStage.title}
-                  </span>
-                  <h4 className="text-lg font-bold text-slate-900 dark:text-slate-100 mt-1">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="font-mono text-xs font-black uppercase text-[#FF5C00]">
+                      STAGE {currentStage.stageNumber}: {currentStage.title}
+                    </span>
+                    <span className="font-mono text-xs font-bold opacity-75">
+                      POINTS: {currentStage.points} PTS
+                    </span>
+                  </div>
+                  <p className="font-sans text-xs sm:text-sm font-medium opacity-90">
                     {currentStage.description}
-                  </h4>
+                  </p>
                 </div>
 
-                {/* Stage Type: Concept */}
+                {/* Concept Question Stage */}
                 {currentStage.type === 'concept' && currentStage.question && (
                   <div className="flex flex-col gap-4">
-                    <p className="text-sm text-slate-700 dark:text-slate-200">
+                    <h4 className="font-display font-black text-base uppercase">
                       {currentStage.question.question}
-                    </p>
-                    <div className="grid grid-cols-1 gap-2.5">
+                    </h4>
+
+                    <div className="flex flex-col gap-2.5">
                       {currentStage.question.options.map((opt) => {
                         const isSelected = selectedOptionId === opt.id;
-                        let style = 'bg-slate-100 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-800 dark:text-slate-200 hover:border-slate-400 dark:hover:border-slate-700';
-                        if (isSelected) {
-                          style = opt.isCorrect
-                            ? 'bg-emerald-500/15 border-emerald-500 text-emerald-800 dark:text-emerald-300 font-bold'
-                            : 'bg-rose-500/15 border-rose-500 text-rose-800 dark:text-rose-300 font-bold';
+                        let btnStyle = 'bg-white dark:bg-[#202020] border-[#111111] text-inherit';
+
+                        if (selectedOptionId) {
+                          if (opt.isCorrect) {
+                            btnStyle = 'bg-[#C6FF00] text-[#111111] font-black border-[#111111]';
+                          } else if (isSelected && !opt.isCorrect) {
+                            btnStyle = 'bg-[#FF2DAA] text-[#111111] font-black border-[#111111]';
+                          }
                         }
+
                         return (
                           <button
                             key={opt.id}
-                            disabled={isStageSolved}
                             onClick={() => handleConceptAnswer(opt.id)}
-                            className={`p-3.5 rounded-2xl border text-left text-xs font-medium transition-all ${style}`}
+                            disabled={isStageSolved}
+                            className={`p-3 border-2 text-left font-sans text-xs sm:text-sm font-bold transition-all shadow-[2px_2px_0px_#111111] flex items-center justify-between gap-3 ${btnStyle}`}
                           >
-                            <span className="font-mono mr-2 uppercase text-slate-500">
-                              {opt.id.toUpperCase()}:
-                            </span>
-                            {opt.text}
+                            <span>{opt.text}</span>
+                            {selectedOptionId && opt.isCorrect && <CheckCircle2 className="w-5 h-5 text-[#111111]" />}
                           </button>
                         );
                       })}
@@ -250,9 +256,9 @@ export const BossBattleModal: React.FC<BossBattleModalProps> = ({ boss, isOpen, 
                   </div>
                 )}
 
-                {/* Stage Type: Code */}
+                {/* Coding Challenge Stage */}
                 {currentStage.type === 'code' && currentStage.codeProblem && (
-                  <div className="mt-2">
+                  <div className="h-[460px]">
                     <CodeEditorPanel
                       problem={currentStage.codeProblem}
                       onSuccess={handleCodingSuccess}
@@ -262,13 +268,13 @@ export const BossBattleModal: React.FC<BossBattleModalProps> = ({ boss, isOpen, 
 
                 {/* Stage Cleared CTA */}
                 {isStageSolved && (
-                  <div className="p-4 rounded-2xl bg-emerald-500/15 border border-emerald-400/40 flex items-center justify-between text-xs text-emerald-800 dark:text-emerald-300">
-                    <div className="flex items-center gap-2">
-                      <CheckCircle2 className="w-5 h-5 text-emerald-500" />
-                      <span className="font-bold">Stage Passed! Boss took heavy damage!</span>
-                    </div>
-                    <Button variant="primary" size="sm" onClick={handleNextStage}>
-                      Next Stage <ArrowRight className="w-4 h-4 ml-1" />
+                  <div className="flex justify-end pt-2">
+                    <Button variant="lime" size="md" onClick={handleNextStage}>
+                      {currentStageIdx < boss.stages.length - 1 ? (
+                        <>ADVANCE TO STAGE {currentStageIdx + 2} <ArrowRight className="w-4 h-4 ml-1.5" /></>
+                      ) : (
+                        <>DELIVER FINAL BLOW ⚔️</>
+                      )}
                     </Button>
                   </div>
                 )}
@@ -280,3 +286,5 @@ export const BossBattleModal: React.FC<BossBattleModalProps> = ({ boss, isOpen, 
     </AnimatePresence>
   );
 };
+
+export default BossBattleModal;

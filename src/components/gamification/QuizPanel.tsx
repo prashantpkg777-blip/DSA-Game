@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { CheckCircle2, XCircle, ArrowRight, RotateCcw, Award } from 'lucide-react';
+import { CheckCircle2, XCircle, ArrowRight, RotateCcw, Award, Zap } from 'lucide-react';
 import { QuizQuestion } from '../../types/curriculum';
 import { useUserStore } from '../../stores/userStore';
 import { Button } from '../ui/Button';
@@ -41,7 +41,6 @@ export const QuizPanel: React.FC<QuizPanelProps> = ({
     if (option?.isCorrect) {
       setScore((s) => s + 1);
     } else {
-      // Record mistake in user's Error Notebook for Spaced Repetition / Review Mode
       const correctOption = currentQ.options.find((o) => o.isCorrect);
       recordMistake({
         topicId,
@@ -83,48 +82,48 @@ export const QuizPanel: React.FC<QuizPanelProps> = ({
   if (quizFinished) {
     const passed = score >= Math.ceil(questions.length * 0.7);
     return (
-      <div className="p-8 bg-slate-900/90 rounded-3xl border border-slate-800 text-center flex flex-col items-center gap-4 shadow-xl">
-        <div className="w-16 h-16 rounded-2xl bg-cyan-500/10 border border-cyan-500/30 flex items-center justify-center text-cyan-400">
+      <div className="p-8 bg-[#F5F0E8] dark:bg-[#181818] border-3 md:border-4 border-[#111111] dark:border-[#F5F0E8] shadow-[8px_8px_0px_#111111] dark:shadow-[8px_8px_0px_#C6FF00] text-center flex flex-col items-center gap-4">
+        <div className="w-16 h-16 bg-[#C6FF00] text-[#111111] border-2 border-[#111111] shadow-[3px_3px_0px_#111111] flex items-center justify-center -rotate-3">
           <Award className="w-8 h-8" />
         </div>
-        <h3 className="text-xl font-bold text-slate-100">
-          {passed ? 'Quiz Mastered!' : 'Needs Review'}
+        <h3 className="text-2xl font-display font-black uppercase">
+          {passed ? 'QUIZ CRUSHED!' : 'NEEDS REVISION'}
         </h3>
-        <p className="text-sm text-slate-400">
-          You scored <strong className="text-cyan-400">{score}</strong> out of{' '}
+        <p className="font-sans text-xs sm:text-sm font-bold opacity-80">
+          You scored <strong className="text-[#FF2DAA]">{score}</strong> out of{' '}
           <strong>{questions.length}</strong> questions correctly.
         </p>
 
         {passed && (
-          <Badge variant="emerald" size="md">
-            +{xpReward} XP Earned
-          </Badge>
+          <span className="px-3 py-1 bg-[#C6FF00] text-[#111111] border-2 border-[#111111] font-display font-black text-xs uppercase shadow-[2px_2px_0px_#111111]">
+            +{xpReward} XP EARNED
+          </span>
         )}
 
         <Button variant="secondary" onClick={handleRetry} className="mt-2">
-          <RotateCcw className="w-4 h-4 mr-1.5" /> Retry Quiz
+          <RotateCcw className="w-4 h-4 mr-1.5" /> RETRY QUIZ
         </Button>
       </div>
     );
   }
 
   return (
-    <div className="p-6 bg-slate-900/90 rounded-3xl border border-slate-800 flex flex-col gap-6 shadow-xl">
+    <div className="p-6 bg-[#F5F0E8] dark:bg-[#181818] border-3 md:border-4 border-[#111111] dark:border-[#F5F0E8] shadow-[8px_8px_0px_#111111] dark:shadow-[8px_8px_0px_#FF2DAA] flex flex-col gap-6">
       <div className="flex items-center justify-between">
-        <Badge variant="violet">
-          Question {currentIdx + 1} of {questions.length}
-        </Badge>
-        <span className="text-xs font-mono text-slate-400">
-          Score: {score}/{currentIdx}
+        <span className="px-2.5 py-0.5 bg-[#B9A0FF] text-[#111111] font-display font-black text-xs uppercase border border-[#111111] shadow-[2px_2px_0px_#111111]">
+          QUESTION {currentIdx + 1} OF {questions.length}
+        </span>
+        <span className="font-mono text-xs font-black text-[#FF5C00]">
+          SCORE: {score}/{currentIdx}
         </span>
       </div>
 
-      <h3 className="text-lg font-bold text-slate-100 leading-snug">
+      <h3 className="text-lg sm:text-xl font-display font-black uppercase leading-snug">
         {currentQ.question}
       </h3>
 
       {currentQ.codeSnippet && (
-        <pre className="p-4 rounded-xl bg-slate-950 border border-slate-800 font-mono text-xs text-cyan-300 overflow-x-auto">
+        <pre className="p-4 bg-[#111111] text-[#C6FF00] border-2 border-[#111111] font-mono text-xs overflow-x-auto leading-relaxed">
           {currentQ.codeSnippet}
         </pre>
       )}
@@ -133,13 +132,13 @@ export const QuizPanel: React.FC<QuizPanelProps> = ({
       <div className="flex flex-col gap-3">
         {currentQ.options.map((option) => {
           const isSelected = selectedOptionId === option.id;
-          let btnStyle = 'bg-slate-950/80 border-slate-800 text-slate-200 hover:border-slate-700';
+          let btnStyle = 'bg-white dark:bg-[#202020] border-[#111111] text-inherit hover:bg-[#FFF200] hover:text-[#111111]';
 
           if (isAnswered) {
             if (option.isCorrect) {
-              btnStyle = 'bg-emerald-950/40 border-emerald-500/50 text-emerald-300';
+              btnStyle = 'bg-[#C6FF00] text-[#111111] border-[#111111] shadow-[3px_3px_0px_#111111] font-black';
             } else if (isSelected && !option.isCorrect) {
-              btnStyle = 'bg-rose-950/40 border-rose-500/50 text-rose-300';
+              btnStyle = 'bg-[#FF2DAA] text-[#111111] border-[#111111] shadow-[3px_3px_0px_#111111] font-black';
             }
           }
 
@@ -148,40 +147,33 @@ export const QuizPanel: React.FC<QuizPanelProps> = ({
               key={option.id}
               onClick={() => handleSelectOption(option.id)}
               disabled={isAnswered}
-              className={`p-4 rounded-2xl border text-left transition-all duration-200 flex items-start justify-between gap-3 ${btnStyle}`}
+              className={`p-3.5 border-2 text-left font-sans text-xs sm:text-sm font-bold transition-all shadow-[2px_2px_0px_#111111] flex items-center justify-between gap-3 ${btnStyle}`}
             >
-              <div className="flex-1 text-sm font-medium leading-relaxed">
-                {option.text}
-              </div>
-              {isAnswered && option.isCorrect && (
-                <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0 mt-0.5" />
-              )}
-              {isAnswered && isSelected && !option.isCorrect && (
-                <XCircle className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />
+              <span>{option.text}</span>
+              {isAnswered && (
+                <span>
+                  {option.isCorrect ? <CheckCircle2 className="w-5 h-5 text-[#111111]" /> : isSelected ? <XCircle className="w-5 h-5 text-[#111111]" /> : null}
+                </span>
               )}
             </button>
           );
         })}
       </div>
 
-      {/* Explanation Banner */}
+      {/* Next Question / Finish */}
       {isAnswered && (
-        <div className="p-4 rounded-2xl bg-slate-950 border border-slate-800 text-xs text-slate-300 flex flex-col gap-3 animate-fade-in">
-          <div className="flex items-center gap-2 font-bold font-mono">
-            {currentQ.options.find((o) => o.id === selectedOptionId)?.isCorrect ? (
-              <span className="text-emerald-400">CORRECT!</span>
+        <div className="flex justify-end pt-2">
+          <Button variant="lime" size="md" onClick={handleNext}>
+            {currentIdx < questions.length - 1 ? (
+              <>NEXT QUESTION <ArrowRight className="w-4 h-4 ml-1.5" /></>
             ) : (
-              <span className="text-rose-400">INCORRECT (Logged to Error Notebook)</span>
+              <>FINISH QUIZ <Award className="w-4 h-4 ml-1.5" /></>
             )}
-          </div>
-          <p className="leading-relaxed">
-            {currentQ.options.find((o) => o.id === selectedOptionId)?.explanation}
-          </p>
-          <Button variant="primary" size="sm" onClick={handleNext} className="self-end mt-1">
-            Next Question <ArrowRight className="w-4 h-4 ml-1.5" />
           </Button>
         </div>
       )}
     </div>
   );
 };
+
+export default QuizPanel;

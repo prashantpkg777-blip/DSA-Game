@@ -2,316 +2,311 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
-  Gamepad2, 
-  Sparkles, 
-  ArrowRight, 
-  ShieldAlert, 
-  Map, 
   Zap, 
-  CheckCircle, 
-  Brain, 
-  Code2, 
-  Layers, 
+  ArrowRight, 
   Flame, 
-  Trophy 
+  Map, 
+  Brain, 
+  ShieldAlert, 
+  Terminal, 
+  Sparkles,
+  Code2,
+  Swords,
+  ChevronRight
 } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { Card } from '../components/ui/Card';
 import { Badge } from '../components/ui/Badge';
 import { ArraySortingArena } from '../components/visualizers/ArraySortingArena';
-import { WORLD_REGIONS } from '../curriculum/curriculumData';
 
 export const LandingPage: React.FC = () => {
+  const chaosWorlds = [
+    { num: '01', name: 'ARRAY CITY', theme: 'bg-[#C6FF00] text-[#111111]', desc: 'Traversal, sorting, two pointers, sliding window.', boss: 'The Array Golem', id: 'bubble-sort' },
+    { num: '02', name: 'LINKED LAB', theme: 'bg-[#304FFE] text-[#F5F0E8]', desc: 'Singly & doubly lists, fast/slow pointers, cycle detection.', boss: 'Pointer Hydra', id: 'linked-list-reversal' },
+    { num: '03', name: 'RECURSION REALM', theme: 'bg-[#FF2DAA] text-[#111111]', desc: 'Call stacks, backtracking, subsets & permutations.', boss: 'Infinite Loop Demon', id: 'fibonacci-recursion' },
+    { num: '04', name: 'STACK & QUEUE ARENA', theme: 'bg-[#FF5C00] text-[#111111]', desc: 'Monotonic stacks, parentheses, priority queues.', boss: 'Stack Overflower', id: 'stack-tower' },
+    { num: '05', name: 'TREE TOPIA', theme: 'bg-[#B9A0FF] text-[#111111]', desc: 'BST traversals, heaps, tries, LCA.', boss: 'Binary Behemoth', id: 'bst-operations' },
+    { num: '06', name: 'GRAPH GLITCH', theme: 'bg-[#C6FF00] text-[#111111]', desc: 'BFS, DFS, Dijkstra, topological sort.', boss: 'Cyclic Overlord', id: 'graph-traversal' },
+    { num: '07', name: 'DP DIMENSION', theme: 'bg-[#FFF200] text-[#111111]', desc: 'Memoization, tabulation, knapsack, LCS.', boss: 'Optimal Substructure', id: 'dp-knapsack' },
+    { num: '08', name: 'FINAL BOSS', theme: 'bg-[#111111] text-[#FF2DAA] border-[#FF2DAA]', desc: 'Greedy, bit manipulation & MAANG interview gauntlet.', boss: 'The Algorithm Archon', id: 'sliding-window-max' },
+  ];
+
   return (
-    <div className="flex flex-col min-h-screen bg-transparent text-slate-800 dark:text-slate-100">
-      {/* Hero Section with Cinematic Motion */}
-      <section className="relative overflow-hidden pt-8 pb-16 sm:pt-16 sm:pb-24 lg:pt-20 lg:pb-32">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center text-center">
-          {/* Badge */}
+    <div className="flex flex-col min-h-screen text-[#111111] dark:text-[#F5F0E8] overflow-x-hidden">
+      {/* Gen-Z Chaos Hero Section */}
+      <section className="relative pt-6 sm:pt-12 pb-16 lg:pt-16 lg:pb-24 px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto flex flex-col items-center text-center relative z-10">
+          
+          {/* Top Marquee Sticker Bar */}
           <motion.div 
-            initial={{ opacity: 0, y: -16 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-            className="inline-flex items-center gap-2 px-3.5 sm:px-4 py-1.5 rounded-full bg-[#0080FF]/15 border border-[#0080FF]/40 text-[#0060DF] dark:text-[#60A5FA] text-xs font-mono font-semibold uppercase tracking-wider mb-6 sm:mb-8 shadow-sm dark:shadow-glass-electric backdrop-blur-md"
+            initial={{ opacity: 0, y: -20, rotate: -3 }}
+            animate={{ opacity: 1, y: 0, rotate: -2 }}
+            transition={{ duration: 0.4 }}
+            className="inline-flex items-center gap-2 px-3 py-1 bg-[#FF2DAA] text-[#111111] border-2 border-[#111111] shadow-[3px_3px_0px_#111111] font-display font-black text-xs uppercase tracking-wider mb-6 hover:rotate-0 transition-transform"
           >
-            <Sparkles className="w-3.5 h-3.5 text-[#20B2AA] animate-pulse" />
-            <span>LEARN → VISUALIZE → PLAY → CODE → MASTER</span>
+            <Sparkles className="w-3.5 h-3.5 fill-[#FFF200] text-[#111111]" />
+            <span>LESS THEORY. MORE ALGORITHM MAYHEM.</span>
           </motion.div>
 
-          {/* Headline */}
-          <motion.h1 
-            initial={{ opacity: 0, y: 28 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.75, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-            className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight max-w-4xl text-slate-900 dark:text-slate-100 leading-[1.15] mb-5 sm:mb-6"
-          >
-            Stop Memorizing DSA.{' '}
-            <span className="bg-gradient-to-r from-[#20B2AA] via-[#0080FF] to-[#FF1493] bg-clip-text text-transparent">
-              Start Playing It.
-            </span>
-          </motion.h1>
+          {/* Floating Sticker: 100+ Challenges (Left) */}
+          <div className="hidden lg:block absolute left-4 top-16 -rotate-12 select-none pointer-events-none">
+            <div className="px-3 py-1.5 bg-[#C6FF00] text-[#111111] border-3 border-[#111111] shadow-[4px_4px_0px_#111111] font-display font-black text-sm uppercase">
+              ★ 100+ CHALLENGES
+            </div>
+            <div className="font-mono text-[11px] font-black text-[#FF2DAA] mt-1 ml-2">
+              // NO CAP, ALL SKILL
+            </div>
+          </div>
 
-          {/* Subtitle */}
-          <motion.p 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.65, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            className="text-base sm:text-lg md:text-xl text-slate-600 dark:text-slate-300 max-w-2xl font-normal leading-relaxed mb-8 sm:mb-10 px-2"
+          {/* Floating Sticker: Rotating BIG BRAIN ENERGY (Right) */}
+          <div className="hidden lg:block absolute right-4 top-12 rotate-12 select-none">
+            <div className="w-24 h-24 rounded-full bg-[#FFF200] text-[#111111] border-3 border-[#111111] shadow-[4px_4px_0px_#111111] flex flex-col items-center justify-center p-1 font-display font-black text-[10px] uppercase text-center animate-spin-slow">
+              <span>★ BIG BRAIN ★</span>
+              <span className="text-sm font-black">ENERGY</span>
+              <span>⚡⚡⚡</span>
+            </div>
+          </div>
+
+          {/* Main Giant Headlines */}
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5 }}
+            className="max-w-5xl mb-6"
           >
-            Master Data Structures & Algorithms from beginner to MAANG-ready through interactive visual games,
-            boss battles, coding arenas, and real-time algorithmic simulations.
+            <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-display font-black tracking-tighter uppercase leading-[0.95]">
+              <span className="block text-inherit">STOP MEMORIZING.</span>
+              <span className="inline-block mt-2 px-3 py-1 bg-[#C6FF00] text-[#111111] border-3 border-[#111111] shadow-[6px_6px_0px_#111111] -rotate-1">
+                START BREAKING
+              </span>
+              <span className="block mt-2 text-[#FF2DAA] dark:text-[#FF2DAA] underline decoration-wavy decoration-[#C6FF00]">
+                ALGORITHMS.
+              </span>
+            </h1>
+          </motion.div>
+
+          {/* Supporting Text */}
+          <motion.p 
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45, delay: 0.15 }}
+            className="text-base sm:text-lg md:text-xl max-w-2xl font-sans font-bold opacity-90 leading-relaxed mb-8 px-2"
+          >
+            Learn Data Structures and Algorithms by playing, experimenting, and defeating increasingly difficult coding challenges. LeetCode meets arcade mayhem.
           </motion.p>
 
-          {/* Action Buttons */}
+          {/* Primary CTA Buttons with Doodle Arrow */}
           <motion.div 
-            initial={{ opacity: 0, scale: 0.94 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.5, delay: 0.45, ease: [0.22, 1, 0.36, 1] }}
-            className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 mb-12 sm:mb-16 w-full sm:w-auto"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.45, delay: 0.25 }}
+            className="flex flex-col sm:flex-row items-center gap-4 mb-12 sm:mb-16 relative"
           >
             <Link to="/map" className="w-full sm:w-auto">
-              <Button variant="neon" size="lg" className="w-full sm:w-auto px-8 text-base shadow-glass-electric">
-                Start Your Quest <ArrowRight className="w-5 h-5 ml-2" />
+              <Button variant="lime" size="lg" className="w-full sm:w-auto text-base sm:text-lg px-8 py-4 shadow-[6px_6px_0px_#111111] hover:rotate-1">
+                ENTER THE CHAOS <ArrowRight className="w-6 h-6 ml-2" />
               </Button>
             </Link>
             <Link to="/map" className="w-full sm:w-auto">
-              <Button variant="secondary" size="lg" className="w-full sm:w-auto px-8 text-base">
-                <Map className="w-5 h-5 mr-2 text-[#0080FF]" />
-                Explore Algorithm Map
+              <Button variant="secondary" size="lg" className="w-full sm:w-auto text-base sm:text-lg px-8 py-4 shadow-[6px_6px_0px_#111111] hover:-rotate-1">
+                <Map className="w-5 h-5 mr-2 text-[#304FFE]" />
+                EXPLORE THE MAP
               </Button>
             </Link>
+
+            {/* Doodle Arrow pointing to CTA */}
+            <div className="hidden md:flex absolute -right-28 -top-8 flex-col items-center -rotate-12 select-none pointer-events-none">
+              <span className="font-mono text-xs font-black text-[#FF5C00] uppercase tracking-wider bg-[#FFF200] px-2 py-0.5 border border-[#111111]">
+                CLICK HERE FR FR ↵
+              </span>
+              <span className="text-2xl text-[#FF5C00]">↙</span>
+            </div>
           </motion.div>
 
-          {/* Interactive Live Preview Hero Element */}
+          {/* Gen-Z Pixel Mascot & Algorithm Creature */}
+          <div className="mb-10 flex items-center justify-center gap-3">
+            <div className="p-3 bg-[#304FFE] text-[#F5F0E8] border-3 border-[#111111] shadow-[4px_4px_0px_#111111] -rotate-3 flex items-center gap-2">
+              <span className="text-2xl">👾</span>
+              <div className="text-left font-mono text-xs font-bold leading-tight">
+                <div className="text-[#C6FF00]">BOT: GLITCH-01</div>
+                <div>"I EAT O(N²) FOR BREAKFAST"</div>
+              </div>
+            </div>
+            <div className="px-3 py-2 bg-[#FFF200] text-[#111111] border-3 border-[#111111] shadow-[4px_4px_0px_#111111] rotate-2 font-display font-black text-xs uppercase">
+              NO MORE BORING DSA 💥
+            </div>
+          </div>
+
+          {/* Interactive Live Sorting Arena inside Brutalist Arcade Terminal */}
           <motion.div 
-            initial={{ opacity: 0, y: 36 }}
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.55, ease: [0.22, 1, 0.36, 1] }}
-            className="w-full max-w-5xl rounded-[28px] border border-slate-200/90 dark:border-white/[0.2] bg-white/80 dark:bg-white/[0.05] p-3 sm:p-6 backdrop-blur-2xl shadow-xl dark:shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
+            transition={{ duration: 0.6, delay: 0.35 }}
+            className="w-full max-w-5xl border-3 md:border-4 border-[#111111] bg-[#F5F0E8] dark:bg-[#181818] p-4 sm:p-6 shadow-[8px_8px_0px_#111111] dark:shadow-[8px_8px_0px_#C6FF00] rounded-xl text-left"
           >
-            <div className="flex items-center justify-between mb-4 border-b border-slate-200/80 dark:border-white/[0.12] pb-3">
+            <div className="flex flex-wrap items-center justify-between mb-4 pb-3 border-b-3 border-[#111111] dark:border-[#F5F0E8] gap-2">
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-[#FF1493]/80 shadow-sm" />
-                <div className="w-3 h-3 rounded-full bg-amber-500/80 shadow-sm" />
-                <div className="w-3 h-3 rounded-full bg-[#20B2AA]/80 shadow-sm" />
-                <span className="text-xs font-mono text-slate-500 dark:text-slate-300 ml-2">
-                  interactive_sorting_arena.sim
+                <div className="w-3.5 h-3.5 bg-[#FF2DAA] border border-[#111111]" />
+                <div className="w-3.5 h-3.5 bg-[#FFF200] border border-[#111111]" />
+                <div className="w-3.5 h-3.5 bg-[#C6FF00] border border-[#111111]" />
+                <span className="font-mono text-xs font-bold text-[#111111] dark:text-[#C6FF00] ml-2">
+                  CHAOS_SORT_ARENA.EXE
                 </span>
               </div>
-              <Badge variant="teal" size="sm">LIVE PLAYABLE DEMO</Badge>
+              <Badge variant="lime" size="sm" tilt>
+                INTERACTIVE ARCADE SIM
+              </Badge>
             </div>
             <ArraySortingArena />
           </motion.div>
         </div>
       </section>
 
-      {/* Philosophy / Features Grid */}
-      <section className="py-16 sm:py-20 bg-slate-100/50 dark:bg-white/[0.02] border-t border-slate-200/80 dark:border-white/[0.08] backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
-            <Badge variant="royal" className="mb-3">THE GAMIFIED ROADMAP</Badge>
-            <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-slate-900 dark:text-slate-100">
-              Why Engineers Learn 5x Faster With DSA Gamly
+      {/* Ticker / Infinite Marquee */}
+      <div className="bg-[#111111] text-[#C6FF00] border-y-3 border-[#111111] dark:border-[#F5F0E8] py-2 overflow-hidden font-display font-black text-base uppercase tracking-wider select-none">
+        <div className="flex w-max animate-marquee space-x-12">
+          <span>ARRAYS ✳ RECURSION ✳ TREES ✳ GRAPHS ✳ DYNAMIC PROGRAMMING ✳ BINARY SEARCH ✳ STACKS & QUEUES ✳ TWO POINTERS ✳ SLIDING WINDOW ✳</span>
+          <span>ARRAYS ✳ RECURSION ✳ TREES ✳ GRAPHS ✳ DYNAMIC PROGRAMMING ✳ BINARY SEARCH ✳ STACKS & QUEUES ✳ TWO POINTERS ✳ SLIDING WINDOW ✳</span>
+        </div>
+      </div>
+
+      {/* The 8 Chaos Worlds Grid */}
+      <section className="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+        <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-4 mb-12">
+          <div>
+            <div className="inline-block px-3 py-1 bg-[#FF2DAA] text-[#111111] border-2 border-[#111111] font-display font-black text-xs uppercase mb-2 -rotate-1">
+              THE 8 WORLDS OF CHAOS
+            </div>
+            <h2 className="text-3xl sm:text-5xl font-display font-black uppercase tracking-tight">
+              PROGRESSION MAP
             </h2>
-            <p className="text-slate-600 dark:text-slate-300 text-sm mt-3">
-              Traditional leetcode grinding teaches rote memorization. DSA Gamly builds genuine algorithm intuition.
+          </div>
+          <Link to="/map">
+            <Button variant="lime" size="md">
+              VIEW FULL WORLD MAP <ChevronRight className="w-4 h-4 ml-1" />
+            </Button>
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {chaosWorlds.map((world, idx) => (
+            <motion.div
+              key={world.num}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.4, delay: idx * 0.05 }}
+            >
+              <Card interactive className="h-full flex flex-col justify-between p-5 border-3 border-[#111111] shadow-[5px_5px_0px_#111111]">
+                <div>
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="font-mono font-black text-xs px-2 py-0.5 bg-[#111111] text-[#C6FF00]">
+                      WORLD {world.num}
+                    </span>
+                    <span className="font-mono text-xs font-bold text-[#FF5C00]">
+                      BOSS FIGHT
+                    </span>
+                  </div>
+                  <h3 className={`font-display font-black text-base uppercase px-2 py-1 mb-2 border-2 border-[#111111] inline-block ${world.theme}`}>
+                    {world.name}
+                  </h3>
+                  <p className="font-sans text-xs font-medium opacity-80 leading-relaxed mb-4">
+                    {world.desc}
+                  </p>
+                </div>
+
+                <div className="pt-3 border-t-2 border-[#111111] dark:border-[#333] flex items-center justify-between">
+                  <span className="font-mono text-[11px] font-bold text-[#FF2DAA]">
+                    👹 {world.boss}
+                  </span>
+                  <Link to={`/lesson/${world.id}`}>
+                    <span className="font-display font-black text-xs uppercase text-[#304FFE] dark:text-[#C6FF00] hover:underline">
+                      PLAY →
+                    </span>
+                  </Link>
+                </div>
+              </Card>
+            </motion.div>
+          ))}
+        </div>
+      </section>
+
+      {/* Manifesto / Why DSA Chaos Hits Different */}
+      <section className="py-16 sm:py-20 border-t-3 border-[#111111] dark:border-[#F5F0E8] bg-[#F5F0E8] dark:bg-[#141414] px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto">
+          <div className="text-center max-w-3xl mx-auto mb-12 sm:mb-16">
+            <div className="inline-block px-3 py-1 bg-[#FFF200] text-[#111111] border-2 border-[#111111] font-display font-black text-xs uppercase mb-3 rotate-1">
+              BUILT FOR CODERS WHO HATE SNOOZEFESTS
+            </div>
+            <h2 className="text-3xl sm:text-5xl font-display font-black uppercase tracking-tight">
+              WHY DSA CHAOS HITS DIFFERENT
+            </h2>
+            <p className="font-sans font-bold text-sm sm:text-base opacity-80 mt-3">
+              Traditional platforms make you memorize arbitrary answers. We teach you how algorithms actually execute.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <motion.div
-              initial={{ opacity: 0, y: 25 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.55, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <Card glow="electric" className="p-6 sm:p-8 h-full">
-                <div className="w-12 h-12 rounded-2xl bg-[#0080FF]/15 border border-[#0080FF]/40 flex items-center justify-center text-[#0080FF] mb-5 shadow-sm dark:shadow-glass-electric">
-                  <Zap className="w-6 h-6" />
-                </div>
-                <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-2">
-                  Real Algorithmic Logic
-                </h3>
-                <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-                  Zero fake animations. Every bar swap, pointer jump, and matrix state is computed by real, deterministic algorithm step engines.
-                </p>
-              </Card>
-            </motion.div>
+            <Card glow="lime" className="p-6">
+              <div className="w-12 h-12 bg-[#C6FF00] text-[#111111] border-2 border-[#111111] shadow-[3px_3px_0px_#111111] flex items-center justify-center font-display font-black text-xl mb-4 -rotate-3">
+                <Zap className="w-6 h-6" />
+              </div>
+              <h3 className="font-display font-black text-xl uppercase mb-2">
+                100% Deterministic Engine
+              </h3>
+              <p className="font-sans text-xs sm:text-sm font-medium opacity-80 leading-relaxed">
+                Zero fake visual trickery. Every pointer shift, stack pop, and matrix cell calculation is executed by authentic algorithm code.
+              </p>
+            </Card>
 
-            <motion.div
-              initial={{ opacity: 0, y: 25 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.55, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <Card glow="royal" className="p-6 sm:p-8 h-full">
-                <div className="w-12 h-12 rounded-2xl bg-[#8B00FF]/15 border border-[#8B00FF]/40 flex items-center justify-center text-[#8B00FF] dark:text-[#C084FC] mb-5 shadow-sm dark:shadow-glass-royal">
-                  <ShieldAlert className="w-6 h-6" />
-                </div>
-                <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-2">
-                  Epic Region Boss Battles
-                </h3>
-                <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-                  Face the Complexity Sentinel, The Array Golem, and The Sorting Sphinx in multi-stage boss fights testing concept, visual strategy, and code.
-                </p>
-              </Card>
-            </motion.div>
+            <Card glow="pink" className="p-6">
+              <div className="w-12 h-12 bg-[#FF2DAA] text-[#111111] border-2 border-[#111111] shadow-[3px_3px_0px_#111111] flex items-center justify-center font-display font-black text-xl mb-4 rotate-2">
+                <Swords className="w-6 h-6" />
+              </div>
+              <h3 className="font-display font-black text-xl uppercase mb-2">
+                Boss Battle Gauntlets
+              </h3>
+              <p className="font-sans text-xs sm:text-sm font-medium opacity-80 leading-relaxed">
+                Face the Complexity Sentinel, The Pointer Hydra, and The DP Archon in multi-stage boss fights testing logic, strategy, and syntax.
+              </p>
+            </Card>
 
-            <motion.div
-              initial={{ opacity: 0, y: 25 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.55, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <Card glow="pink" className="p-6 sm:p-8 h-full">
-                <div className="w-12 h-12 rounded-2xl bg-[#FF1493]/15 border border-[#FF1493]/40 flex items-center justify-center text-[#FF1493] dark:text-[#F472B6] mb-5 shadow-sm dark:shadow-glass-pink">
-                  <Brain className="w-6 h-6" />
-                </div>
-                <h3 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-2">
-                  Active Spaced Repetition
-                </h3>
-                <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-                  Your mistakes are automatically logged to your private Error Notebook, turning tricky edge cases into permanent mastery.
-                </p>
-              </Card>
-            </motion.div>
-          </div>
-        </div>
-      </section>
-
-      {/* World Map Regions Preview */}
-      <section className="py-16 sm:py-20 bg-transparent border-t border-slate-200/80 dark:border-white/[0.08] backdrop-blur-sm">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10 sm:mb-12">
-            <div>
-              <Badge variant="teal" className="mb-2">12 UNLOCKABLE REALMS</Badge>
-              <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-100">
-                Explore The Algorithm Map
-              </h2>
-            </div>
-            <Link to="/map">
-              <Button variant="secondary" size="sm">
-                View Full Map <ArrowRight className="w-4 h-4 ml-1.5" />
-              </Button>
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {WORLD_REGIONS.slice(0, 6).map((region, idx) => (
-              <motion.div
-                key={region.id}
-                initial={{ opacity: 0, y: 25 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: idx * 0.08, ease: [0.22, 1, 0.36, 1] }}
-              >
-                <Card glow="electric" interactive className="p-6 flex flex-col justify-between h-full">
-                  <div>
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="text-xs font-mono font-bold text-[#0080FF]">
-                        REGION 0{region.number}
-                      </span>
-                      <Badge variant="royal" size="sm">
-                        Level {region.requiredLevel}
-                      </Badge>
-                    </div>
-                    <h3 className="text-lg font-bold text-slate-900 dark:text-slate-100 mb-1">
-                      {region.name}
-                    </h3>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 font-mono mb-3">
-                      {region.tagline}
-                    </p>
-                    <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed line-clamp-2">
-                      {region.description}
-                    </p>
-                  </div>
-
-                  <div className="mt-6 pt-4 border-t border-slate-200/80 dark:border-white/[0.1] flex items-center justify-between">
-                    <span className="text-xs text-slate-500 dark:text-slate-400 font-mono">
-                      Boss: {region.bossBattle.name}
-                    </span>
-                    <Link to={`/lesson/${region.topics[0].id}`}>
-                      <span className="text-xs text-[#0080FF] dark:text-[#20B2AA] font-bold hover:underline">
-                        Enter →
-                      </span>
-                    </Link>
-                  </div>
-                </Card>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* FAQ Section */}
-      <section className="py-16 sm:py-20 bg-slate-100/50 dark:bg-white/[0.01] border-t border-slate-200/80 dark:border-white/[0.08] backdrop-blur-sm">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-10 sm:mb-12">
-            <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-100">
-              Frequently Asked Questions
-            </h2>
-          </div>
-
-          <div className="flex flex-col gap-4">
-            {[
-              {
-                q: 'What languages does DSA Gamly support?',
-                a: 'Java is our primary interview curriculum focus, alongside JavaScript, Python, and C++. You can view implementations in all four languages and solve coding challenges in the editor.',
-              },
-              {
-                q: 'Do I need any previous DSA experience?',
-                a: 'Not at all! Region 1 (Coding Village) starts from absolute zero: Big-O foundations, call stack behavior, and memory models.',
-              },
-              {
-                q: 'Is my progress saved without an account?',
-                a: 'Yes! Guest mode automatically saves your XP, level, unlocked achievements, daily quests, and Error Notebook to your browser storage. Connect Supabase anytime for cloud synchronization.',
-              },
-            ].map((faq, idx) => (
-              <motion.div 
-                key={idx}
-                initial={{ opacity: 0, y: 15 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.45, delay: idx * 0.1 }}
-                className="p-5 sm:p-6 rounded-[20px] bg-white/80 dark:bg-white/[0.05] border border-slate-200/90 dark:border-white/[0.15] backdrop-blur-xl shadow-sm dark:shadow-glass transition-all hover:bg-white dark:hover:bg-white/[0.09] hover:border-slate-300 dark:hover:border-white/[0.25]"
-              >
-                <h3 className="text-base font-bold text-slate-900 dark:text-slate-100 mb-2">
-                  {faq.q}
-                </h3>
-                <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
-                  {faq.a}
-                </p>
-              </motion.div>
-            ))}
+            <Card glow="electric" className="p-6">
+              <div className="w-12 h-12 bg-[#304FFE] text-[#F5F0E8] border-2 border-[#111111] shadow-[3px_3px_0px_#111111] flex items-center justify-center font-display font-black text-xl mb-4 -rotate-2">
+                <Brain className="w-6 h-6" />
+              </div>
+              <h3 className="font-display font-black text-xl uppercase mb-2">
+                Spaced Error Notebook
+              </h3>
+              <p className="font-sans text-xs sm:text-sm font-medium opacity-80 leading-relaxed">
+                Every quiz mistake or code bug is automatically saved to your private Error Notebook, turning weak spots into permanent strengths.
+              </p>
+            </Card>
           </div>
         </div>
       </section>
 
       {/* Final Call to Action */}
-      <section className="py-16 sm:py-20 border-t border-slate-200/80 dark:border-white/[0.08] text-center">
-        <div className="max-w-4xl mx-auto px-4">
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.96 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-            className="p-8 sm:p-10 rounded-[28px] bg-white/85 dark:bg-white/[0.05] border border-slate-200/90 dark:border-white/[0.2] backdrop-blur-2xl shadow-xl dark:shadow-[0_20px_60px_rgba(0,128,255,0.25)] relative overflow-hidden"
-          >
-            <div className="text-4xl mb-4">⚔️</div>
-            <h2 className="text-2xl sm:text-4xl md:text-5xl font-black text-slate-900 dark:text-slate-100 tracking-tight mb-4">
-              Your Algorithm Quest Awaits.
+      <section className="py-20 border-t-3 border-[#111111] dark:border-[#F5F0E8] px-4 text-center">
+        <div className="max-w-4xl mx-auto">
+          <div className="p-8 sm:p-12 bg-[#FF2DAA] text-[#111111] border-4 border-[#111111] shadow-[10px_10px_0px_#111111] -rotate-1">
+            <div className="text-4xl mb-3">⚡💥⚡</div>
+            <h2 className="text-3xl sm:text-5xl md:text-6xl font-display font-black uppercase tracking-tight mb-4">
+              READY TO MASTER THE CHAOS?
             </h2>
-            <p className="text-slate-600 dark:text-slate-300 text-sm sm:text-base max-w-xl mx-auto mb-8">
-              Level up from absolute beginner to algorithm wizard with DSA Gamly. Start playing right now.
+            <p className="font-sans font-bold text-sm sm:text-base max-w-xl mx-auto mb-8 opacity-90">
+              Stop stressing over interviews. Level up your algorithmic thinking the arcade way.
             </p>
             <Link to="/map">
-              <Button variant="neon" size="lg" className="px-8 sm:px-10 text-base shadow-glass-electric">
-                Enter The World Map <ArrowRight className="w-5 h-5 ml-2" />
+              <Button variant="lime" size="lg" className="px-8 py-4 text-base sm:text-lg border-3 border-[#111111] shadow-[5px_5px_0px_#111111] hover:rotate-1">
+                ENTER THE CHAOS NOW →
               </Button>
             </Link>
-          </motion.div>
+          </div>
         </div>
       </section>
     </div>
   );
 };
+
+export default LandingPage;

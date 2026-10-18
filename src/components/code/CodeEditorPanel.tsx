@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Editor from '@monaco-editor/react';
-import { Play, CheckCircle2, XCircle, Lightbulb, Terminal, Code, Sparkles, Clock, MemoryStick } from 'lucide-react';
+import { Play, CheckCircle2, XCircle, Lightbulb, Terminal, Clock, Zap } from 'lucide-react';
 import { CodeProblem, TestCase } from '../../types/curriculum';
 import { SupportedLanguage, ExecutionResult } from '../../types/codeEditor';
 import { executeCodeChallenge } from '../../services/codeRunner';
@@ -21,7 +21,6 @@ export const CodeEditorPanel: React.FC<CodeEditorPanelProps> = ({ problem, onSuc
   const [activeTab, setActiveTab] = useState<'tests' | 'console' | 'editorial'>('tests');
   const [unlockedHintIndex, setUnlockedHintIndex] = useState<number>(-1);
 
-  // When language changes, load the corresponding starter code
   const handleLanguageChange = (lang: SupportedLanguage) => {
     setLanguage(lang);
     setCode(problem.starterCode[lang] || '');
@@ -46,40 +45,43 @@ export const CodeEditorPanel: React.FC<CodeEditorPanelProps> = ({ problem, onSuc
     }
   };
 
+  const difficultyTag = problem.difficulty === 'Easy' ? 'WARM-UP' : problem.difficulty === 'Medium' ? 'CHAOS MODE' : 'BOSS FIGHT';
+  const difficultyVariant = problem.difficulty === 'Easy' ? 'lime' : problem.difficulty === 'Medium' ? 'orange' : 'pink';
+
   return (
-    <div className="flex flex-col lg:flex-row gap-4 w-full h-[650px] bg-slate-950 rounded-3xl border border-slate-800 overflow-hidden shadow-2xl">
+    <div className="flex flex-col lg:flex-row gap-0 w-full h-[680px] bg-[#111111] text-[#F5F0E8] border-3 md:border-4 border-[#111111] dark:border-[#F5F0E8] shadow-[8px_8px_0px_#111111] dark:shadow-[8px_8px_0px_#C6FF00] overflow-hidden">
       {/* Left Column: Problem Details & Hints */}
-      <div className="w-full lg:w-5/12 flex flex-col border-b lg:border-b-0 lg:border-r border-slate-800 bg-slate-900/50 p-6 overflow-y-auto">
+      <div className="w-full lg:w-5/12 flex flex-col border-b-2 lg:border-b-0 lg:border-r-3 border-[#111111] dark:border-[#333] bg-[#1a1a1a] p-6 overflow-y-auto">
         <div className="flex items-center justify-between gap-2 mb-3">
-          <Badge variant={problem.difficulty === 'Easy' ? 'emerald' : problem.difficulty === 'Medium' ? 'amber' : 'rose'}>
-            {problem.difficulty}
+          <Badge variant={difficultyVariant} size="sm" tilt>
+            {difficultyTag}
           </Badge>
-          <span className="text-xs text-slate-500 font-mono">ID: {problem.id}</span>
+          <span className="text-xs font-mono font-bold text-[#FF5C00]">ID: {problem.id}</span>
         </div>
 
-        <h3 className="text-xl font-bold text-slate-100 mb-3 tracking-tight">
+        <h3 className="text-2xl font-display font-black uppercase text-[#F5F0E8] mb-3 tracking-tight">
           {problem.title}
         </h3>
 
-        <div className="prose prose-invert prose-sm text-slate-300 mb-6 leading-relaxed">
+        <div className="prose prose-invert prose-sm text-[#F5F0E8] opacity-90 mb-6 font-sans leading-relaxed">
           <p>{problem.description}</p>
         </div>
 
         {/* Examples */}
         <div className="flex flex-col gap-3 mb-6">
-          <h4 className="text-xs font-bold font-mono text-slate-400 uppercase tracking-wider">
-            Examples:
+          <h4 className="font-mono text-xs font-black uppercase tracking-wider text-[#C6FF00]">
+            EXAMPLES:
           </h4>
           {problem.examples.map((ex, idx) => (
-            <div key={idx} className="p-3 bg-slate-950/80 rounded-xl border border-slate-800 font-mono text-xs">
-              <div className="text-slate-400">
-                <strong className="text-cyan-400">Input:</strong> {ex.input}
+            <div key={idx} className="p-3 bg-[#111111] border-2 border-[#333] font-mono text-xs">
+              <div className="text-[#F5F0E8]">
+                <strong className="text-[#C6FF00]">Input:</strong> {ex.input}
               </div>
-              <div className="text-slate-400 mt-1">
-                <strong className="text-emerald-400">Output:</strong> {ex.output}
+              <div className="text-[#F5F0E8] mt-1">
+                <strong className="text-[#FF2DAA]">Output:</strong> {ex.output}
               </div>
               {ex.explanation && (
-                <div className="text-slate-500 text-[11px] mt-1 font-sans">
+                <div className="text-[#F5F0E8] opacity-75 text-[11px] mt-1 font-sans">
                   {ex.explanation}
                 </div>
               )}
@@ -89,10 +91,10 @@ export const CodeEditorPanel: React.FC<CodeEditorPanelProps> = ({ problem, onSuc
 
         {/* Constraints */}
         <div className="mb-6">
-          <h4 className="text-xs font-bold font-mono text-slate-400 uppercase tracking-wider mb-2">
-            Constraints:
+          <h4 className="font-mono text-xs font-black uppercase tracking-wider text-[#FFF200] mb-2">
+            CONSTRAINTS:
           </h4>
-          <ul className="list-disc list-inside text-xs font-mono text-slate-400 space-y-1">
+          <ul className="list-disc list-inside text-xs font-mono opacity-80 space-y-1">
             {problem.constraints.map((c, idx) => (
               <li key={idx}>{c}</li>
             ))}
@@ -100,17 +102,17 @@ export const CodeEditorPanel: React.FC<CodeEditorPanelProps> = ({ problem, onSuc
         </div>
 
         {/* Progressive Hint System */}
-        <div className="mt-auto pt-4 border-t border-slate-800/80">
+        <div className="mt-auto pt-4 border-t-2 border-[#333]">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-xs font-semibold text-amber-400 flex items-center gap-1.5">
-              <Lightbulb className="w-3.5 h-3.5" /> Progressive Hints
+            <span className="text-xs font-mono font-bold text-[#FFF200] flex items-center gap-1.5">
+              <Lightbulb className="w-4 h-4 text-[#FFF200]" /> PROGRESSIVE HINTS
             </span>
             {unlockedHintIndex < problem.hints.length - 1 && (
               <button
                 onClick={unlockNextHint}
-                className="text-xs text-cyan-400 hover:text-cyan-300 font-medium"
+                className="text-xs font-display font-bold text-[#C6FF00] hover:underline"
               >
-                + Reveal Hint {unlockedHintIndex + 2}
+                + REVEAL HINT {unlockedHintIndex + 2}
               </button>
             )}
           </div>
@@ -118,13 +120,13 @@ export const CodeEditorPanel: React.FC<CodeEditorPanelProps> = ({ problem, onSuc
           {unlockedHintIndex >= 0 ? (
             <div className="flex flex-col gap-2">
               {problem.hints.slice(0, unlockedHintIndex + 1).map((hint, idx) => (
-                <div key={idx} className="p-2.5 rounded-lg bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200">
-                  <strong>Hint {idx + 1}:</strong> {hint}
+                <div key={idx} className="p-2.5 bg-[#FFF200] text-[#111111] border-2 border-[#111111] text-xs font-mono font-bold">
+                  <strong>HINT {idx + 1}:</strong> {hint}
                 </div>
               ))}
             </div>
           ) : (
-            <p className="text-xs text-slate-500 italic">
+            <p className="text-xs font-mono opacity-60 italic">
               Stuck? Progressive hints guide your thinking without spoiling the answer.
             </p>
           )}
@@ -132,35 +134,35 @@ export const CodeEditorPanel: React.FC<CodeEditorPanelProps> = ({ problem, onSuc
       </div>
 
       {/* Right Column: Code Editor & Test Results */}
-      <div className="w-full lg:w-7/12 flex flex-col h-full bg-slate-950">
+      <div className="w-full lg:w-7/12 flex flex-col h-full bg-[#111111]">
         {/* Editor Toolbar */}
-        <div className="flex items-center justify-between p-3 border-b border-slate-800 bg-slate-900/80">
+        <div className="flex items-center justify-between p-3 border-b-2 border-[#333] bg-[#181818]">
           {/* Language selector */}
           <div className="flex items-center gap-1.5">
             {(['javascript', 'python', 'java', 'cpp'] as const).map((lang) => (
               <button
                 key={lang}
                 onClick={() => handleLanguageChange(lang)}
-                className={`px-3 py-1 rounded-lg text-xs font-mono font-semibold transition-colors ${
+                className={`px-3 py-1 text-xs font-display font-black uppercase transition-all border-2 ${
                   language === lang
-                    ? 'bg-cyan-500 text-slate-950 shadow-glow-cyan'
-                    : 'bg-slate-800 text-slate-400 hover:text-slate-200'
+                    ? 'bg-[#C6FF00] text-[#111111] border-[#111111] shadow-[2px_2px_0px_#111111]'
+                    : 'bg-[#222222] text-[#F5F0E8] border-transparent hover:border-[#F5F0E8]'
                 }`}
               >
-                {lang === 'javascript' ? 'JS' : lang === 'python' ? 'Python' : lang === 'java' ? 'Java' : 'C++'}
+                {lang === 'javascript' ? 'JS' : lang === 'python' ? 'PYTHON' : lang === 'java' ? 'JAVA' : 'C++'}
               </button>
             ))}
           </div>
 
           <div className="flex items-center gap-2">
             <Button
-              variant="primary"
+              variant="lime"
               size="sm"
               onClick={handleRun}
               disabled={isRunning}
               icon={<Play className="w-3.5 h-3.5 fill-current" />}
             >
-              {isRunning ? 'Running...' : 'Run & Test'}
+              {isRunning ? 'EXECUTING...' : 'RUN CODE ⚡'}
             </Button>
           </div>
         </div>
@@ -176,7 +178,7 @@ export const CodeEditorPanel: React.FC<CodeEditorPanelProps> = ({ problem, onSuc
             options={{
               minimap: { enabled: false },
               fontSize: 13,
-              fontFamily: "'Fira Code', 'JetBrains Mono', Consolas, monospace",
+              fontFamily: "'JetBrains Mono', 'Fira Code', Consolas, monospace",
               fontLigatures: true,
               scrollBeyondLastLine: false,
               automaticLayout: true,
@@ -188,118 +190,95 @@ export const CodeEditorPanel: React.FC<CodeEditorPanelProps> = ({ problem, onSuc
         </div>
 
         {/* Bottom Panel: Test Results / Console / Editorial */}
-        <div className="h-56 border-t border-slate-800 flex flex-col bg-slate-900/60">
-          <div className="flex items-center justify-between px-4 border-b border-slate-800 bg-slate-950/60 text-xs font-mono">
+        <div className="h-60 border-t-2 border-[#333] flex flex-col bg-[#141414]">
+          <div className="flex items-center justify-between px-4 border-b-2 border-[#333] bg-[#181818] text-xs font-mono">
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setActiveTab('tests')}
-                className={`py-2 px-3 border-b-2 font-medium transition-colors ${
+                className={`py-2 px-3 font-display font-black uppercase transition-all ${
                   activeTab === 'tests'
-                    ? 'border-cyan-400 text-cyan-400'
-                    : 'border-transparent text-slate-400 hover:text-slate-200'
+                    ? 'border-b-2 border-[#C6FF00] text-[#C6FF00]'
+                    : 'text-[#F5F0E8] opacity-60 hover:opacity-100'
                 }`}
               >
-                Test Cases {result && `(${result.passedTests}/${result.totalTests})`}
+                TEST CASES {result && `(${result.passedTests}/${result.totalTests})`}
               </button>
               <button
                 onClick={() => setActiveTab('console')}
-                className={`py-2 px-3 border-b-2 font-medium transition-colors ${
+                className={`py-2 px-3 font-display font-black uppercase transition-all ${
                   activeTab === 'console'
-                    ? 'border-cyan-400 text-cyan-400'
-                    : 'border-transparent text-slate-400 hover:text-slate-200'
+                    ? 'border-b-2 border-[#FF2DAA] text-[#FF2DAA]'
+                    : 'text-[#F5F0E8] opacity-60 hover:opacity-100'
                 }`}
               >
-                Console Logs
+                CONSOLE LOGS
               </button>
               <button
                 onClick={() => setActiveTab('editorial')}
-                className={`py-2 px-3 border-b-2 font-medium transition-colors ${
+                className={`py-2 px-3 font-display font-black uppercase transition-all ${
                   activeTab === 'editorial'
-                    ? 'border-violet-400 text-violet-400'
-                    : 'border-transparent text-slate-400 hover:text-slate-200'
+                    ? 'border-b-2 border-[#FFF200] text-[#FFF200]'
+                    : 'text-[#F5F0E8] opacity-60 hover:opacity-100'
                 }`}
               >
-                Editorial Solution
+                EDITORIAL / HINTS
               </button>
             </div>
 
             {result && (
-              <div className="flex items-center gap-3 text-slate-400 text-[11px]">
-                <span className="flex items-center gap-1">
-                  <Clock className="w-3 h-3 text-slate-500" /> {result.executionTimeMs} ms
+              <div className="flex items-center gap-3 text-[11px] font-mono">
+                <span className="flex items-center gap-1 text-slate-400">
+                  <Clock className="w-3 h-3 text-[#FF5C00]" /> {result.executionTimeMs.toFixed(1)}ms
                 </span>
-                {result.memoryKb && (
-                  <span className="flex items-center gap-1">
-                    <MemoryStick className="w-3 h-3 text-slate-500" /> {result.memoryKb} KB
-                  </span>
-                )}
+                <span className={`font-bold ${result.success ? 'text-[#C6FF00]' : 'text-[#FF2DAA]'}`}>
+                  {result.success ? 'ALL TESTS PASSED' : 'TESTS FAILED'}
+                </span>
               </div>
             )}
           </div>
 
-          <div className="flex-1 p-4 overflow-y-auto">
+          <div className="flex-1 p-4 overflow-y-auto font-mono text-xs">
             {activeTab === 'tests' && (
               <div className="flex flex-col gap-2">
-                {result?.compileError && (
-                  <div className="p-3 rounded-xl bg-rose-500/15 border border-rose-500/30 text-rose-300 text-xs font-mono">
-                    <strong>Error:</strong> {result.compileError}
-                  </div>
-                )}
-
-                {result?.testResults && result.testResults.length > 0 ? (
-                  result.testResults.map((tc, idx) => (
+                {result ? (
+                  result.testResults.map((tRes, idx) => (
                     <div
                       key={idx}
-                      className={`p-3 rounded-xl border flex items-center justify-between text-xs font-mono ${
-                        tc.passed
-                          ? 'bg-emerald-950/30 border-emerald-500/30 text-emerald-300'
-                          : 'bg-rose-950/30 border-rose-500/30 text-rose-300'
+                      className={`p-2.5 border-2 flex items-center justify-between ${
+                        tRes.passed
+                          ? 'bg-[#C6FF00]/10 border-[#C6FF00] text-[#C6FF00]'
+                          : 'bg-[#FF2DAA]/10 border-[#FF2DAA] text-[#FF2DAA]'
                       }`}
                     >
                       <div className="flex items-center gap-2">
-                        {tc.passed ? (
-                          <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                        ) : (
-                          <XCircle className="w-4 h-4 text-rose-400" />
-                        )}
-                        <span>Case {idx + 1}: {tc.passed ? 'PASSED' : 'FAILED'}</span>
+                        {tRes.passed ? <CheckCircle2 className="w-4 h-4 text-[#C6FF00]" /> : <XCircle className="w-4 h-4 text-[#FF2DAA]" />}
+                        <span>Case {idx + 1}: Expected {JSON.stringify(tRes.expected)}</span>
                       </div>
-                      <div className="text-slate-400 text-[11px]">
-                        Expected: {tc.expectedOutput} | Actual: {tc.actualOutput}
-                      </div>
+                      <span>Actual: {JSON.stringify(tRes.actual)}</span>
                     </div>
                   ))
                 ) : (
-                  <div className="text-slate-500 text-xs text-center py-6 font-mono">
-                    Click "Run & Test" to execute test cases against your solution.
+                  <div className="text-center opacity-60 py-6">
+                    Run your solution to evaluate against all test cases.
                   </div>
                 )}
               </div>
             )}
 
             {activeTab === 'console' && (
-              <div className="font-mono text-xs text-slate-300 space-y-1">
+              <div className="text-[#F5F0E8] font-mono text-xs">
                 {result?.logs && result.logs.length > 0 ? (
                   result.logs.map((log, i) => <div key={i}>{log}</div>)
                 ) : (
-                  <div className="text-slate-500 text-center py-6">No console output.</div>
+                  <span className="opacity-50">No console output.</span>
                 )}
               </div>
             )}
 
             {activeTab === 'editorial' && (
-              <div className="flex flex-col gap-3 font-mono text-xs text-slate-300">
-                <div className="flex items-center gap-3">
-                  <Badge variant="cyan">Complexity</Badge>
-                  <span>Time: {problem.optimalSolution.timeComplexity}</span>
-                  <span>Space: {problem.optimalSolution.spaceComplexity}</span>
-                </div>
-                <p className="text-slate-400 font-sans text-xs">
-                  {problem.optimalSolution.explanation}
-                </p>
-                <pre className="p-3 bg-slate-950 rounded-xl border border-slate-800 text-cyan-300 overflow-x-auto">
-                  {problem.optimalSolution[language] || problem.optimalSolution.javascript}
-                </pre>
+              <div className="prose prose-invert prose-xs text-[#F5F0E8] opacity-90">
+                <p className="font-bold text-[#FFF200]">Time Complexity Target: {problem.timeComplexity}</p>
+                <p className="font-bold text-[#FF2DAA]">Space Complexity Target: {problem.spaceComplexity}</p>
               </div>
             )}
           </div>
@@ -308,3 +287,5 @@ export const CodeEditorPanel: React.FC<CodeEditorPanelProps> = ({ problem, onSuc
     </div>
   );
 };
+
+export default CodeEditorPanel;

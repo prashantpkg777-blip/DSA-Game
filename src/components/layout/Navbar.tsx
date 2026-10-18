@@ -2,25 +2,23 @@ import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Gamepad2, 
-  Map, 
-  Code2, 
-  LayoutDashboard, 
   Flame, 
   Volume2, 
   VolumeX, 
   Sun, 
   Moon, 
-  Sparkles,
+  Map, 
+  Code2, 
+  LayoutDashboard, 
   BookOpenCheck,
   Menu,
   X,
   Mic,
-  MicOff
+  MicOff,
+  Zap
 } from 'lucide-react';
 import { useUserStore } from '../../stores/userStore';
 import { Badge } from '../ui/Badge';
-import { ProgressBar } from '../ui/ProgressBar';
 import { audioService } from '../../services/audioService';
 
 export const Navbar: React.FC = () => {
@@ -37,13 +35,11 @@ export const Navbar: React.FC = () => {
   } = useUserStore();
 
   const navLinks = [
-    { to: '/map', label: 'World Map', icon: <Map className="w-4 h-4 transition-transform duration-200 group-hover:scale-115" /> },
-    { to: '/dashboard', label: 'Dashboard', icon: <LayoutDashboard className="w-4 h-4 transition-transform duration-200 group-hover:scale-115" /> },
-    { to: '/playground', label: 'Playground', icon: <Code2 className="w-4 h-4 transition-transform duration-200 group-hover:scale-115" /> },
-    { to: '/notebook', label: 'Error Notebook', icon: <BookOpenCheck className="w-4 h-4 transition-transform duration-200 group-hover:scale-115" /> },
+    { to: '/map', label: 'WORLD MAP', icon: <Map className="w-4 h-4" /> },
+    { to: '/dashboard', label: 'DASHBOARD', icon: <LayoutDashboard className="w-4 h-4" /> },
+    { to: '/playground', label: 'CHAOS CODE', icon: <Code2 className="w-4 h-4" /> },
+    { to: '/notebook', label: 'ERROR NOTEBOOK', icon: <BookOpenCheck className="w-4 h-4" /> },
   ];
-
-  const xpPercent = Math.min(100, Math.round((profile.xp / profile.xpToNextLevel) * 100));
 
   const handleNavClick = () => {
     audioService.playClick(soundEnabled);
@@ -66,30 +62,25 @@ export const Navbar: React.FC = () => {
   };
 
   return (
-    <motion.header 
-      initial={{ y: -24, opacity: 0 }}
-      animate={{ y: 0, opacity: 1 }}
-      transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-      className="sticky top-0 z-50 w-full border-b border-slate-200/90 dark:border-white/[0.14] bg-white/85 dark:bg-[#080B18]/75 backdrop-blur-2xl shadow-[0_8px_32px_rgba(0,0,0,0.06)] dark:shadow-[0_8px_32px_rgba(0,0,0,0.3)] transition-colors duration-300"
-    >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        {/* Brand */}
-        <Link to="/" onClick={handleNavClick} className="flex items-center gap-2.5 group">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-[#0080FF] via-[#8B00FF] to-[#FF1493] flex items-center justify-center shadow-glass-electric border border-white/30 backdrop-blur-md transition-all duration-300 group-hover:scale-105 group-hover:shadow-glass-royal">
-            <Gamepad2 className="w-5 h-5 text-white" />
+    <header className="sticky top-0 z-50 w-full border-b-3 border-[#111111] dark:border-[#F5F0E8] bg-[#F5F0E8] dark:bg-[#111111] transition-colors duration-200">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between">
+        {/* Brand: DSA CHAOS */}
+        <Link 
+          to="/" 
+          onClick={handleNavClick} 
+          className="flex items-center gap-3 group select-none"
+        >
+          <div className="px-3 py-1.5 bg-[#C6FF00] text-[#111111] border-2 md:border-3 border-[#111111] shadow-[3px_3px_0px_#111111] -rotate-2 group-hover:rotate-0 transition-transform font-display font-black text-lg md:text-xl tracking-tighter flex items-center gap-1.5">
+            <Zap className="w-5 h-5 fill-[#FF2DAA] text-[#111111]" />
+            <span>DSA CHAOS</span>
           </div>
-          <div className="flex flex-col">
-            <span className="font-extrabold text-lg tracking-tight bg-gradient-to-r from-[#20B2AA] via-[#0080FF] to-[#FF1493] bg-clip-text text-transparent">
-              DSA Gamly
-            </span>
-            <span className="text-[10px] uppercase font-mono tracking-widest text-[#0080FF] dark:text-[#20B2AA] -mt-1 font-semibold">
-              Interactive RPG
-            </span>
-          </div>
+          <span className="hidden xl:inline-block text-[11px] font-mono uppercase font-black text-[#FF2DAA] dark:text-[#C6FF00] tracking-widest border border-dashed border-[#FF2DAA] dark:border-[#C6FF00] px-2 py-0.5 rounded-sm">
+            BREAK THE CODE
+          </span>
         </Link>
 
-        {/* Desktop Navigation Links with Animated Sliding Indicator */}
-        <nav className="hidden md:flex items-center gap-1.5 relative p-1 bg-slate-100/80 dark:bg-white/[0.04] rounded-2xl border border-slate-200/80 dark:border-white/[0.1] backdrop-blur-md">
+        {/* Desktop Navigation Links */}
+        <nav className="hidden lg:flex items-center gap-2">
           {navLinks.map((link) => {
             const isActive = location.pathname === link.to;
             return (
@@ -97,20 +88,13 @@ export const Navbar: React.FC = () => {
                 key={link.to}
                 to={link.to}
                 onClick={handleNavClick}
-                className={`relative flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-sm font-medium transition-colors group z-10 ${
+                className={`relative flex items-center gap-1.5 px-3 py-1.5 font-display text-xs font-black tracking-wide border-2 transition-all ${
                   isActive
-                    ? 'text-slate-900 dark:text-white font-semibold'
-                    : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
+                    ? 'bg-[#FFF200] text-[#111111] border-[#111111] shadow-[3px_3px_0px_#111111] -translate-y-0.5'
+                    : 'bg-transparent text-inherit border-transparent hover:border-[#111111] dark:hover:border-[#F5F0E8] hover:bg-[#F5F0E8] dark:hover:bg-[#1f1f1f]'
                 }`}
               >
-                {isActive && (
-                  <motion.div
-                    layoutId="nav-active-indicator"
-                    className="absolute inset-0 rounded-xl bg-white dark:bg-gradient-to-r dark:from-white/[0.16] dark:to-white/[0.1] border border-slate-200 dark:border-white/[0.25] shadow-sm dark:shadow-glass -z-10"
-                    transition={{ type: 'spring', stiffness: 350, damping: 30 }}
-                  />
-                )}
-                <span className="text-[#0080FF] group-hover:text-[#20B2AA] transition-colors">{link.icon}</span>
+                {link.icon}
                 <span>{link.label}</span>
               </Link>
             );
@@ -119,168 +103,121 @@ export const Navbar: React.FC = () => {
 
         {/* Player Stats & Controls */}
         <div className="flex items-center gap-2 sm:gap-3">
-          {/* Streak indicator */}
-          <div className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-xl bg-amber-500/15 border border-amber-400/30 text-amber-600 dark:text-amber-300 font-mono text-xs backdrop-blur-md shadow-sm">
-            <Flame className="w-4 h-4 fill-amber-500 dark:fill-amber-400 animate-pulse text-amber-500 dark:text-amber-400" />
-            <span className="font-bold">{profile.streakDays}d</span>
+          {/* Streak indicator sticker */}
+          <div className="flex items-center gap-1.5 px-2.5 py-1 bg-[#FF5C00] text-[#111111] border-2 border-[#111111] shadow-[2px_2px_0px_#111111] font-mono text-xs font-black -rotate-1">
+            <Flame className="w-4 h-4 fill-[#FFF200] text-[#111111]" />
+            <span>{profile.streakDays}D STREAK</span>
           </div>
 
-          {/* Level & XP Mini Bar (Tablet & Desktop) */}
+          {/* Level Badge */}
           <Link
             to="/dashboard"
             onClick={handleNavClick}
-            className="hidden sm:flex items-center gap-2.5 px-3 py-1 rounded-xl bg-slate-100/70 dark:bg-white/[0.06] border border-slate-200/80 dark:border-white/[0.15] hover:border-slate-300 dark:hover:border-white/[0.25] backdrop-blur-md shadow-sm transition-colors"
+            className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 bg-[#FF2DAA] text-[#111111] border-2 border-[#111111] shadow-[2px_2px_0px_#111111] font-display text-xs font-black rotate-1 hover:rotate-0 transition-transform"
           >
-            <div className="flex items-center gap-1.5">
-              <Badge variant="violet" size="sm">
-                LVL {profile.level}
-              </Badge>
-              <span className="text-xs font-medium text-slate-700 dark:text-slate-200 hidden lg:inline">
-                {profile.displayName}
-              </span>
-            </div>
-            <div className="w-20 hidden md:block">
-              <ProgressBar value={xpPercent} height="sm" barColor="cyan" />
-            </div>
-            <span className="text-[11px] font-mono text-[#0080FF] dark:text-cyan-300 font-medium">
-              {profile.xp}/{profile.xpToNextLevel} XP
-            </span>
+            <span>LVL {profile.level}</span>
+            <span className="font-mono text-[11px] opacity-80">({profile.xp} XP)</span>
           </Link>
 
-          {/* Controls: Audio, Voice, & Theme */}
-          <div className="flex items-center gap-1 border-l border-slate-200/80 dark:border-white/[0.12] pl-1.5 sm:pl-2">
-            {/* Voice Narrator Quick Toggle */}
+          {/* Start Quest CTA button */}
+          <Link
+            to="/map"
+            onClick={handleNavClick}
+            className="hidden md:inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-[#C6FF00] hover:bg-[#b2e600] text-[#111111] border-2 md:border-3 border-[#111111] shadow-[3px_3px_0px_#111111] font-display font-black text-xs uppercase tracking-wider hover:-translate-y-0.5 active:translate-y-0 active:shadow-none transition-all"
+          >
+            <span>START QUEST ↗</span>
+          </Link>
+
+          {/* Audio, Voice, & Theme Buttons */}
+          <div className="flex items-center gap-1 pl-1 border-l-2 border-[#111111] dark:border-[#333333]">
+            {/* Voice Narrator */}
             <button
               onClick={handleVoiceToggle}
-              className={`p-2 rounded-xl backdrop-blur-md transition-colors ${
-                voiceEnabled
-                  ? 'text-[#0080FF] hover:bg-[#0080FF]/10'
-                  : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/[0.08]'
+              className={`p-1.5 rounded-md border-2 border-[#111111] transition-all ${
+                voiceEnabled ? 'bg-[#304FFE] text-[#F5F0E8] shadow-[2px_2px_0px_#111111]' : 'bg-transparent text-inherit opacity-60'
               }`}
-              title={voiceEnabled ? 'Mute AI Voice Narrator' : 'Enable AI Voice Narrator'}
+              title={voiceEnabled ? 'Mute AI Voice' : 'Enable AI Voice'}
               aria-label="Toggle Voice"
             >
-              {voiceEnabled ? <Mic className="w-4 h-4 text-[#0080FF]" /> : <MicOff className="w-4 h-4" />}
+              {voiceEnabled ? <Mic className="w-3.5 h-3.5" /> : <MicOff className="w-3.5 h-3.5" />}
             </button>
 
-            {/* Sound Effects Toggle */}
+            {/* Sound FX */}
             <button
               onClick={handleSoundToggle}
-              className={`p-2 rounded-xl backdrop-blur-md transition-colors ${
-                soundEnabled
-                  ? 'text-[#20B2AA] hover:bg-[#20B2AA]/10'
-                  : 'text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/[0.08]'
+              className={`p-1.5 rounded-md border-2 border-[#111111] transition-all ${
+                soundEnabled ? 'bg-[#C6FF00] text-[#111111] shadow-[2px_2px_0px_#111111]' : 'bg-transparent text-inherit opacity-60'
               }`}
-              title={soundEnabled ? 'Mute sound effects' : 'Enable sound effects'}
+              title={soundEnabled ? 'Mute Sound' : 'Enable Sound'}
               aria-label="Toggle Sound"
             >
-              {soundEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
+              {soundEnabled ? <Volume2 className="w-3.5 h-3.5" /> : <VolumeX className="w-3.5 h-3.5" />}
             </button>
 
-            {/* Light / Dark Mode Toggle */}
+            {/* Theme Toggle */}
             <button
               onClick={handleThemeToggle}
-              className="p-2 rounded-xl text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/[0.08] backdrop-blur-md transition-all active:scale-95"
+              className="p-1.5 rounded-md border-2 border-[#111111] bg-[#FFF200] text-[#111111] shadow-[2px_2px_0px_#111111] transition-all active:translate-y-0.5"
               title={theme === 'dark' ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
               aria-label="Toggle Theme"
             >
-              {theme === 'dark' ? (
-                <Sun className="w-4 h-4 text-amber-400 transition-transform hover:rotate-45" />
-              ) : (
-                <Moon className="w-4 h-4 text-slate-700 transition-transform hover:-rotate-12" />
-              )}
+              {theme === 'dark' ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
             </button>
 
-            {/* Mobile Hamburger Menu Button */}
+            {/* Mobile Hamburger */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 rounded-xl text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/[0.08] transition-colors ml-1"
+              className="lg:hidden p-1.5 rounded-md border-2 border-[#111111] bg-[#F5F0E8] text-[#111111] shadow-[2px_2px_0px_#111111] ml-1"
               aria-label="Open Mobile Menu"
             >
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              {mobileMenuOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
             </button>
           </div>
         </div>
       </div>
 
-      {/* Mobile Drawer / Dropdown */}
+      {/* Mobile Drawer */}
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-            className="md:hidden border-t border-slate-200/90 dark:border-white/10 bg-white/95 dark:bg-[#080B18]/95 backdrop-blur-3xl px-4 py-4 overflow-hidden shadow-2xl"
+            className="lg:hidden border-t-3 border-[#111111] dark:border-[#F5F0E8] bg-[#F5F0E8] dark:bg-[#111111] px-4 py-4 overflow-hidden"
           >
-            {/* Player Mini Status */}
-            <div className="flex items-center justify-between p-3 rounded-2xl bg-slate-100/80 dark:bg-white/[0.06] border border-slate-200/80 dark:border-white/10 mb-3">
-              <div className="flex items-center gap-2.5">
+            <div className="flex items-center justify-between p-3 border-2 border-[#111111] bg-[#C6FF00] text-[#111111] shadow-[3px_3px_0px_#111111] mb-3">
+              <div className="flex items-center gap-2">
                 <span className="text-2xl">{profile.avatar}</span>
                 <div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-sm font-bold text-slate-900 dark:text-slate-100">{profile.username}</span>
-                    <Badge variant="violet" size="sm">LVL {profile.level}</Badge>
-                  </div>
-                  <span className="text-xs text-[#0080FF] dark:text-cyan-300 font-mono">
-                    {profile.xp}/{profile.xpToNextLevel} XP ({xpPercent}%)
-                  </span>
+                  <div className="font-display font-black text-sm uppercase">{profile.username}</div>
+                  <div className="font-mono text-xs font-bold">LVL {profile.level} • {profile.xp} XP</div>
                 </div>
               </div>
-              <Link
-                to="/dashboard"
-                onClick={handleNavClick}
-                className="text-xs font-semibold text-[#0080FF] hover:underline"
-              >
-                Profile →
+              <Link to="/map" onClick={handleNavClick} className="font-display font-black text-xs uppercase px-2 py-1 bg-[#111111] text-[#C6FF00]">
+                QUEST ↗
               </Link>
             </div>
 
-            {/* Navigation Links */}
-            <div className="space-y-1 mb-4">
-              {navLinks.map((link) => {
-                const isActive = location.pathname === link.to;
-                return (
-                  <Link
-                    key={link.to}
-                    to={link.to}
-                    onClick={handleNavClick}
-                    className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
-                      isActive
-                        ? 'bg-[#0080FF]/15 text-[#0080FF] dark:text-white font-bold'
-                        : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/[0.06]'
-                    }`}
-                  >
-                    <span className="text-[#0080FF]">{link.icon}</span>
-                    <span>{link.label}</span>
-                  </Link>
-                );
-              })}
-            </div>
-
-            {/* Quick Controls in Drawer */}
-            <div className="pt-3 border-t border-slate-200/80 dark:border-white/10 flex items-center justify-between text-xs text-slate-600 dark:text-slate-400">
-              <span className="font-mono">Theme & Voice</span>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={handleVoiceToggle}
-                  className="px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-white/[0.08] text-slate-800 dark:text-slate-200 flex items-center gap-1"
+            <div className="flex flex-col gap-2 mb-3">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.to}
+                  to={link.to}
+                  onClick={handleNavClick}
+                  className={`flex items-center gap-2 p-2.5 font-display text-sm font-black border-2 border-[#111111] ${
+                    location.pathname === link.to ? 'bg-[#FFF200] text-[#111111] shadow-[3px_3px_0px_#111111]' : 'bg-white dark:bg-[#1e1e1e] text-inherit'
+                  }`}
                 >
-                  {voiceEnabled ? <Mic className="w-3.5 h-3.5 text-[#0080FF]" /> : <MicOff className="w-3.5 h-3.5" />}
-                  <span>{voiceEnabled ? 'Voice On' : 'Voice Off'}</span>
-                </button>
-                <button
-                  onClick={handleThemeToggle}
-                  className="px-2.5 py-1.5 rounded-lg bg-slate-100 dark:bg-white/[0.08] text-slate-800 dark:text-slate-200 flex items-center gap-1"
-                >
-                  {theme === 'dark' ? <Sun className="w-3.5 h-3.5 text-amber-400" /> : <Moon className="w-3.5 h-3.5" />}
-                  <span>{theme === 'dark' ? 'Light' : 'Dark'}</span>
-                </button>
-              </div>
+                  {link.icon}
+                  <span>{link.label}</span>
+                </Link>
+              ))}
             </div>
           </motion.div>
         )}
       </AnimatePresence>
-    </motion.header>
+    </header>
   );
 };
+
+export default Navbar;

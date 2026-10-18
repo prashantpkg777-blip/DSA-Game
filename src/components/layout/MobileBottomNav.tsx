@@ -10,14 +10,14 @@ export const MobileBottomNav: React.FC = () => {
   const soundEnabled = useUserStore((s) => s.soundEnabled);
 
   const tabs = [
-    { to: '/map', label: 'World Map', icon: Map },
-    { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { to: '/playground', label: 'Playground', icon: Code2 },
-    { to: '/notebook', label: 'Notebook', icon: BookOpenCheck },
+    { to: '/map', label: 'MAP', icon: Map },
+    { to: '/dashboard', label: 'COOK', icon: LayoutDashboard },
+    { to: '/playground', label: 'CODE', icon: Code2 },
+    { to: '/notebook', label: 'NOTES', icon: BookOpenCheck },
   ];
 
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/90 dark:bg-[#080B18]/90 backdrop-blur-2xl border-t border-slate-200/90 dark:border-white/15 px-3 py-2 flex items-center justify-around shadow-[0_-8px_30px_rgba(0,0,0,0.15)]">
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#F5F0E8] dark:bg-[#111111] border-t-3 border-[#111111] dark:border-[#F5F0E8] px-2 py-1.5 flex items-center justify-around select-none">
       {tabs.map((tab) => {
         const isActive = location.pathname === tab.to;
         const Icon = tab.icon;
@@ -27,21 +27,14 @@ export const MobileBottomNav: React.FC = () => {
             key={tab.to}
             to={tab.to}
             onClick={() => audioService.playClick(soundEnabled)}
-            className={`relative flex flex-col items-center justify-center min-w-[64px] py-1 px-2 rounded-xl text-xs transition-colors duration-200 ${
+            className={`relative flex flex-col items-center justify-center min-w-[64px] py-1 px-2 border-2 transition-all font-display ${
               isActive
-                ? 'text-[#0080FF] dark:text-[#20B2AA] font-bold'
-                : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
+                ? 'bg-[#C6FF00] text-[#111111] border-[#111111] shadow-[2px_2px_0px_#111111] -translate-y-0.5'
+                : 'border-transparent text-inherit opacity-70 hover:opacity-100'
             }`}
           >
-            {isActive && (
-              <motion.div
-                layoutId="mobile-nav-active"
-                className="absolute inset-0 rounded-xl bg-[#0080FF]/10 dark:bg-white/[0.08] border border-[#0080FF]/25 dark:border-white/20 shadow-sm"
-                transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-              />
-            )}
-            <Icon className={`w-5 h-5 mb-0.5 transition-transform duration-200 ${isActive ? 'scale-110' : ''}`} />
-            <span className="text-[10px] tracking-tight">{tab.label}</span>
+            <Icon className="w-5 h-5 mb-0.5" />
+            <span className="text-[10px] font-black uppercase tracking-wider">{tab.label}</span>
           </Link>
         );
       })}
