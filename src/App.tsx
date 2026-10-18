@@ -23,20 +23,32 @@ export const App: React.FC = () => {
 
   return (
     <BrowserRouter>
-      <div className="flex flex-col min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-cyan-500 selection:text-slate-950">
-        <Navbar />
-        <main className="flex-1">
-          <Routes>
-            <Route path="/" element={<LandingPage />} />
-            <Route path="/dashboard" element={<DashboardPage />} />
-            <Route path="/map" element={<WorldMapPage />} />
-            <Route path="/lesson/:topicId" element={<LessonPage />} />
-            <Route path="/playground" element={<CodingPlaygroundPage />} />
-            <Route path="/notebook" element={<ErrorNotebookPage />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </main>
-        <Footer />
+      <div className="relative min-h-screen bg-[#060A16] text-slate-100 font-sans selection:bg-cyan-500 selection:text-slate-950 flex flex-col">
+        {/* Global Glassmorphic Bokeh Atmosphere */}
+        <div className="glass-bokeh-bg" aria-hidden="true">
+          <div className="bokeh-orb-1" />
+          <div className="bokeh-orb-2" />
+          <div className="bokeh-orb-3" />
+          <div className="bokeh-orb-4" />
+        </div>
+        <div className="glass-grid-overlay" aria-hidden="true" />
+
+        {/* Interactive App Shell */}
+        <div className="relative z-10 flex flex-col flex-1">
+          <Navbar />
+          <main className="flex-1">
+            <Routes>
+              <Route path="/" element={<LandingPage />} />
+              <Route path="/dashboard" element={<DashboardPage />} />
+              <Route path="/map" element={<WorldMapPage />} />
+              <Route path="/lesson/:topicId" element={<LessonPage />} />
+              <Route path="/playground" element={<CodingPlaygroundPage />} />
+              <Route path="/notebook" element={<ErrorNotebookPage />} />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </main>
+          <Footer />
+        </div>
       </div>
     </BrowserRouter>
   );

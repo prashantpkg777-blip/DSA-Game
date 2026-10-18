@@ -22,20 +22,20 @@ import { WORLD_REGIONS } from '../curriculum/curriculumData';
 
 export const LandingPage: React.FC = () => {
   return (
-    <div className="flex flex-col min-h-screen bg-slate-950 text-slate-100">
+    <div className="flex flex-col min-h-screen bg-transparent text-slate-100">
       {/* Hero Section */}
-      <section className="relative overflow-hidden pt-12 pb-20 lg:pt-20 lg:pb-32 bg-radial-glow">
+      <section className="relative overflow-hidden pt-12 pb-20 lg:pt-20 lg:pb-32">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col items-center text-center">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-xs font-mono font-semibold uppercase tracking-wider mb-8 shadow-glow-cyan animate-pulse-subtle">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cyan-500/15 border border-cyan-400/35 text-cyan-300 text-xs font-mono font-semibold uppercase tracking-wider mb-8 shadow-glass-cyan backdrop-blur-md animate-pulse-subtle">
             <Sparkles className="w-3.5 h-3.5" />
             <span>LEARN → VISUALIZE → PLAY → CODE → MASTER</span>
           </div>
 
           {/* Headline */}
-          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight max-w-4xl text-slate-100 leading-[1.1] mb-6">
+          <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight max-w-4xl text-slate-100 leading-[1.1] mb-6 drop-shadow-md">
             Stop Memorizing DSA.{' '}
-            <span className="bg-gradient-to-r from-cyan-400 via-sky-300 to-violet-500 bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-cyan-300 via-sky-300 to-violet-400 bg-clip-text text-transparent">
               Start Playing It.
             </span>
           </h1>
@@ -49,7 +49,7 @@ export const LandingPage: React.FC = () => {
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row items-center gap-4 mb-16">
             <Link to="/map">
-              <Button variant="neon" size="lg" className="px-8 text-base shadow-glow-cyan">
+              <Button variant="neon" size="lg" className="px-8 text-base shadow-glass-cyan">
                 Start Your Quest <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
             </Link>
@@ -62,13 +62,13 @@ export const LandingPage: React.FC = () => {
           </div>
 
           {/* Interactive Live Preview Hero Element */}
-          <div className="w-full max-w-5xl rounded-3xl border border-slate-800 bg-slate-900/60 p-4 sm:p-6 backdrop-blur-xl shadow-2xl">
-            <div className="flex items-center justify-between mb-4 border-b border-slate-800/80 pb-3">
+          <div className="w-full max-w-5xl rounded-3xl border border-white/[0.18] bg-white/[0.04] p-4 sm:p-6 backdrop-blur-2xl shadow-glass">
+            <div className="flex items-center justify-between mb-4 border-b border-white/[0.1] pb-3">
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-rose-500" />
-                <div className="w-3 h-3 rounded-full bg-amber-500" />
-                <div className="w-3 h-3 rounded-full bg-emerald-500" />
-                <span className="text-xs font-mono text-slate-400 ml-2">
+                <div className="w-3 h-3 rounded-full bg-rose-500/80 shadow-sm" />
+                <div className="w-3 h-3 rounded-full bg-amber-500/80 shadow-sm" />
+                <div className="w-3 h-3 rounded-full bg-emerald-500/80 shadow-sm" />
+                <span className="text-xs font-mono text-slate-300 ml-2">
                   interactive_sorting_arena.sim
                 </span>
               </div>
@@ -80,15 +80,15 @@ export const LandingPage: React.FC = () => {
       </section>
 
       {/* Philosophy / Features Grid */}
-      <section className="py-20 bg-slate-950 border-t border-slate-900">
+      <section className="py-20 bg-white/[0.02] border-t border-white/[0.08] backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-16">
             <Badge variant="violet" className="mb-3">THE GAMIFIED ROADMAP</Badge>
             <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-100">
-              Why Engineers Learn 5x Faster With DSA Quest
+              Why Engineers Learn 5x Faster With DSA Gamly
             </h2>
-            <p className="text-slate-400 text-sm mt-3">
-              Traditional leetcode grinding teaches rote memorization. DSA Quest builds genuine algorithm intuition.
+            <p className="text-slate-300 text-sm mt-3">
+              Traditional leetcode grinding teaches rote memorization. DSA Gamly builds genuine algorithm intuition.
             </p>
           </div>
 
@@ -133,7 +133,7 @@ export const LandingPage: React.FC = () => {
       </section>
 
       {/* World Map Regions Preview */}
-      <section className="py-20 bg-slate-900/40 border-t border-slate-800">
+      <section className="py-20 bg-white/[0.02] border-t border-white/[0.08] backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-12">
             <div>
@@ -172,7 +172,7 @@ export const LandingPage: React.FC = () => {
                   </p>
                 </div>
 
-                <div className="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between">
+                <div className="mt-6 pt-4 border-t border-white/[0.08] flex items-center justify-between">
                   <span className="text-xs text-slate-400 font-mono">
                     Boss: {region.bossBattle.name}
                   </span>
@@ -189,7 +189,7 @@ export const LandingPage: React.FC = () => {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-20 bg-slate-950 border-t border-slate-800">
+      <section className="py-20 bg-white/[0.01] border-t border-white/[0.08] backdrop-blur-sm">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-slate-100">
@@ -200,7 +200,7 @@ export const LandingPage: React.FC = () => {
           <div className="flex flex-col gap-4">
             {[
               {
-                q: 'What languages does DSA Quest support?',
+                q: 'What languages does DSA Gamly support?',
                 a: 'Java is our primary interview curriculum focus, alongside JavaScript, Python, and C++. You can view implementations in all four languages and solve coding challenges in the editor.',
               },
               {
@@ -212,11 +212,11 @@ export const LandingPage: React.FC = () => {
                 a: 'Yes! Guest mode automatically saves your XP, level, unlocked achievements, daily quests, and Error Notebook to your browser storage. Connect Supabase anytime for cloud synchronization.',
               },
             ].map((faq, idx) => (
-              <div key={idx} className="p-6 rounded-2xl bg-slate-900 border border-slate-800">
+              <div key={idx} className="p-6 rounded-2xl bg-white/[0.05] border border-white/[0.12] backdrop-blur-xl shadow-glass transition-all hover:bg-white/[0.08] hover:border-white/[0.2]">
                 <h3 className="text-base font-bold text-slate-100 mb-2">
                   {faq.q}
                 </h3>
-                <p className="text-sm text-slate-400 leading-relaxed">
+                <p className="text-sm text-slate-300 leading-relaxed">
                   {faq.a}
                 </p>
               </div>
@@ -226,20 +226,22 @@ export const LandingPage: React.FC = () => {
       </section>
 
       {/* Final Call to Action */}
-      <section className="py-20 bg-gradient-to-b from-slate-950 to-slate-900 border-t border-slate-800 text-center">
+      <section className="py-20 border-t border-white/[0.08] text-center">
         <div className="max-w-4xl mx-auto px-4">
-          <div className="text-4xl mb-4">⚔️</div>
-          <h2 className="text-3xl sm:text-5xl font-black text-slate-100 tracking-tight mb-4">
-            Your Algorithm Quest Awaits.
-          </h2>
-          <p className="text-slate-400 text-base max-w-xl mx-auto mb-8">
-            Level up from absolute beginner to algorithm wizard. Start playing right now.
-          </p>
-          <Link to="/map">
-            <Button variant="neon" size="lg" className="px-10 text-base shadow-glow-cyan">
-              Enter The World Map <ArrowRight className="w-5 h-5 ml-2" />
-            </Button>
-          </Link>
+          <div className="p-10 rounded-3xl bg-white/[0.04] border border-white/[0.16] backdrop-blur-2xl shadow-glass-cyan relative overflow-hidden">
+            <div className="text-4xl mb-4">⚔️</div>
+            <h2 className="text-3xl sm:text-5xl font-black text-slate-100 tracking-tight mb-4">
+              Your Algorithm Quest Awaits.
+            </h2>
+            <p className="text-slate-300 text-base max-w-xl mx-auto mb-8">
+              Level up from absolute beginner to algorithm wizard with DSA Gamly. Start playing right now.
+            </p>
+            <Link to="/map">
+              <Button variant="neon" size="lg" className="px-10 text-base shadow-glass-cyan">
+                Enter The World Map <ArrowRight className="w-5 h-5 ml-2" />
+              </Button>
+            </Link>
+          </div>
         </div>
       </section>
     </div>

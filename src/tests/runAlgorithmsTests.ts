@@ -41,7 +41,7 @@ function assert(condition: boolean, testName: string) {
 }
 
 console.log('\n======================================================');
-console.log('       DSA QUEST — ALGORITHM VERIFICATION SUITE       ');
+console.log('       DSA Gamly — ALGORITHM VERIFICATION SUITE       ');
 console.log('======================================================\n');
 
 // 1. Sorting Suite

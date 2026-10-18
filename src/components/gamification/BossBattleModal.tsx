@@ -61,12 +61,12 @@ export const BossBattleModal: React.FC<BossBattleModalProps> = ({ boss, isOpen, 
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-md animate-fade-in">
-      <div className="relative w-full max-w-4xl max-h-[90vh] bg-slate-900 border-2 border-rose-500/50 rounded-3xl overflow-hidden shadow-2xl flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xl animate-fade-in">
+      <div className="relative w-full max-w-4xl max-h-[90vh] bg-[#090d1f]/85 backdrop-blur-2xl border border-white/[0.18] rounded-3xl overflow-hidden shadow-[0_16px_50px_rgba(0,0,0,0.6)] flex flex-col">
         {/* Boss Header */}
-        <div className="p-6 bg-gradient-to-r from-rose-950/80 via-slate-900 to-indigo-950/80 border-b border-rose-900/50 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="p-6 bg-white/[0.04] backdrop-blur-md border-b border-white/[0.1] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
-            <div className="text-4xl p-3 bg-rose-500/20 rounded-2xl border border-rose-500/40 shadow-lg shadow-rose-950/60">
+            <div className="text-4xl p-3 bg-rose-500/15 rounded-2xl border border-rose-400/30 shadow-glass-rose backdrop-blur-md">
               {boss.avatar}
             </div>
             <div>
@@ -83,22 +83,22 @@ export const BossBattleModal: React.FC<BossBattleModalProps> = ({ boss, isOpen, 
 
           <button
             onClick={onClose}
-            className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+            className="p-2 rounded-xl text-slate-300 hover:text-white hover:bg-white/[0.1] border border-transparent hover:border-white/[0.1] backdrop-blur-md transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
         {/* Boss Health Bar */}
-        <div className="px-6 py-3 bg-slate-950 border-b border-slate-800 flex items-center gap-4">
+        <div className="px-6 py-3 bg-white/[0.02] border-b border-white/[0.08] flex items-center gap-4 backdrop-blur-md">
           <div className="text-xs font-mono font-bold text-rose-400 flex items-center gap-1.5 shrink-0">
-            <ShieldAlert className="w-4 h-4 text-rose-500" />
+            <ShieldAlert className="w-4 h-4 text-rose-400" />
             BOSS HP: {bossHealth}/{boss.health}
           </div>
           <div className="flex-1">
             <ProgressBar value={healthPercent} barColor="violet" height="md" />
           </div>
-          <div className="text-xs font-mono text-slate-400 shrink-0">
+          <div className="text-xs font-mono text-slate-300 shrink-0">
             Stage {currentStageIdx + 1}/{boss.stages.length}
           </div>
         </div>

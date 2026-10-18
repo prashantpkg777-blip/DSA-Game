@@ -1,7 +1,7 @@
-# ⚔️ DSA QUEST — Master Data Structures & Algorithms Through Gaming
+# ⚔️ DSA Gamly — Master Data Structures & Algorithms Through Gaming
 
 > **"Stop Memorizing DSA. Start Playing It."**
-> A production-grade interactive game-based learning platform for mastering Data Structures and Algorithms through real algorithmic simulations, visual sandboxes, coding arenas, and epic boss battles.
+> A production-grade interactive game-based learning platform for mastering Data Structures and Algorithms through real algorithmic simulations, visual sandboxes, coding arenas, epic boss battles, and a cutting-edge **Glassmorphism UI/UX**.
 
 ---
 
@@ -11,11 +11,20 @@
 LEARN ───► VISUALIZE ───► PLAY ───► CODE ───► MASTER
 ```
 
-Unlike static problem lists or passive video tutorials, **DSA QUEST** computes every algorithm step using deterministic execution engines. You don't just read about algorithms—you step through them, play with them in interactive sandboxes, solve coding challenges, defeat guardian bosses, and permanently master edge cases.
+Unlike static problem lists or passive video tutorials, **DSA Gamly** computes every algorithm step using deterministic execution engines. You don't just read about algorithms—you step through them, play with them in interactive sandboxes, solve coding challenges, defeat guardian bosses, and permanently master edge cases.
 
 ---
 
-## 🗺️ The World of DSA QUEST (Curriculum & Regions)
+## 🎨 Design System: Premium Glassmorphism UI/UX
+
+- **Ambient Bokeh Background**: Vibrant floating gradient orbs in electric blue (`#4F7CFF`), violet (`#8B5CF6`), cyan (`#22D3EE`), and magenta (`#E879F9`) floating over deep navy space (`#060A16`).
+- **Frosted Glass Panels**: Authentic `backdrop-filter: blur(20px–28px)` with translucent surfaces (`rgba(255, 255, 255, 0.05–0.14)`), delicate 15–25% white borders, and specular inner reflections.
+- **Glass Controllers & Badges**: Tactile interactive controls, luminous status pills, glowing progress bars, and floating step runners.
+- **Micro-Interactions**: Smooth hover lifts, active compression, ambient glows, and celebration particle confetti.
+
+---
+
+## 🗺️ The World of DSA Gamly (Curriculum & Regions)
 
 1. **Coding Village** — *Programming Foundations & Complexity*
    - Big-O, Big-Omega, Big-Theta asymptotic bounds
@@ -97,8 +106,8 @@ Unlike static problem lists or passive video tutorials, **DSA QUEST** computes e
 
 ### 1. Clone & Install
 ```bash
-git clone https://github.com/your-username/dsa-quest.git
-cd dsa-quest
+git clone https://github.com/prashantpkg777-blip/DSA-Game.git
+cd DSA-Game
 npm install
 ```
 
@@ -112,7 +121,7 @@ Fill in your Supabase credentials:
 VITE_SUPABASE_URL=https://your-project.supabase.co
 VITE_SUPABASE_ANON_KEY=your-anon-key
 ```
-*(Note: If no Supabase credentials are provided, DSA Quest runs in **Local Demo / Guest Mode** and persists all XP, streaks, achievements, and error records in your browser's local storage).*
+*(Note: If no Supabase credentials are provided, DSA Gamly runs in **Local Demo / Guest Mode** and persists all XP, streaks, achievements, and error records in your browser's local storage).*
 
 ### 3. Start Development Server
 ```bash

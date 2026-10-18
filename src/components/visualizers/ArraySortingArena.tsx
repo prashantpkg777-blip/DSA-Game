@@ -113,7 +113,7 @@ export const ArraySortingArena: React.FC = () => {
   return (
     <div className="flex flex-col gap-6">
       {/* Algorithm Tabs & Modes */}
-      <div className="flex flex-wrap items-center justify-between gap-3 p-2 bg-slate-900/60 rounded-2xl border border-slate-800">
+      <div className="flex flex-wrap items-center justify-between gap-3 p-2 bg-white/[0.04] rounded-2xl border border-white/[0.12] backdrop-blur-md">
         <div className="flex flex-wrap items-center gap-1.5">
           {(['bubble', 'selection', 'insertion', 'merge', 'quick'] as const).map((algo) => (
             <button
@@ -124,8 +124,8 @@ export const ArraySortingArena: React.FC = () => {
               }}
               className={`px-3 py-1.5 rounded-xl text-xs font-semibold capitalize transition-all ${
                 algorithm === algo && mode === 'simulator'
-                  ? 'bg-cyan-500 text-slate-950 shadow-glow-cyan'
-                  : 'bg-slate-800/80 text-slate-300 hover:bg-slate-700/80'
+                  ? 'bg-white/[0.16] text-cyan-300 border border-cyan-400/40 shadow-glass-cyan backdrop-blur-md'
+                  : 'bg-white/[0.04] text-slate-300 hover:bg-white/[0.08] hover:text-white border border-transparent'
               }`}
             >
               {algo} Sort
@@ -139,10 +139,10 @@ export const ArraySortingArena: React.FC = () => {
               setMode(mode === 'simulator' ? 'play_sandbox' : 'simulator');
               setIsPlaying(false);
             }}
-            className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all border ${
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all border backdrop-blur-md ${
               mode === 'play_sandbox'
-                ? 'bg-violet-600 text-white border-violet-400 shadow-glow-violet'
-                : 'bg-slate-800 text-slate-300 border-slate-700 hover:border-slate-600'
+                ? 'bg-violet-600/90 text-white border-violet-400/50 shadow-glass-violet'
+                : 'bg-white/[0.06] text-slate-300 border-white/[0.14] hover:bg-white/[0.12] shadow-glass'
             }`}
           >
             🎮 {mode === 'play_sandbox' ? 'Exit Play Mode' : 'Interactive Play Mode'}
@@ -151,10 +151,7 @@ export const ArraySortingArena: React.FC = () => {
       </div>
 
       {/* Arena Canvas */}
-      <div className="relative w-full h-72 sm:h-80 bg-slate-950/80 rounded-3xl border border-slate-800 p-6 flex items-end justify-center gap-3 sm:gap-4 overflow-hidden shadow-2xl">
-        {/* Glow ambient background */}
-        <div className="absolute inset-0 bg-radial-glow pointer-events-none" />
-
+      <div className="relative w-full h-72 sm:h-80 bg-white/[0.04] backdrop-blur-2xl rounded-3xl border border-white/[0.16] p-6 flex items-end justify-center gap-3 sm:gap-4 overflow-hidden shadow-glass">
         {mode === 'play_sandbox' && (
           <div className="absolute top-4 left-6 z-10 flex items-center gap-3">
             <Badge variant="violet">Play Mode Active</Badge>
@@ -175,24 +172,24 @@ export const ArraySortingArena: React.FC = () => {
           const heightPercent = Math.max(15, Math.round((elem.value / maxVal) * 85));
 
           // Determine color based on state
-          let barBg = 'bg-slate-700/80 border-slate-600';
+          let barBg = 'bg-white/[0.08] border-white/[0.18] backdrop-blur-md';
           let textColor = 'text-slate-300';
 
           if (elem.isSelected) {
-            barBg = 'bg-violet-500 border-violet-300 shadow-glow-violet scale-105';
+            barBg = 'bg-gradient-to-t from-violet-600 to-fuchsia-400 border-white/50 shadow-glass-violet scale-105';
             textColor = 'text-white font-bold';
           } else if (elem.isSorted) {
-            barBg = 'bg-emerald-500/90 border-emerald-300 shadow-glow-emerald';
-            textColor = 'text-emerald-300';
+            barBg = 'bg-gradient-to-t from-emerald-600 to-teal-400 border-emerald-300/50 shadow-glow-emerald';
+            textColor = 'text-emerald-200';
           } else if (elem.isSwapped) {
-            barBg = 'bg-cyan-400 border-cyan-200 shadow-glow-cyan scale-105';
-            textColor = 'text-cyan-200 font-bold';
+            barBg = 'bg-gradient-to-t from-cyan-500 to-sky-300 border-cyan-200 shadow-glass-cyan scale-105';
+            textColor = 'text-cyan-950 font-bold';
           } else if (elem.isCompared) {
-            barBg = 'bg-amber-400 border-amber-200 shadow-glow-amber';
-            textColor = 'text-amber-200';
+            barBg = 'bg-gradient-to-t from-amber-500 to-yellow-300 border-amber-200 shadow-glow-amber';
+            textColor = 'text-amber-950 font-bold';
           } else if (elem.isPivot) {
-            barBg = 'bg-rose-500 border-rose-300 shadow-lg shadow-rose-950/40';
-            textColor = 'text-rose-200';
+            barBg = 'bg-gradient-to-t from-rose-600 to-pink-500 border-rose-300 shadow-lg';
+            textColor = 'text-rose-100 font-bold';
           }
 
           return (

@@ -19,27 +19,27 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
   const clampedValue = Math.min(100, Math.max(0, value));
 
   const colors = {
-    cyan: 'bg-gradient-to-r from-cyan-500 to-blue-500 shadow-glow-cyan',
-    amber: 'bg-gradient-to-r from-amber-500 to-yellow-400 shadow-glow-amber',
-    emerald: 'bg-gradient-to-r from-emerald-500 to-teal-400 shadow-glow-emerald',
-    violet: 'bg-gradient-to-r from-violet-600 to-purple-500 shadow-glow-violet',
+    cyan: 'bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-500 shadow-glass-cyan',
+    amber: 'bg-gradient-to-r from-amber-400 to-yellow-300 shadow-glow-amber',
+    emerald: 'bg-gradient-to-r from-emerald-400 to-teal-300 shadow-glow-emerald',
+    violet: 'bg-gradient-to-r from-violet-500 via-purple-500 to-fuchsia-500 shadow-glass-violet',
   };
 
   const heights = {
-    sm: 'h-1.5',
-    md: 'h-2.5',
+    sm: 'h-2',
+    md: 'h-3',
     lg: 'h-4',
   };
 
   return (
     <div className={cn('w-full', className)}>
-      <div className={cn('w-full bg-slate-800 rounded-full overflow-hidden p-0.5 border border-slate-700/60', heights[height])}>
+      <div className={cn('w-full bg-white/[0.06] backdrop-blur-md rounded-full overflow-hidden p-0.5 border border-white/[0.14] shadow-inner', heights[height])}>
         <div
           className={cn('h-full rounded-full transition-all duration-500 ease-out relative', colors[barColor])}
           style={{ width: `${clampedValue}%` }}
         >
-          {/* Subtle shine pulse */}
-          <div className="absolute inset-0 bg-white/20 rounded-full animate-pulse-subtle" />
+          {/* Subtle specular reflection pulse */}
+          <div className="absolute inset-0 bg-gradient-to-b from-white/30 to-transparent rounded-full animate-pulse-subtle" />
         </div>
       </div>
       {showLabel && (

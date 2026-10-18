@@ -72,19 +72,19 @@ export const LessonPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-transparent text-slate-100 py-10 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto flex flex-col gap-6">
         {/* Navigation Breadcrumb */}
         <div className="flex items-center justify-between">
           <Link
             to="/map"
-            className="inline-flex items-center gap-1.5 text-xs text-slate-400 hover:text-cyan-400 font-mono transition-colors"
+            className="inline-flex items-center gap-1.5 text-xs text-slate-300 hover:text-cyan-300 font-mono transition-colors"
           >
             <ArrowLeft className="w-4 h-4" /> Back to World Map
           </Link>
 
           <div className="flex items-center gap-2">
-            <span className="text-xs font-mono text-slate-400">
+            <span className="text-xs font-mono text-slate-300">
               {currentRegion?.name}
             </span>
             {isCompleted ? (
@@ -100,7 +100,7 @@ export const LessonPage: React.FC = () => {
         </div>
 
         {/* Title Header */}
-        <div className="p-6 bg-slate-900/60 rounded-3xl border border-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="p-6 bg-white/[0.05] rounded-3xl border border-white/[0.16] backdrop-blur-2xl shadow-glass flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 mb-1">
               <Badge variant="cyan">{currentTopic.difficulty}</Badge>
@@ -111,19 +111,19 @@ export const LessonPage: React.FC = () => {
             <h1 className="text-2xl sm:text-3xl font-black text-slate-100 tracking-tight">
               {currentTopic.title}
             </h1>
-            <p className="text-sm text-slate-400 mt-1">
+            <p className="text-sm text-slate-300 mt-1">
               {currentTopic.subtitle}
             </p>
           </div>
 
           {/* Mode Tabs */}
-          <div className="flex items-center gap-1.5 p-1.5 bg-slate-950 rounded-2xl border border-slate-800 shrink-0">
+          <div className="flex items-center gap-1.5 p-1.5 bg-white/[0.04] rounded-2xl border border-white/[0.12] backdrop-blur-md shrink-0">
             <button
               onClick={() => setActiveTab('concept')}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
                 activeTab === 'concept'
-                  ? 'bg-cyan-500 text-slate-950 shadow-glow-cyan'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-white/[0.16] text-cyan-300 border border-cyan-400/40 shadow-glass-cyan backdrop-blur-md'
+                  : 'text-slate-300 hover:text-white hover:bg-white/[0.08]'
               }`}
             >
               <BookOpen className="w-3.5 h-3.5" /> Concept
@@ -132,8 +132,8 @@ export const LessonPage: React.FC = () => {
               onClick={() => setActiveTab('simulator')}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
                 activeTab === 'simulator'
-                  ? 'bg-cyan-500 text-slate-950 shadow-glow-cyan'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-white/[0.16] text-cyan-300 border border-cyan-400/40 shadow-glass-cyan backdrop-blur-md'
+                  : 'text-slate-300 hover:text-white hover:bg-white/[0.08]'
               }`}
             >
               <Gamepad2 className="w-3.5 h-3.5" /> Visualizer & Play
@@ -142,8 +142,8 @@ export const LessonPage: React.FC = () => {
               onClick={() => setActiveTab('code')}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
                 activeTab === 'code'
-                  ? 'bg-cyan-500 text-slate-950 shadow-glow-cyan'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-white/[0.16] text-cyan-300 border border-cyan-400/40 shadow-glass-cyan backdrop-blur-md'
+                  : 'text-slate-300 hover:text-white hover:bg-white/[0.08]'
               }`}
             >
               <Code2 className="w-3.5 h-3.5" /> Code Challenge
@@ -152,8 +152,8 @@ export const LessonPage: React.FC = () => {
               onClick={() => setActiveTab('quiz')}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
                 activeTab === 'quiz'
-                  ? 'bg-cyan-500 text-slate-950 shadow-glow-cyan'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-white/[0.16] text-cyan-300 border border-cyan-400/40 shadow-glass-cyan backdrop-blur-md'
+                  : 'text-slate-300 hover:text-white hover:bg-white/[0.08]'
               }`}
             >
               <HelpCircle className="w-3.5 h-3.5" /> Quiz

@@ -44,16 +44,16 @@ export const Button: React.FC<ButtonProps> = ({
   };
 
   const variants = {
-    primary: 'bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-semibold shadow-glow-cyan hover:shadow-cyan-500/50',
-    secondary: 'bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 hover:border-slate-600',
-    neon: 'bg-gradient-to-r from-cyan-500 to-violet-600 text-white font-bold shadow-glow-violet hover:brightness-110 active:scale-95',
-    amber: 'bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold shadow-glow-amber',
-    ghost: 'bg-transparent hover:bg-slate-800/60 text-slate-300 hover:text-white',
-    danger: 'bg-rose-600 hover:bg-rose-500 text-white font-semibold shadow-lg shadow-rose-900/40',
+    primary: 'bg-gradient-to-r from-cyan-400 via-sky-500 to-blue-600 text-slate-950 font-semibold shadow-glass-cyan hover:brightness-110 active:brightness-95 border-t border-cyan-200/50',
+    secondary: 'bg-white/[0.07] hover:bg-white/[0.13] text-slate-200 border border-white/[0.18] backdrop-blur-md shadow-glass hover:border-white/[0.28]',
+    neon: 'bg-gradient-to-r from-cyan-400 via-indigo-500 to-violet-600 text-white font-bold shadow-glass-violet hover:brightness-115 active:scale-95 border-t border-white/40',
+    amber: 'bg-gradient-to-r from-amber-400 to-amber-600 text-slate-950 font-semibold shadow-glow-amber hover:brightness-110 border-t border-amber-200/50',
+    ghost: 'bg-transparent hover:bg-white/[0.08] text-slate-300 hover:text-white border border-transparent hover:border-white/[0.12]',
+    danger: 'bg-gradient-to-r from-rose-600 to-rose-700 hover:from-rose-500 hover:to-rose-600 text-white font-semibold border border-rose-400/30 shadow-lg shadow-rose-950/40',
   };
 
   const sizes = {
-    sm: 'px-3 py-1.5 text-xs rounded-lg gap-1.5',
+    sm: 'px-3 py-1.5 text-xs rounded-xl gap-1.5',
     md: 'px-4 py-2 text-sm rounded-xl gap-2',
     lg: 'px-6 py-3 text-base rounded-2xl gap-2.5',
   };
@@ -61,7 +61,7 @@ export const Button: React.FC<ButtonProps> = ({
   return (
     <button
       className={cn(
-        'inline-flex items-center justify-center font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-cyan-400/50 disabled:opacity-50 disabled:pointer-events-none active:scale-[0.98]',
+        'inline-flex items-center justify-center font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-cyan-400/50 disabled:opacity-50 disabled:pointer-events-none active:scale-[0.98] glass-btn',
         variants[variant],
         sizes[size],
         className

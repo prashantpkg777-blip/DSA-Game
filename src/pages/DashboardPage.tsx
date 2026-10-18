@@ -34,15 +34,13 @@ export const DashboardPage: React.FC = () => {
   const maxWeeklyXP = Math.max(...stats.weeklyActivity, 100);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 py-10 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-transparent text-slate-100 py-10 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto flex flex-col gap-8">
         {/* Top Profile Banner */}
-        <div className="p-8 rounded-3xl bg-gradient-to-r from-slate-900 via-indigo-950/40 to-slate-900 border border-slate-800 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-2xl relative overflow-hidden">
-          <div className="absolute inset-0 bg-radial-glow pointer-events-none" />
-
+        <div className="p-8 rounded-3xl bg-white/[0.05] border border-white/[0.16] backdrop-blur-2xl flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-glass relative overflow-hidden">
           <div className="flex items-center gap-5 z-10">
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-tr from-cyan-500 to-violet-600 p-1 flex items-center justify-center text-4xl shadow-glow-cyan">
-              <div className="w-full h-full bg-slate-950 rounded-xl flex items-center justify-center">
+            <div className="w-20 h-20 rounded-2xl bg-gradient-to-tr from-cyan-400 via-sky-500 to-violet-600 p-1 flex items-center justify-center text-4xl shadow-glass-cyan border border-white/30 backdrop-blur-md">
+              <div className="w-full h-full bg-[#070c1a]/80 backdrop-blur-md rounded-xl flex items-center justify-center">
                 {profile.avatar}
               </div>
             </div>
@@ -54,7 +52,7 @@ export const DashboardPage: React.FC = () => {
                 <Badge variant="cyan">LVL {profile.level}</Badge>
                 {profile.isGuest && <Badge variant="slate">Guest Mode</Badge>}
               </div>
-              <p className="text-sm text-cyan-400 font-mono">{profile.title}</p>
+              <p className="text-sm text-cyan-300 font-mono">{profile.title}</p>
               <p className="text-xs text-slate-400 mt-1">
                 Joined on {profile.joinedDate} • {profile.streakDays} day streak
               </p>
@@ -62,15 +60,15 @@ export const DashboardPage: React.FC = () => {
           </div>
 
           {/* XP Progress Card */}
-          <div className="w-full md:w-80 bg-slate-950/80 p-4 rounded-2xl border border-slate-800 flex flex-col gap-2 z-10">
+          <div className="w-full md:w-80 bg-white/[0.07] backdrop-blur-md p-4 rounded-2xl border border-white/[0.16] shadow-glass flex flex-col gap-2 z-10">
             <div className="flex items-center justify-between text-xs font-mono">
-              <span className="text-slate-400">Level Progress</span>
-              <span className="text-cyan-400 font-bold">
+              <span className="text-slate-300">Level Progress</span>
+              <span className="text-cyan-300 font-bold">
                 {profile.xp} / {profile.xpToNextLevel} XP ({xpPercent}%)
               </span>
             </div>
             <ProgressBar value={xpPercent} barColor="cyan" height="md" />
-            <div className="text-[11px] text-slate-500 font-mono text-right">
+            <div className="text-[11px] text-slate-400 font-mono text-right">
               {profile.xpToNextLevel - profile.xp} XP to Level {profile.level + 1}
             </div>
           </div>
@@ -132,13 +130,13 @@ export const DashboardPage: React.FC = () => {
         </div>
 
         {/* Continue Learning Callout */}
-        <div className="p-6 rounded-3xl bg-gradient-to-r from-cyan-950/40 via-slate-900 to-violet-950/40 border border-cyan-500/30 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="p-6 rounded-3xl bg-white/[0.05] border border-cyan-400/30 backdrop-blur-2xl shadow-glass-cyan flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div>
             <Badge variant="cyan" className="mb-2">RECOMMENDED NEXT MISSION</Badge>
             <h2 className="text-xl font-bold text-slate-100">
               {nextLesson.title}
             </h2>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <p className="text-xs text-slate-300 mt-0.5">
               {nextLesson.subtitle} • +{nextLesson.xpReward} XP Reward
             </p>
           </div>
@@ -170,7 +168,7 @@ export const DashboardPage: React.FC = () => {
                     <span className="text-[10px] font-mono text-cyan-400">{xpVal}</span>
                     <div
                       style={{ height: `${heightPercent}%` }}
-                      className="w-full max-w-[32px] rounded-t-lg bg-gradient-to-t from-cyan-600 to-blue-400 shadow-glow-cyan transition-all duration-300"
+                      className="w-full max-w-[32px] rounded-t-lg bg-gradient-to-t from-cyan-500 to-sky-300 shadow-glass-cyan transition-all duration-300"
                     />
                     <span className="text-xs font-mono text-slate-400">
                       {daysOfWeek[idx]}
@@ -195,10 +193,10 @@ export const DashboardPage: React.FC = () => {
               {dailyQuests.map((quest) => (
                 <div
                   key={quest.id}
-                  className={`p-4 rounded-2xl border flex items-center justify-between gap-4 transition-all ${
+                  className={`p-4 rounded-2xl border flex items-center justify-between gap-4 transition-all backdrop-blur-md shadow-glass ${
                     quest.isCompleted
-                      ? 'bg-emerald-950/20 border-emerald-500/30'
-                      : 'bg-slate-950 border-slate-800'
+                      ? 'bg-emerald-500/10 border-emerald-400/30'
+                      : 'bg-white/[0.04] border-white/[0.12] hover:bg-white/[0.07]'
                   }`}
                 >
                   <div className="flex items-center gap-3">
@@ -206,7 +204,7 @@ export const DashboardPage: React.FC = () => {
                       className={`w-8 h-8 rounded-xl flex items-center justify-center ${
                         quest.isCompleted
                           ? 'bg-emerald-500/20 text-emerald-400'
-                          : 'bg-slate-800 text-slate-400'
+                          : 'bg-white/[0.08] text-slate-400'
                       }`}
                     >
                       {quest.isCompleted ? <CheckCircle2 className="w-4 h-4" /> : <Target className="w-4 h-4" />}
@@ -226,7 +224,7 @@ export const DashboardPage: React.FC = () => {
                     {quest.isCompleted ? (
                       <Badge variant="emerald" size="sm">CLAIMED</Badge>
                     ) : (
-                      <span className="text-slate-500 text-[11px]">
+                      <span className="text-slate-400 text-[11px]">
                         {quest.currentCount}/{quest.targetCount}
                       </span>
                     )}
@@ -252,10 +250,10 @@ export const DashboardPage: React.FC = () => {
             {achievements.map((ach) => (
               <Card
                 key={ach.id}
-                className={`p-4 flex items-start gap-3.5 transition-all ${
+                className={`p-4 flex items-start gap-3.5 transition-all backdrop-blur-md ${
                   ach.isUnlocked
-                    ? 'border-violet-500/30 bg-violet-950/15'
-                    : 'border-slate-800/80 bg-slate-900/40 opacity-60'
+                    ? 'border-violet-400/35 bg-violet-500/10 shadow-glass-violet'
+                    : 'border-white/[0.08] bg-white/[0.02] opacity-60'
                 }`}
               >
                 <div

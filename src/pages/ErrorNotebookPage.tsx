@@ -12,10 +12,10 @@ export const ErrorNotebookPage: React.FC = () => {
   const reviewedMistakes = mistakes.filter((m) => m.reviewed);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 py-10 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-transparent text-slate-100 py-10 px-4 sm:px-6 lg:px-8">
       <div className="max-w-5xl mx-auto flex flex-col gap-8">
         {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/[0.1] pb-6">
           <div>
             <div className="flex items-center gap-2 mb-1">
               <Badge variant="amber">SPACED REPETITION NOTEBOOK</Badge>
@@ -24,17 +24,17 @@ export const ErrorNotebookPage: React.FC = () => {
             <h1 className="text-3xl font-black text-slate-100 tracking-tight flex items-center gap-2.5">
               <BookOpenCheck className="w-8 h-8 text-amber-400" /> Error Notebook
             </h1>
-            <p className="text-sm text-slate-400 mt-1">
+            <p className="text-sm text-slate-300 mt-1">
               Review and correct concepts you previously struggled with. Reviewing mistakes awards +30 XP and reinforces permanent retention.
             </p>
           </div>
 
-          <div className="flex items-center gap-3 text-xs font-mono bg-slate-900 px-4 py-2 rounded-2xl border border-slate-800">
+          <div className="flex items-center gap-3 text-xs font-mono bg-white/[0.06] border border-white/[0.16] backdrop-blur-md px-4 py-2 rounded-2xl shadow-glass">
             <span className="text-amber-400 font-bold">{unreviewedMistakes.length}</span>
-            <span className="text-slate-400">Needs Review</span>
-            <span className="text-slate-600">|</span>
+            <span className="text-slate-300">Needs Review</span>
+            <span className="text-white/20">|</span>
             <span className="text-emerald-400 font-bold">{reviewedMistakes.length}</span>
-            <span className="text-slate-400">Mastered</span>
+            <span className="text-slate-300">Mastered</span>
           </div>
         </div>
 
@@ -88,15 +88,15 @@ export const ErrorNotebookPage: React.FC = () => {
                     </div>
 
                     {item.explanation && (
-                      <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-300 font-sans leading-relaxed">
-                        <strong className="text-cyan-400 block font-mono text-[11px] uppercase mb-1">
+                      <div className="p-3.5 rounded-xl bg-white/[0.04] border border-white/[0.12] backdrop-blur-md text-xs text-slate-300 font-sans leading-relaxed">
+                        <strong className="text-cyan-300 block font-mono text-[11px] uppercase mb-1">
                           Conceptual Explanation:
                         </strong>
                         {item.explanation}
                       </div>
                     )}
 
-                    <div className="flex justify-end pt-2 border-t border-slate-800">
+                    <div className="flex justify-end pt-2 border-t border-white/[0.1]">
                       <Button
                         variant="primary"
                         size="sm"
