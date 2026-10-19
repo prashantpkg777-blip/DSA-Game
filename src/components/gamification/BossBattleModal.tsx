@@ -29,12 +29,18 @@ export const BossBattleModal: React.FC<BossBattleModalProps> = ({ boss, isOpen, 
 
   useEffect(() => {
     if (isOpen) {
+      setCurrentStageIdx(0);
+      setBossHealth(boss.health);
+      setSelectedOptionId(null);
+      setIsStageSolved(false);
+      setIsVictory(false);
+      setIsSpeakingTaunt(false);
       audioService.playBossRoar(soundEnabled);
     }
     return () => {
       audioService.stop();
     };
-  }, [isOpen]);
+  }, [isOpen, boss.id]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -257,7 +263,7 @@ export const BossBattleModal: React.FC<BossBattleModalProps> = ({ boss, isOpen, 
                 )}
 
                 {/* Coding Challenge Stage */}
-                {currentStage.type === 'code' && currentStage.codeProblem && (
+                {(currentStage.type === 'coding' || currentStage.type === 'code') && currentStage.codeProblem && (
                   <div className="h-[460px]">
                     <CodeEditorPanel
                       problem={currentStage.codeProblem}

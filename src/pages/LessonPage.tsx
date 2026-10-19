@@ -331,6 +331,7 @@ export const LessonPage: React.FC = () => {
         {activeTab === 'code' && (
           <div className="animate-fade-in">
             <CodeEditorPanel
+              key={currentTopic.id}
               problem={currentTopic.codeProblem}
               onSuccess={handleClaimComplete}
             />
@@ -341,6 +342,7 @@ export const LessonPage: React.FC = () => {
         {activeTab === 'quiz' && (
           <div className="max-w-3xl mx-auto w-full animate-fade-in">
             <QuizPanel
+              key={currentTopic.id}
               questions={currentTopic.quizQuestions}
               topicId={currentTopic.id}
               topicTitle={currentTopic.title}

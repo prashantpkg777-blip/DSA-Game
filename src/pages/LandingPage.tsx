@@ -19,16 +19,24 @@ import { Card } from '../components/ui/Card';
 import { Badge } from '../components/ui/Badge';
 import { ArraySortingArena } from '../components/visualizers/ArraySortingArena';
 
+import { WORLD_REGIONS } from '../curriculum/curriculumData';
+
 export const LandingPage: React.FC = () => {
-  const chaosWorlds = [
-    { num: '01', name: 'ARRAY CITY', theme: 'bg-[#C6FF00] text-[#111111]', desc: 'Traversal, sorting, two pointers, sliding window.', boss: 'The Array Golem', id: 'bubble-sort' },
-    { num: '02', name: 'LINKED LAB', theme: 'bg-[#304FFE] text-[#F5F0E8]', desc: 'Singly & doubly lists, fast/slow pointers, cycle detection.', boss: 'Pointer Hydra', id: 'linked-list-reversal' },
-    { num: '03', name: 'RECURSION REALM', theme: 'bg-[#FF2DAA] text-[#111111]', desc: 'Call stacks, backtracking, subsets & permutations.', boss: 'Infinite Loop Demon', id: 'fibonacci-recursion' },
-    { num: '04', name: 'STACK & QUEUE ARENA', theme: 'bg-[#FF5C00] text-[#111111]', desc: 'Monotonic stacks, parentheses, priority queues.', boss: 'Stack Overflower', id: 'stack-tower' },
-    { num: '05', name: 'TREE TOPIA', theme: 'bg-[#B9A0FF] text-[#111111]', desc: 'BST traversals, heaps, tries, LCA.', boss: 'Binary Behemoth', id: 'bst-operations' },
-    { num: '06', name: 'GRAPH GLITCH', theme: 'bg-[#C6FF00] text-[#111111]', desc: 'BFS, DFS, Dijkstra, topological sort.', boss: 'Cyclic Overlord', id: 'graph-traversal' },
-    { num: '07', name: 'DP DIMENSION', theme: 'bg-[#FFF200] text-[#111111]', desc: 'Memoization, tabulation, knapsack, LCS.', boss: 'Optimal Substructure', id: 'dp-knapsack' },
-    { num: '08', name: 'FINAL BOSS', theme: 'bg-[#111111] text-[#FF2DAA] border-[#FF2DAA]', desc: 'Greedy, bit manipulation & MAANG interview gauntlet.', boss: 'The Algorithm Archon', id: 'sliding-window-max' },
+  const themeColors = [
+    'bg-[#C6FF00] text-[#111111]',
+    'bg-[#304FFE] text-[#F5F0E8]',
+    'bg-[#FF2DAA] text-[#111111]',
+    'bg-[#FF5C00] text-[#111111]',
+    'bg-[#B9A0FF] text-[#111111]',
+    'bg-[#FFF200] text-[#111111]',
+    'bg-[#00E5FF] text-[#111111]',
+    'bg-[#FF3366] text-[#F5F0E8]',
+    'bg-[#A3E635] text-[#111111]',
+    'bg-[#38BDF8] text-[#111111]',
+    'bg-[#F472B6] text-[#111111]',
+    'bg-[#FB923C] text-[#111111]',
+    'bg-[#C084FC] text-[#111111]',
+    'bg-[#FACC15] text-[#111111]',
   ];
 
   return (
@@ -170,12 +178,12 @@ export const LandingPage: React.FC = () => {
         </div>
       </div>
 
-      {/* The 8 Chaos Worlds Grid */}
+      {/* The 14 Chaos Worlds Grid */}
       <section className="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
         <div className="flex flex-col md:flex-row items-start md:items-end justify-between gap-4 mb-12">
           <div>
             <div className="inline-block px-3 py-1 bg-[#FF2DAA] text-[#111111] border-2 border-[#111111] font-display font-black text-xs uppercase mb-2 -rotate-1">
-              THE 8 WORLDS OF CHAOS
+              THE {WORLD_REGIONS.length} WORLDS OF CHAOS
             </div>
             <h2 className="text-3xl sm:text-5xl font-display font-black uppercase tracking-tight">
               PROGRESSION MAP
@@ -183,51 +191,55 @@ export const LandingPage: React.FC = () => {
           </div>
           <Link to="/map">
             <Button variant="lime" size="md">
-              VIEW FULL WORLD MAP <ChevronRight className="w-4 h-4 ml-1" />
+              VIEW FULL WORLD MAP ({WORLD_REGIONS.length} WORLDS) <ChevronRight className="w-4 h-4 ml-1" />
             </Button>
           </Link>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {chaosWorlds.map((world, idx) => (
-            <motion.div
-              key={world.num}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.4, delay: idx * 0.05 }}
-            >
-              <Card interactive className="h-full flex flex-col justify-between p-5 border-3 border-[#111111] shadow-[5px_5px_0px_#111111]">
-                <div>
-                  <div className="flex items-center justify-between mb-3">
-                    <span className="font-mono font-black text-xs px-2 py-0.5 bg-[#111111] text-[#C6FF00]">
-                      WORLD {world.num}
-                    </span>
-                    <span className="font-mono text-xs font-bold text-[#FF5C00]">
-                      BOSS FIGHT
-                    </span>
+          {WORLD_REGIONS.map((region, idx) => {
+            const firstTopicId = region.topics[0]?.id || 'topic-big-o';
+            const theme = themeColors[idx % themeColors.length];
+            return (
+              <motion.div
+                key={region.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.3, delay: Math.min(idx * 0.04, 0.4) }}
+              >
+                <Card interactive className="h-full flex flex-col justify-between p-5 border-3 border-[#111111] shadow-[5px_5px_0px_#111111]">
+                  <div>
+                    <div className="flex items-center justify-between mb-3">
+                      <span className="font-mono font-black text-xs px-2 py-0.5 bg-[#111111] text-[#C6FF00]">
+                        WORLD {String(region.number).padStart(2, '0')}
+                      </span>
+                      <span className="font-mono text-xs font-bold text-[#FF5C00]">
+                        BOSS FIGHT
+                      </span>
+                    </div>
+                    <h3 className={`font-display font-black text-base uppercase px-2 py-1 mb-2 border-2 border-[#111111] inline-block ${theme}`}>
+                      {region.name}
+                    </h3>
+                    <p className="font-sans text-xs font-medium opacity-80 leading-relaxed mb-4">
+                      {region.description}
+                    </p>
                   </div>
-                  <h3 className={`font-display font-black text-base uppercase px-2 py-1 mb-2 border-2 border-[#111111] inline-block ${world.theme}`}>
-                    {world.name}
-                  </h3>
-                  <p className="font-sans text-xs font-medium opacity-80 leading-relaxed mb-4">
-                    {world.desc}
-                  </p>
-                </div>
 
-                <div className="pt-3 border-t-2 border-[#111111] dark:border-[#333] flex items-center justify-between">
-                  <span className="font-mono text-[11px] font-bold text-[#FF2DAA]">
-                    👹 {world.boss}
-                  </span>
-                  <Link to={`/lesson/${world.id}`}>
-                    <span className="font-display font-black text-xs uppercase text-[#304FFE] dark:text-[#C6FF00] hover:underline">
-                      PLAY →
+                  <div className="pt-3 border-t-2 border-[#111111] dark:border-[#333] flex items-center justify-between">
+                    <span className="font-mono text-[11px] font-bold text-[#FF2DAA]">
+                      👹 {region.bossBattle.name}
                     </span>
-                  </Link>
-                </div>
-              </Card>
-            </motion.div>
-          ))}
+                    <Link to={`/lesson/${firstTopicId}`}>
+                      <span className="font-display font-black text-xs uppercase text-[#304FFE] dark:text-[#C6FF00] hover:underline">
+                        PLAY →
+                      </span>
+                    </Link>
+                  </div>
+                </Card>
+              </motion.div>
+            );
+          })}
         </div>
       </section>
 

@@ -137,8 +137,15 @@ const knapsack = generateKnapsackSteps([2, 3, 4], [3, 4, 5], 5);
 const lastStep = knapsack[knapsack.length - 1];
 assert(lastStep.transitionFormula.includes('Optimal Max Value = 7') && lastStep.explanation.includes('7'), '0/1 Knapsack computes optimal value = 7');
 
+import { runQuestAndCurriculumTests } from './questAndCurriculumTests';
+
+// 8. Quest & Curriculum Navigation Suite
+const questResults = runQuestAndCurriculumTests();
+passed += questResults.passed;
+failed += questResults.failed;
+
 console.log('\n======================================================');
-console.log(`TOTAL TESTS: ${passed + failed} | PASSED: ${passed} | FAILED: ${failed}`);
+console.log(`TOTAL COMBINED TESTS: ${passed + failed} | PASSED: ${passed} | FAILED: ${failed}`);
 console.log('======================================================\n');
 
 if (failed > 0) {

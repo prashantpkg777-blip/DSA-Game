@@ -101,7 +101,9 @@ export type TopicCategory =
   | 'graphs'
   | 'dp'
   | 'tries'
-  | 'advanced';
+  | 'strings'
+  | 'advanced'
+  | 'competitive';
 
 export interface TopicLesson {
   id: string;
@@ -115,6 +117,7 @@ export interface TopicLesson {
   iconName: string;
   difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
   summary: string;
+  subtopics?: string[];
   
   // Real educational content
   content: {
