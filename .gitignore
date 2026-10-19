@@ -12,6 +12,10 @@ dist
 dist-ssr
 dist-test
 *.local
+.env
+.env.*.local
+!.env.example
+supabase/.temp/
 
 # Editor directories and files
 .vscode/*

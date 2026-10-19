@@ -103,9 +103,11 @@ export function runBackendIntegrationTests(): { passed: number; failed: number }
   assert(typeof authService.isConfigured === 'function', 'authService exposes isConfigured check');
   assert(typeof progressService.isConfigured === 'function', 'progressService exposes isConfigured check');
 
-  // In testing without live env, services should report unconfigured gracefully
-  assert(authService.isConfigured() === false, 'authService safely handles empty env without crashing');
-  assert(progressService.isConfigured() === false, 'progressService safely handles empty env without crashing');
+  // Verify configuration detection
+  assert(typeof authService.isConfigured() === 'boolean', 'authService exposes functional boolean configuration status');
+  assert(typeof progressService.isConfigured() === 'boolean', 'progressService exposes functional boolean configuration status');
+  assert(authService.isConfigured() === true, 'authService successfully detects active Supabase credentials');
+  assert(progressService.isConfigured() === true, 'progressService successfully detects active Supabase credentials');
 
   // 6. UserStore Auth & Gamification Invariants
   console.log('\n--- Suite 8: UserStore Auth State & Gamification Invariants ---');
