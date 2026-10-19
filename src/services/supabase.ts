@@ -1,19 +1,8 @@
-import { createClient } from '@supabase/supabase-js';
+import { supabase, isSupabaseConfigured } from '../lib/supabase';
+import { progressService } from './progressService';
+import { authService } from './authService';
 
-// Environment variables or fallback to demo local mode
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL || '';
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY || '';
-
-export const isSupabaseConfigured = Boolean(
-  supabaseUrl && 
-  supabaseAnonKey && 
-  !supabaseUrl.includes('placeholder')
-);
-
-// Graceful client creation
-export const supabase = isSupabaseConfigured
-  ? createClient(supabaseUrl, supabaseAnonKey)
-  : null;
+export { supabase, isSupabaseConfigured, authService, progressService };
 
 export interface CloudSyncPayload {
   userId: string;
@@ -24,24 +13,23 @@ export interface CloudSyncPayload {
   achievements: string[];
 }
 
+/**
+ * Backward compatibility sync handler
+ */
 export async function syncProgressToCloud(payload: CloudSyncPayload): Promise<boolean> {
   if (!supabase || !isSupabaseConfigured) {
-    // In local demo mode, progress is safely managed via localStorage Zustand persistence
     return false;
   }
 
   try {
     const { error } = await supabase
-      .from('user_progress')
-      .upsert({
-        user_id: payload.userId,
-        xp: payload.xp,
-        level: payload.level,
-        streak: payload.streak,
-        completed_lessons: payload.completedLessons,
-        achievements: payload.achievements,
+      .from('user_stats')
+      .update({
+        current_streak: payload.streak,
+        lessons_completed: payload.completedLessons.length,
         updated_at: new Date().toISOString(),
-      });
+      })
+      .eq('user_id', payload.userId);
 
     if (error) {
       console.warn('Supabase sync warning:', error.message);

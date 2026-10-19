@@ -14,7 +14,10 @@ import {
   Zap,
   Swords,
   Download,
-  Upload
+  Upload,
+  Cloud,
+  LogIn,
+  RefreshCw
 } from 'lucide-react';
 import { useUserStore } from '../stores/userStore';
 import { WORLD_REGIONS } from '../curriculum/curriculumData';
@@ -33,6 +36,9 @@ export const DashboardPage: React.FC = () => {
     completedChallenges, 
     defeatedBosses, 
     mistakes, 
+    isSyncing,
+    openAuthModal,
+    syncWithCloud,
     resetProgress, 
     importProgress 
   } = useUserStore();
@@ -145,6 +151,50 @@ export const DashboardPage: React.FC = () => {
             </div>
           </div>
         </motion.div>
+
+        {/* Cloud Sync Status Banner */}
+        <div className={`p-4 border-3 border-[#111111] shadow-[4px_4px_0px_#111111] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 ${
+          profile.isGuest 
+            ? 'bg-[#FFF200] text-[#111111]' 
+            : 'bg-[#304FFE] text-[#F5F0E8]'
+        }`}>
+          <div className="flex items-center gap-3">
+            <div className={`p-2 border-2 border-[#111111] ${profile.isGuest ? 'bg-[#FF2DAA] text-[#111111]' : 'bg-[#C6FF00] text-[#111111]'}`}>
+              <Cloud className="w-5 h-5 fill-current" />
+            </div>
+            <div>
+              <div className="font-display font-black text-sm uppercase tracking-wide">
+                {profile.isGuest ? 'GUEST PROFILE DETECTED' : 'SUPABASE CLOUD CONNECTED'}
+              </div>
+              <p className="font-mono text-xs opacity-90">
+                {profile.isGuest 
+                  ? 'Your progress is stored in browser cache. Connect your free account to sync with PostgreSQL!'
+                  : `Signed in as @${profile.username} • Progress & XP synchronized to cloud database`}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 self-end sm:self-auto">
+            {profile.isGuest ? (
+              <button
+                onClick={() => openAuthModal('signup')}
+                className="px-3.5 py-1.5 bg-[#C6FF00] hover:bg-[#b2e600] text-[#111111] border-2 border-[#111111] shadow-[2px_2px_0px_#111111] font-display font-black text-xs uppercase tracking-wider flex items-center gap-1.5 transition-transform active:translate-y-0.5"
+              >
+                <LogIn className="w-3.5 h-3.5" />
+                <span>CONNECT CLOUD ↗</span>
+              </button>
+            ) : (
+              <button
+                onClick={() => syncWithCloud()}
+                disabled={isSyncing}
+                className="px-3.5 py-1.5 bg-[#C6FF00] hover:bg-[#b2e600] text-[#111111] border-2 border-[#111111] shadow-[2px_2px_0px_#111111] font-display font-black text-xs uppercase tracking-wider flex items-center gap-1.5 transition-transform active:translate-y-0.5 disabled:opacity-60"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin' : ''}`} />
+                <span>{isSyncing ? 'SYNCING...' : 'SYNC CLOUD'}</span>
+              </button>
+            )}
+          </div>
+        </div>
 
         {/* 4 Brutalist Key Stats Cards */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">

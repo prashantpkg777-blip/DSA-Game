@@ -138,11 +138,17 @@ const lastStep = knapsack[knapsack.length - 1];
 assert(lastStep.transitionFormula.includes('Optimal Max Value = 7') && lastStep.explanation.includes('7'), '0/1 Knapsack computes optimal value = 7');
 
 import { runQuestAndCurriculumTests } from './questAndCurriculumTests';
+import { runBackendIntegrationTests } from './backendIntegrationTests';
 
 // 8. Quest & Curriculum Navigation Suite
 const questResults = runQuestAndCurriculumTests();
 passed += questResults.passed;
 failed += questResults.failed;
+
+// 9. Supabase PostgreSQL Backend & Migrations Suite
+const backendResults = runBackendIntegrationTests();
+passed += backendResults.passed;
+failed += backendResults.failed;
 
 console.log('\n======================================================');
 console.log(`TOTAL COMBINED TESTS: ${passed + failed} | PASSED: ${passed} | FAILED: ${failed}`);

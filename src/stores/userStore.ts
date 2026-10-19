@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { UserProfile, UserStats, Achievement, DailyQuest, MistakeRecord, ActivityEventType } from '../types/gamification';
+import { authService, SignInParams, SignUpParams } from '../services/authService';
+import { progressService } from '../services/progressService';
 import { syncProgressToCloud } from '../services/supabase';
 
 const INITIAL_ACHIEVEMENTS: Achievement[] = [
@@ -149,10 +151,38 @@ interface UserState {
   speechRate: number;
   theme: 'dark' | 'light';
 
+  // Auth & Cloud State
+  authModalOpen: boolean;
+  authMode: 'login' | 'signup';
+  isSyncing: boolean;
+  cloudError: string | null;
+  cloudConnected: boolean;
+
   // Actions
+  openAuthModal: (mode?: 'login' | 'signup') => void;
+  closeAuthModal: () => void;
+  initAuth: () => Promise<void>;
+  login: (params: SignInParams) => Promise<{ success: boolean; error?: string }>;
+  signup: (params: SignUpParams) => Promise<{ success: boolean; error?: string }>;
+  logout: () => Promise<void>;
+  syncWithCloud: () => Promise<void>;
+  migrateGuestToCloud: () => Promise<{ success: boolean; error?: string }>;
+
   addXP: (amount: number, reason?: string) => void;
   completeLesson: (lessonId: string, xpReward: number, topicCategory?: string) => void;
-  solveChallenge: (challengeId: string, xpReward: number, topicCategory?: string) => void;
+  solveChallenge: (
+    challengeId: string,
+    xpReward: number,
+    topicCategory?: string,
+    submissionMeta?: {
+      passed: boolean;
+      language: string;
+      code: string;
+      passedTests: number;
+      totalTests: number;
+      executionTimeMs?: number;
+    }
+  ) => void;
   defeatBoss: (bossId: string, xpReward: number) => void;
   recordMistake: (mistake: Omit<MistakeRecord, 'id' | 'timestamp' | 'reviewed'>) => void;
   markMistakeReviewed: (id: string) => void;
@@ -180,7 +210,7 @@ export const useUserStore = create<UserState>()(
         level: 1,
         xp: 0,
         xpToNextLevel: 200,
-        streakDays: 0, // Starts at 0 until first recorded activity
+        streakDays: 0,
         lastActiveDate: '',
         joinedDate: getLocalDateString(),
         isGuest: true,
@@ -189,12 +219,12 @@ export const useUserStore = create<UserState>()(
         problemsSolved: 0,
         lessonsCompleted: 0,
         bossesDefeated: 0,
-        accuracy: 0, // Accurate zero state
+        accuracy: 0,
         totalSubmissions: 0,
         correctSubmissions: 0,
         currentStreak: 0,
         longestStreak: 0,
-        weeklyActivity: [0, 0, 0, 0, 0, 0, 0], // Sun-Sat zero activity
+        weeklyActivity: [0, 0, 0, 0, 0, 0, 0],
         topicsMastered: 0,
         totalTimeSpentMinutes: 0,
       },
@@ -209,6 +239,215 @@ export const useUserStore = create<UserState>()(
       autoVoiceNarrate: false,
       speechRate: 1.0,
       theme: 'dark',
+
+      authModalOpen: false,
+      authMode: 'login',
+      isSyncing: false,
+      cloudError: null,
+      cloudConnected: authService.isConfigured(),
+
+      openAuthModal: (mode = 'login') => {
+        set({ authModalOpen: true, authMode: mode, cloudError: null });
+      },
+
+      closeAuthModal: () => {
+        set({ authModalOpen: false, cloudError: null });
+      },
+
+      initAuth: async () => {
+        if (!authService.isConfigured()) return;
+        try {
+          const user = await authService.getCurrentUser();
+          if (user) {
+            set({ isSyncing: true });
+            const result = await progressService.fetchUserDashboard(user.id);
+            if (result.success && result.data && result.data.profile) {
+              set({
+                profile: {
+                  ...result.data.profile,
+                  isGuest: false,
+                },
+                stats: result.data.stats || get().stats,
+                completedLessons: result.data.completedLessons.length > 0 ? result.data.completedLessons : get().completedLessons,
+                completedChallenges: result.data.completedChallenges.length > 0 ? result.data.completedChallenges : get().completedChallenges,
+                achievements: result.data.achievements.length > 0 ? result.data.achievements : get().achievements,
+                isSyncing: false,
+                cloudConnected: true,
+              });
+            } else {
+              set({
+                profile: {
+                  ...get().profile,
+                  id: user.id,
+                  username: user.user_metadata?.username || user.email?.split('@')[0] || 'ChaosCoder',
+                  displayName: user.user_metadata?.display_name || 'Chaos Coder',
+                  avatar: user.user_metadata?.avatar || '🧙‍♂️',
+                  isGuest: false,
+                },
+                isSyncing: false,
+                cloudConnected: true,
+              });
+            }
+          }
+        } catch (err: any) {
+          set({ isSyncing: false, cloudError: err?.message || 'Error checking session' });
+        }
+      },
+
+      login: async (params: SignInParams) => {
+        set({ isSyncing: true, cloudError: null });
+        const result = await authService.signIn(params);
+        if (!result.success || !result.user) {
+          set({ isSyncing: false, cloudError: result.error || 'Login failed' });
+          return { success: false, error: result.error };
+        }
+
+        const currentGuestState = {
+          profile: get().profile,
+          stats: get().stats,
+          completedLessons: get().completedLessons,
+          completedChallenges: get().completedChallenges,
+          defeatedBosses: get().defeatedBosses,
+          mistakes: get().mistakes,
+        };
+
+        // If guest has progress, migrate to account
+        if (currentGuestState.completedLessons.length > 0 || currentGuestState.completedChallenges.length > 0) {
+          await progressService.migrateGuestProgressToCloud(currentGuestState);
+        }
+
+        // Fetch cloud dashboard
+        const dashboard = await progressService.fetchUserDashboard(result.user.id);
+        if (dashboard.success && dashboard.data && dashboard.data.profile) {
+          set({
+            profile: {
+              ...dashboard.data.profile,
+              isGuest: false,
+            },
+            stats: dashboard.data.stats || get().stats,
+            completedLessons: dashboard.data.completedLessons,
+            completedChallenges: dashboard.data.completedChallenges,
+            achievements: dashboard.data.achievements.length > 0 ? dashboard.data.achievements : get().achievements,
+            isSyncing: false,
+            authModalOpen: false,
+            cloudConnected: true,
+          });
+        } else {
+          set({
+            profile: {
+              ...get().profile,
+              id: result.user.id,
+              username: result.user.user_metadata?.username || result.user.email?.split('@')[0] || 'ChaosCoder',
+              displayName: result.user.user_metadata?.display_name || 'Chaos Coder',
+              avatar: result.user.user_metadata?.avatar || '🧙‍♂️',
+              isGuest: false,
+            },
+            isSyncing: false,
+            authModalOpen: false,
+            cloudConnected: true,
+          });
+        }
+
+        return { success: true };
+      },
+
+      signup: async (params: SignUpParams) => {
+        set({ isSyncing: true, cloudError: null });
+        const result = await authService.signUp(params);
+        if (!result.success || !result.user) {
+          set({ isSyncing: false, cloudError: result.error || 'Signup failed' });
+          return { success: false, error: result.error };
+        }
+
+        const currentGuestState = {
+          profile: get().profile,
+          stats: get().stats,
+          completedLessons: get().completedLessons,
+          completedChallenges: get().completedChallenges,
+          defeatedBosses: get().defeatedBosses,
+          mistakes: get().mistakes,
+        };
+
+        // If user already had guest progress before creating account, migrate immediately
+        if (currentGuestState.completedLessons.length > 0 || currentGuestState.completedChallenges.length > 0) {
+          await progressService.migrateGuestProgressToCloud(currentGuestState);
+        }
+
+        set({
+          profile: {
+            ...get().profile,
+            id: result.user.id,
+            username: params.username,
+            displayName: params.displayName || params.username,
+            avatar: params.avatar || '🧙‍♂️',
+            isGuest: false,
+          },
+          isSyncing: false,
+          authModalOpen: false,
+          cloudConnected: true,
+        });
+
+        return { success: true };
+      },
+
+      logout: async () => {
+        set({ isSyncing: true });
+        await authService.signOut();
+        get().resetProgress();
+        set({
+          isSyncing: false,
+          cloudConnected: authService.isConfigured(),
+        });
+      },
+
+      syncWithCloud: async () => {
+        const state = get();
+        if (state.profile.isGuest || !progressService.isConfigured()) return;
+
+        set({ isSyncing: true, cloudError: null });
+        try {
+          const dashboard = await progressService.fetchUserDashboard(state.profile.id);
+          if (dashboard.success && dashboard.data && dashboard.data.profile) {
+            set({
+              profile: { ...dashboard.data.profile, isGuest: false },
+              stats: dashboard.data.stats || state.stats,
+              completedLessons: dashboard.data.completedLessons,
+              completedChallenges: dashboard.data.completedChallenges,
+              achievements: dashboard.data.achievements.length > 0 ? dashboard.data.achievements : state.achievements,
+              isSyncing: false,
+            });
+          } else {
+            set({ isSyncing: false });
+          }
+        } catch (err: any) {
+          set({ isSyncing: false, cloudError: err?.message || 'Sync failed' });
+        }
+      },
+
+      migrateGuestToCloud: async () => {
+        const state = get();
+        if (state.profile.isGuest || !progressService.isConfigured()) {
+          return { success: false, error: 'Not authenticated or cloud backend is not configured' };
+        }
+
+        set({ isSyncing: true, cloudError: null });
+        const result = await progressService.migrateGuestProgressToCloud({
+          profile: state.profile,
+          stats: state.stats,
+          completedLessons: state.completedLessons,
+          completedChallenges: state.completedChallenges,
+          defeatedBosses: state.defeatedBosses,
+          mistakes: state.mistakes,
+        });
+
+        if (result.success) {
+          await get().syncWithCloud();
+          return { success: true };
+        } else {
+          set({ isSyncing: false, cloudError: result.error });
+          return { success: false, error: result.error };
+        }
+      },
 
       checkDateRollover: () => {
         const today = getLocalDateString();
@@ -337,9 +576,14 @@ export const useUserStore = create<UserState>()(
             topicsMastered: Math.floor(newCompleted.length / 2),
           },
         });
+
+        // Trigger atomic PostgreSQL stored procedure in cloud if authenticated
+        if (!state.profile.isGuest && progressService.isConfigured()) {
+          progressService.completeLessonInCloud(lessonId, xpReward);
+        }
       },
 
-      solveChallenge: (challengeId: string, xpReward: number, topicCategory?: string) => {
+      solveChallenge: (challengeId, xpReward, topicCategory, submissionMeta) => {
         const state = get();
         const alreadySolved = state.completedChallenges.includes(challengeId);
         const newChallenges = alreadySolved ? state.completedChallenges : [...state.completedChallenges, challengeId];
@@ -353,16 +597,16 @@ export const useUserStore = create<UserState>()(
         const accuracy = Math.round((correctSubs / totalSubs) * 100);
 
         // Update achievements strictly by topic/category
-        const isPointerOrLinked = 
-          topicCategory === 'linked-lists' || 
+        const isPointerOrLinked =
+          topicCategory === 'linked-lists' ||
           topicCategory === 'two-pointers' ||
           challengeId.toLowerCase().includes('pointer') ||
           challengeId.toLowerCase().includes('linked') ||
           challengeId.toLowerCase().includes('floyd') ||
           challengeId.toLowerCase().includes('reverse');
 
-        const isSorting = 
-          topicCategory === 'sorting' || 
+        const isSorting =
+          topicCategory === 'sorting' ||
           challengeId.toLowerCase().includes('sort');
 
         const updatedAchievements = state.achievements.map((ach) => {
@@ -400,6 +644,20 @@ export const useUserStore = create<UserState>()(
             accuracy,
           },
         });
+
+        // Trigger atomic PostgreSQL stored procedure in cloud if authenticated
+        if (!state.profile.isGuest && progressService.isConfigured()) {
+          progressService.submitChallengeInCloud({
+            challengeId,
+            passed: true,
+            language: submissionMeta?.language || 'javascript',
+            code: submissionMeta?.code || '',
+            passedTests: submissionMeta?.passedTests || 1,
+            totalTests: submissionMeta?.totalTests || 1,
+            executionTimeMs: submissionMeta?.executionTimeMs || 0,
+            xpReward,
+          });
+        }
       },
 
       defeatBoss: (bossId: string, xpReward: number) => {
@@ -426,6 +684,10 @@ export const useUserStore = create<UserState>()(
             bossesDefeated: newBosses.length,
           },
         });
+
+        if (!state.profile.isGuest && progressService.isConfigured()) {
+          progressService.defeatBossInCloud(bossId, xpReward);
+        }
       },
 
       recordMistake: (mistake) => {
@@ -483,12 +745,15 @@ export const useUserStore = create<UserState>()(
         // Award XP only for legitimate first review
         get().addXP(30, 'Reviewed mistake in Error Notebook');
         get().progressActivity('mistake_reviewed');
+
+        if (!state.profile.isGuest && progressService.isConfigured()) {
+          progressService.reviewMistakeInCloud(id);
+        }
       },
 
       progressActivity: (eventType: ActivityEventType) => {
         get().checkDateRollover();
 
-        // Map explicit event type to quest category
         let questCategory: DailyQuest['category'] | null = null;
         if (eventType === 'visualization_completed') questCategory = 'visualize';
         else if (eventType === 'quiz_passed') questCategory = 'quiz';
@@ -510,6 +775,9 @@ export const useUserStore = create<UserState>()(
               const isCompleted = count >= q.targetCount;
               if (isCompleted && !q.isCompleted) {
                 xpToAward += q.xpReward;
+                if (!state.profile.isGuest && progressService.isConfigured()) {
+                  progressService.claimDailyQuestInCloud(q.id);
+                }
               }
               return { ...q, currentCount: count, isCompleted };
             }
@@ -606,6 +874,11 @@ export const useUserStore = create<UserState>()(
     }),
     {
       name: 'dsa_quest_user_v1',
+      partialize: (state) => {
+        // Exclude ephemeral auth modal state from persistence
+        const { authModalOpen, isSyncing, cloudError, ...persisted } = state;
+        return persisted;
+      },
     }
   )
 );

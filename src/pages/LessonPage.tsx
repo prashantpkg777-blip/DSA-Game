@@ -40,7 +40,7 @@ export const LessonPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'concept' | 'simulator' | 'code' | 'quiz'>('concept');
   const [isSpeakingLesson, setIsSpeakingLesson] = useState(false);
 
-  const { completedLessons, completeLesson, soundEnabled, voiceEnabled, speechRate } = useUserStore();
+  const { completedLessons, completeLesson, solveChallenge, soundEnabled, voiceEnabled, speechRate } = useUserStore();
 
   const allTopics: TopicLesson[] = WORLD_REGIONS.flatMap((r) => r.topics);
   const currentTopic = allTopics.find((t) => t.id === topicId) || allTopics[0];
@@ -57,8 +57,23 @@ export const LessonPage: React.FC = () => {
   }, [topicId]);
 
   const handleClaimComplete = () => {
-    completeLesson(currentTopic.id, currentTopic.xpReward);
+    completeLesson(currentTopic.id, currentTopic.xpReward, currentTopic.category);
     audioService.playLevelUp(soundEnabled);
+    confetti({ particleCount: 100, spread: 80, origin: { y: 0.6 } });
+  };
+
+  const handleCodeSuccess = () => {
+    if (currentTopic.codeProblem) {
+      solveChallenge(currentTopic.codeProblem.id, 80, currentTopic.category, {
+        passed: true,
+        language: 'javascript',
+        code: '',
+        passedTests: currentTopic.codeProblem.testCases.length,
+        totalTests: currentTopic.codeProblem.testCases.length,
+      });
+    }
+    completeLesson(currentTopic.id, currentTopic.xpReward, currentTopic.category);
+    audioService.playVictory(soundEnabled);
     confetti({ particleCount: 100, spread: 80, origin: { y: 0.6 } });
   };
 
@@ -333,7 +348,7 @@ export const LessonPage: React.FC = () => {
             <CodeEditorPanel
               key={currentTopic.id}
               problem={currentTopic.codeProblem}
-              onSuccess={handleClaimComplete}
+              onSuccess={handleCodeSuccess}
             />
           </div>
         )}
