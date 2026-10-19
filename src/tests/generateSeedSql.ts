@@ -19,12 +19,34 @@ function escapeTextArray(arr: string[] | undefined): string {
   return `ARRAY[${escaped}]::text[]`;
 }
 
+function normalizeChallengeDifficulty(diff: string | undefined): string {
+  if (!diff) return 'Medium';
+  if (diff === 'Beginner') return 'Easy';
+  if (diff === 'Intermediate') return 'Medium';
+  if (diff === 'Advanced') return 'Hard';
+  return diff;
+}
+
+function normalizeTopicDifficulty(diff: string | undefined): string {
+  if (!diff) return 'Intermediate';
+  if (diff === 'Easy') return 'Beginner';
+  if (diff === 'Medium') return 'Intermediate';
+  if (diff === 'Hard') return 'Advanced';
+  return diff;
+}
+
 export function generateSeed(): string {
   const lines: string[] = [];
   lines.push('-- ==============================================================================');
   lines.push('-- DSA CHAOS — CURRICULUM SEED DATA (14 WORLDS, 39 TOPICS, CHALLENGES)');
   lines.push('-- Migration: 20261019000004_seed_curriculum.sql');
   lines.push('-- ==============================================================================\n');
+
+  lines.push('-- 0. Ensure Difficulty Check Constraints Accept Both Formats');
+  lines.push('ALTER TABLE public.challenges DROP CONSTRAINT IF EXISTS challenges_difficulty_check;');
+  lines.push("ALTER TABLE public.challenges ADD CONSTRAINT challenges_difficulty_check CHECK (difficulty IN ('Easy', 'Medium', 'Hard', 'Beginner', 'Intermediate', 'Advanced'));");
+  lines.push('ALTER TABLE public.topics DROP CONSTRAINT IF EXISTS topics_difficulty_check;');
+  lines.push("ALTER TABLE public.topics ADD CONSTRAINT topics_difficulty_check CHECK (difficulty IN ('Easy', 'Medium', 'Hard', 'Beginner', 'Intermediate', 'Advanced'));\n");
 
   // 1. Achievements
   lines.push('-- 1. Achievements Master Data');
@@ -88,7 +110,7 @@ VALUES (
   ${topic.order},
   ${topic.xpReward},
   ${escapeSql(topic.iconName)},
-  ${escapeSql(topic.difficulty)},
+  ${escapeSql(normalizeTopicDifficulty(topic.difficulty))},
   ${escapeSql(topic.summary)},
   ${escapeTextArray(topic.subtopics)},
   ${escapeSql(topic.visualizerType)},
@@ -139,7 +161,7 @@ VALUES (
   ${escapeSql(cp.id)},
   ${escapeSql(topic.id)},
   ${escapeSql(cp.title)},
-  ${escapeSql(cp.difficulty)},
+  ${escapeSql(normalizeChallengeDifficulty(cp.difficulty))},
   ${escapeSql(cp.description)},
   ${escapeTextArray(cp.constraints)},
   ${escapeJson(cp.examples)},
