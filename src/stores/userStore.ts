@@ -145,6 +145,7 @@ interface UserState {
   toggleAutoVoice: () => void;
   setSpeechRate: (rate: number) => void;
   resetProgress: () => void;
+  importProgress: (imported: Partial<UserState>) => void;
 }
 
 const getTodayString = () => new Date().toISOString().split('T')[0];
@@ -454,6 +455,20 @@ export const useUserStore = create<UserState>()(
           dailyQuests: getDailyQuestsForToday(getTodayString()),
           mistakes: [],
         });
+      },
+
+      importProgress: (imported: Partial<UserState>) => {
+        set((state) => ({
+          ...state,
+          ...(imported.profile ? { profile: { ...state.profile, ...imported.profile } } : {}),
+          ...(imported.stats ? { stats: { ...state.stats, ...imported.stats } } : {}),
+          ...(Array.isArray(imported.completedLessons) ? { completedLessons: imported.completedLessons } : {}),
+          ...(Array.isArray(imported.completedChallenges) ? { completedChallenges: imported.completedChallenges } : {}),
+          ...(Array.isArray(imported.defeatedBosses) ? { defeatedBosses: imported.defeatedBosses } : {}),
+          ...(Array.isArray(imported.achievements) ? { achievements: imported.achievements } : {}),
+          ...(Array.isArray(imported.dailyQuests) ? { dailyQuests: imported.dailyQuests } : {}),
+          ...(Array.isArray(imported.mistakes) ? { mistakes: imported.mistakes } : {}),
+        }));
       },
     }),
     {

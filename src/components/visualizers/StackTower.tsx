@@ -62,9 +62,9 @@ export const StackTower: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 text-[#111111] dark:text-[#F5F0E8]">
       {/* Mode and Expressions */}
-      <div className="flex flex-wrap items-center justify-between gap-3 p-3 bg-slate-900/60 rounded-2xl border border-slate-800">
+      <div className="flex flex-wrap items-center justify-between gap-3 p-3 bg-white dark:bg-[#181818] border-2 border-[#111111] dark:border-[#F5F0E8] shadow-[4px_4px_0px_#111111]">
         <div className="flex items-center gap-2">
           <Button
             variant={mode === 'parentheses_simulator' ? 'primary' : 'secondary'}
@@ -84,13 +84,13 @@ export const StackTower: React.FC = () => {
 
         {mode === 'parentheses_simulator' && (
           <div className="flex items-center gap-1.5 text-xs">
-            <span className="text-slate-400 font-mono">Sample:</span>
+            <span className="font-mono font-bold opacity-70">Sample:</span>
             {['{[()]}', '()[]{}', '([)]', '{[(])}'].map((ex) => (
               <button
                 key={ex}
                 onClick={() => setExpression(ex)}
-                className={`px-2 py-0.5 rounded font-mono transition-colors ${
-                  expression === ex ? 'bg-cyan-500 text-slate-950 font-bold' : 'bg-slate-800 text-slate-300'
+                className={`px-2 py-0.5 rounded font-mono font-bold border-2 border-[#111111] dark:border-[#F5F0E8] transition-all shadow-[2px_2px_0px_#111111] ${
+                  expression === ex ? 'bg-[#C6FF00] text-[#111111]' : 'bg-white dark:bg-[#222222] text-[#111111] dark:text-[#F5F0E8]'
                 }`}
               >
                 {ex}
@@ -112,25 +112,23 @@ export const StackTower: React.FC = () => {
       </div>
 
       {/* Stack Tower Visual Canvas */}
-      <div className="relative w-full min-h-[300px] bg-slate-950 rounded-3xl border border-slate-800 p-8 flex flex-col items-center justify-end overflow-hidden shadow-2xl">
-        <div className="absolute inset-0 bg-radial-glow pointer-events-none" />
-
+      <div className="relative w-full min-h-[300px] bg-white dark:bg-[#141414] border-2 md:border-3 border-[#111111] dark:border-[#F5F0E8] p-8 flex flex-col items-center justify-end overflow-hidden shadow-[6px_6px_0px_#111111]">
         {/* Stack Cylinder / Frame */}
-        <div className="relative w-64 min-h-[220px] border-b-4 border-x-4 border-slate-700/80 rounded-b-2xl bg-slate-900/40 p-2 flex flex-col-reverse items-center gap-2">
+        <div className="relative w-64 min-h-[220px] border-b-4 border-x-4 border-[#111111] dark:border-[#F5F0E8] bg-[#F5F0E8] dark:bg-[#222222]/60 p-2 flex flex-col-reverse items-center gap-2 shadow-[4px_4px_0px_#111111]">
           {mode === 'parentheses_simulator' ? (
             currentStep.elements.length === 0 ? (
-              <div className="text-slate-600 font-mono text-xs my-auto select-none">
+              <div className="font-mono font-bold text-xs my-auto select-none opacity-50">
                 Stack Empty
               </div>
             ) : (
               currentStep.elements.map((elem, idx) => (
                 <div
                   key={elem.id || idx}
-                  className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-violet-600 to-indigo-600 border border-violet-400/50 text-white font-mono font-bold text-center shadow-lg shadow-violet-950/50 animate-float"
+                  className="w-full py-2.5 px-4 bg-[#304FFE] text-white border-2 border-[#111111] font-mono font-black text-center shadow-[3px_3px_0px_#111111] animate-float"
                 >
                   {elem.value}
                   {idx === currentStep.elements.length - 1 && (
-                    <span className="ml-2 text-[10px] px-1.5 py-0.5 rounded bg-cyan-400 text-slate-950 font-sans">
+                    <span className="ml-2 text-[10px] px-1.5 py-0.5 bg-[#C6FF00] text-[#111111] font-sans font-black border border-[#111111]">
                       TOP
                     </span>
                   )}
@@ -139,18 +137,18 @@ export const StackTower: React.FC = () => {
             )
           ) : (
             manualStack.length === 0 ? (
-              <div className="text-slate-600 font-mono text-xs my-auto select-none">
+              <div className="font-mono font-bold text-xs my-auto select-none opacity-50">
                 Tower Empty
               </div>
             ) : (
               manualStack.map((val, idx) => (
                 <div
                   key={idx}
-                  className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-cyan-600 to-blue-600 border border-cyan-400/50 text-white font-mono font-bold text-center shadow-lg shadow-cyan-950/50"
+                  className="w-full py-2.5 px-4 bg-[#FF2DAA] text-white border-2 border-[#111111] font-mono font-black text-center shadow-[3px_3px_0px_#111111]"
                 >
                   {val}
                   {idx === manualStack.length - 1 && (
-                    <span className="ml-2 text-[10px] px-1.5 py-0.5 rounded bg-amber-400 text-slate-950 font-sans">
+                    <span className="ml-2 text-[10px] px-1.5 py-0.5 bg-[#FFF200] text-[#111111] font-sans font-black border border-[#111111]">
                       TOP
                     </span>
                   )}
@@ -160,7 +158,7 @@ export const StackTower: React.FC = () => {
           )}
         </div>
 
-        <div className="text-[11px] font-mono text-slate-400 mt-3">
+        <div className="text-[11px] font-mono font-bold opacity-70 mt-3">
           LIFO (Last-In First-Out) Base Platform
         </div>
       </div>

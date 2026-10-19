@@ -53,34 +53,36 @@ export const GraphExplorer: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 text-[#111111] dark:text-[#F5F0E8]">
       {/* Algorithm switcher */}
-      <div className="flex flex-wrap items-center justify-between gap-3 p-3 bg-slate-900/60 rounded-2xl border border-slate-800">
+      <div className="flex flex-wrap items-center justify-between gap-3 p-3 bg-white dark:bg-[#181818] border-2 md:border-3 border-[#111111] dark:border-[#F5F0E8] shadow-[4px_4px_0px_#111111]">
         <div className="flex items-center gap-2">
           <Button
-            variant={algorithm === 'dijkstra' ? 'primary' : 'secondary'}
+            variant={algorithm === 'dijkstra' ? 'lime' : 'secondary'}
             size="sm"
             onClick={() => setAlgorithm('dijkstra')}
           >
-            ⚡ Dijkstra Shortest Path
+            ⚡ DIJKSTRA SHORTEST PATH
           </Button>
           <Button
-            variant={algorithm === 'bfs' ? 'primary' : 'secondary'}
+            variant={algorithm === 'bfs' ? 'blue' : 'secondary'}
             size="sm"
             onClick={() => setAlgorithm('bfs')}
           >
-            🌊 Breadth-First Search (BFS)
+            🌊 BFS TRAVERSAL
           </Button>
         </div>
 
-        <div className="flex items-center gap-1.5 text-xs">
-          <span className="text-slate-400 font-mono">Start Node:</span>
+        <div className="flex items-center gap-1.5 text-xs font-mono font-bold">
+          <span>START NODE:</span>
           {['A', 'B', 'C'].map((nd) => (
             <button
               key={nd}
               onClick={() => setStartNode(nd)}
-              className={`px-2.5 py-1 rounded-lg font-mono font-bold transition-colors ${
-                startNode === nd ? 'bg-cyan-500 text-slate-950 shadow-glow-cyan' : 'bg-slate-800 text-slate-300'
+              className={`px-3 py-1 font-display font-black text-xs border-2 ${
+                startNode === nd
+                  ? 'bg-[#C6FF00] text-[#111111] border-[#111111] shadow-[2px_2px_0px_#111111]'
+                  : 'bg-white dark:bg-[#2c2c2c] text-inherit border-[#111111]'
               }`}
             >
               {nd}
@@ -90,10 +92,8 @@ export const GraphExplorer: React.FC = () => {
       </div>
 
       {/* SVG Graph Canvas */}
-      <div className="relative w-full h-[320px] bg-slate-950 rounded-3xl border border-slate-800 p-4 flex items-center justify-center overflow-hidden shadow-2xl">
-        <div className="absolute inset-0 bg-radial-glow pointer-events-none" />
-
-        <svg className="w-full h-full max-w-[520px]" viewBox="0 0 520 240">
+      <div className="relative w-full h-[340px] bg-white dark:bg-[#141414] border-2 md:border-3 border-[#111111] dark:border-[#F5F0E8] shadow-[6px_6px_0px_#111111] p-4 flex items-center justify-center overflow-hidden">
+        <svg className="w-full h-full max-w-[540px]" viewBox="0 0 520 240">
           {/* Edges */}
           {currentStep.edges.map((edge, idx) => {
             const fromNode = currentStep.nodes.find((n) => n.id === edge.from)!;
@@ -110,21 +110,22 @@ export const GraphExplorer: React.FC = () => {
                   y1={fromNode.y}
                   x2={toNode.x}
                   y2={toNode.y}
-                  stroke={isHigh ? '#38BDF8' : '#334155'}
+                  stroke={isHigh ? '#FF2DAA' : '#777777'}
                   strokeWidth={isHigh ? '4' : '2'}
                   className="transition-all duration-300"
                 />
                 {edge.weight !== undefined && (
-                  <circle cx={midX} cy={midY} r="10" fill="#0F172A" stroke="#475569" strokeWidth="1" />
+                  <circle cx={midX} cy={midY} r="11" fill="#FFF200" stroke="#111111" strokeWidth="1.5" />
                 )}
                 {edge.weight !== undefined && (
                   <text
                     x={midX}
                     y={midY + 3.5}
                     textAnchor="middle"
-                    fill="#94A3B8"
+                    fill="#111111"
                     fontSize="10"
                     fontFamily="monospace"
+                    fontWeight="bold"
                   >
                     {edge.weight}
                   </text>
@@ -139,14 +140,16 @@ export const GraphExplorer: React.FC = () => {
             const isVisited = currentStep.visitedIds.includes(node.id);
             const dist = currentStep.distances ? currentStep.distances[node.id] : undefined;
 
-            let fill = '#0F172A';
-            let stroke = '#475569';
+            let fill = '#F5F0E8';
+            let stroke = '#111111';
+            let textColor = '#111111';
+
             if (isCurr) {
-              fill = '#0284C7';
-              stroke = '#38BDF8';
+              fill = '#C6FF00';
+              stroke = '#111111';
             } else if (isVisited) {
-              fill = '#7C3AED';
-              stroke = '#A78BFA';
+              fill = '#B9A0FF';
+              stroke = '#111111';
             }
 
             return (
@@ -154,44 +157,55 @@ export const GraphExplorer: React.FC = () => {
                 <circle
                   cx={node.x}
                   cy={node.y}
-                  r={isCurr ? '22' : '18'}
+                  r={isCurr ? '24' : '20'}
                   fill={fill}
                   stroke={stroke}
                   strokeWidth="3"
                 />
                 <text
                   x={node.x}
-                  y={node.y + 4}
+                  y={node.y + 4.5}
                   textAnchor="middle"
-                  fill="#FFFFFF"
+                  fill={textColor}
                   fontSize="13"
-                  fontFamily="monospace"
-                  fontWeight="bold"
+                  fontFamily="'Space Grotesk', sans-serif"
+                  fontWeight="900"
                 >
                   {node.label}
                 </text>
                 {dist !== undefined && (
                   <text
                     x={node.x}
-                    y={node.y + 32}
+                    y={node.y + 36}
                     textAnchor="middle"
-                    fill={dist === Infinity ? '#64748B' : '#38BDF8'}
-                    fontSize="10"
+                    fill={dist === Infinity ? '#888' : '#FF5C00'}
+                    fontSize="11"
                     fontFamily="monospace"
                     fontWeight="bold"
                   >
-                    d:{dist === Infinity ? '∞' : dist}
+                    {dist === Infinity ? '∞' : `dist: ${dist}`}
                   </text>
                 )}
               </g>
             );
           })}
         </svg>
+      </div>
 
-        {/* Visited & Queue badge overlay */}
-        <div className="absolute bottom-4 left-6 flex items-center gap-3 text-xs font-mono bg-slate-900/90 border border-slate-700 px-3 py-1.5 rounded-xl">
-          <span className="text-slate-400">Visited:</span>
-          <span className="text-violet-400 font-bold">[{currentStep.visitedIds.join(', ') || 'none'}]</span>
+      {/* Traversal Queue / Distance Tracker Bar */}
+      <div className="flex flex-wrap items-center justify-between gap-3 p-3 bg-white dark:bg-[#181818] border-2 border-[#111111] dark:border-[#333] font-mono text-xs font-bold">
+        <div className="flex items-center gap-2">
+          <span className="text-[#304FFE] dark:text-[#C6FF00]">TRAVERSAL QUEUE:</span>
+          <span className="bg-[#111111] text-[#C6FF00] px-2 py-0.5">
+            [ {currentStep.queueOrStack.join(', ') || 'EMPTY'} ]
+          </span>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <span className="text-[#FF2DAA]">VISITED:</span>
+          <span className="bg-[#111111] text-[#FF2DAA] px-2 py-0.5">
+            {currentStep.visitedIds.join(' → ') || 'NONE'}
+          </span>
         </div>
       </div>
 
@@ -214,3 +228,5 @@ export const GraphExplorer: React.FC = () => {
     </div>
   );
 };
+
+export default GraphExplorer;

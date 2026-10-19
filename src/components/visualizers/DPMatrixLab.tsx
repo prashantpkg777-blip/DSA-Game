@@ -49,28 +49,28 @@ export const DPMatrixLab: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 text-[#111111] dark:text-[#F5F0E8]">
       {/* Top Banner with Transition Formula */}
-      <div className="p-4 bg-slate-900/80 rounded-2xl border border-slate-800 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+      <div className="p-4 bg-white dark:bg-[#181818] border-2 md:border-3 border-[#111111] dark:border-[#F5F0E8] shadow-[4px_4px_0px_#111111] flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         <div>
-          <Badge variant="violet" className="mb-1">0/1 Knapsack Table</Badge>
-          <div className="text-xs text-slate-400 font-mono">
-            Weights: [2, 3, 4] | Values: [3, 4, 5] | Knapsack Capacity: 5
+          <Badge variant="pink" size="sm" className="mb-1">0/1 KNAPSACK MATRIX</Badge>
+          <div className="text-xs font-mono font-bold opacity-80">
+            WEIGHTS: [2, 3, 4] | VALUES: [3, 4, 5] | CAPACITY: 5
           </div>
         </div>
-        <div className="text-xs font-mono bg-slate-950 px-3 py-1.5 rounded-xl border border-slate-700 text-cyan-300">
-          {currentStep.transitionFormula}
+        <div className="text-xs font-mono font-black bg-[#C6FF00] text-[#111111] px-3 py-1.5 border-2 border-[#111111] shadow-[2px_2px_0px_#111111]">
+          {currentStep.transitionFormula || 'dp[i][w] = optimal'}
         </div>
       </div>
 
       {/* DP Table */}
-      <div className="relative w-full bg-slate-950 rounded-3xl border border-slate-800 p-6 overflow-x-auto shadow-2xl">
+      <div className="relative w-full bg-white dark:bg-[#141414] border-2 md:border-3 border-[#111111] dark:border-[#F5F0E8] shadow-[6px_6px_0px_#111111] p-4 sm:p-6 overflow-x-auto">
         <table className="w-full text-center border-collapse font-mono text-xs">
           <thead>
             <tr>
-              <th className="p-2.5 text-slate-500 border-b border-slate-800">Items \ Cap</th>
+              <th className="p-2.5 font-black uppercase border-b-2 border-[#111111] dark:border-[#333]">ITEM \ CAP</th>
               {currentStep.colHeaders?.map((col, idx) => (
-                <th key={idx} className="p-2.5 text-slate-300 font-bold border-b border-slate-800">
+                <th key={idx} className="p-2.5 font-black border-b-2 border-[#111111] dark:border-[#333]">
                   {col}
                 </th>
               ))}
@@ -78,24 +78,24 @@ export const DPMatrixLab: React.FC = () => {
           </thead>
           <tbody>
             {currentStep.table.map((row, rIdx) => (
-              <tr key={rIdx} className="border-b border-slate-900/80">
-                <td className="p-2.5 text-left text-slate-400 font-medium whitespace-nowrap border-r border-slate-800/80">
+              <tr key={rIdx} className="border-b border-[#111111]/20 dark:border-[#333]">
+                <td className="p-2.5 text-left font-black border-r-2 border-[#111111] dark:border-[#333]">
                   {currentStep.rowHeaders?.[rIdx]}
                 </td>
                 {row.map((cell, cIdx) => {
-                  let cellBg = 'bg-slate-900/40 text-slate-500';
+                  let cellBg = 'bg-[#f0ebe3] dark:bg-[#222222] opacity-40';
 
                   if (cell.isCurrent) {
-                    cellBg = 'bg-cyan-500 text-slate-950 font-bold scale-110 shadow-glow-cyan z-10';
+                    cellBg = 'bg-[#C6FF00] text-[#111111] font-black border-2 border-[#111111] scale-105 shadow-[2px_2px_0px_#111111] z-10';
                   } else if (cell.isDependency) {
-                    cellBg = 'bg-amber-500/30 text-amber-300 border border-amber-400/80 shadow-glow-amber';
+                    cellBg = 'bg-[#FFF200] text-[#111111] font-black border-2 border-[#111111] shadow-[2px_2px_0px_#111111]';
                   } else if (cell.isComputed) {
-                    cellBg = 'bg-slate-800/70 text-slate-200';
+                    cellBg = 'bg-[#e4ded5] dark:bg-[#2a2a2a] text-inherit font-bold border border-[#111111]/30 dark:border-[#444]';
                   }
 
                   return (
                     <td key={cIdx} className="p-1">
-                      <div className={`py-2 px-3 rounded-xl transition-all duration-300 ${cellBg}`}>
+                      <div className={`py-2 px-3 transition-all duration-200 select-none ${cellBg}`}>
                         {cell.val}
                       </div>
                     </td>
@@ -126,3 +126,5 @@ export const DPMatrixLab: React.FC = () => {
     </div>
   );
 };
+
+export default DPMatrixLab;

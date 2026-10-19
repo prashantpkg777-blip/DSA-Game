@@ -108,12 +108,42 @@ export const ArraySortingArena: React.FC = () => {
     }
   };
 
+  const [customInput, setCustomInput] = useState('');
+  const [inputError, setInputError] = useState<string | null>(null);
+
+  const handleApplyCustomArray = (e: React.FormEvent) => {
+    e.preventDefault();
+    setInputError(null);
+    if (!customInput.trim()) return;
+
+    const parts = customInput.split(',').map(s => s.trim()).filter(Boolean);
+    if (parts.length < 4 || parts.length > 12) {
+      setInputError('Please provide between 4 and 12 numbers.');
+      return;
+    }
+
+    const parsedNums: number[] = [];
+    for (const p of parts) {
+      const n = parseInt(p, 10);
+      if (isNaN(n) || n < 1 || n > 99) {
+        setInputError(`"${p}" is invalid. Please enter numbers between 1 and 99.`);
+        return;
+      }
+      parsedNums.push(n);
+    }
+
+    setNumbers(parsedNums);
+    setUserSelectedIndices([]);
+    setManualMoveCount(0);
+    setCustomInput('');
+  };
+
   const maxVal = Math.max(...numbers, 100);
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 text-[#111111] dark:text-[#F5F0E8]">
       {/* Algorithm Tabs & Modes */}
-      <div className="flex flex-wrap items-center justify-between gap-3 p-2 bg-white/[0.04] rounded-2xl border border-white/[0.12] backdrop-blur-md">
+      <div className="flex flex-wrap items-center justify-between gap-3 p-3 bg-white dark:bg-[#181818] border-2 border-[#111111] dark:border-[#F5F0E8] shadow-[4px_4px_0px_#111111]">
         <div className="flex flex-wrap items-center gap-1.5">
           {(['bubble', 'selection', 'insertion', 'merge', 'quick'] as const).map((algo) => (
             <button
@@ -122,10 +152,10 @@ export const ArraySortingArena: React.FC = () => {
                 setAlgorithm(algo);
                 setMode('simulator');
               }}
-              className={`px-3 py-1.5 rounded-xl text-xs font-semibold capitalize transition-all ${
+              className={`px-3 py-1.5 uppercase font-mono text-xs font-black transition-all border-2 border-[#111111] dark:border-[#F5F0E8] shadow-[2px_2px_0px_#111111] ${
                 algorithm === algo && mode === 'simulator'
-                  ? 'bg-white/[0.16] text-cyan-300 border border-cyan-400/40 shadow-glass-cyan backdrop-blur-md'
-                  : 'bg-white/[0.04] text-slate-300 hover:bg-white/[0.08] hover:text-white border border-transparent'
+                  ? 'bg-[#C6FF00] text-[#111111]'
+                  : 'bg-white dark:bg-[#222222] text-[#111111] dark:text-[#F5F0E8]'
               }`}
             >
               {algo} Sort
@@ -139,10 +169,10 @@ export const ArraySortingArena: React.FC = () => {
               setMode(mode === 'simulator' ? 'play_sandbox' : 'simulator');
               setIsPlaying(false);
             }}
-            className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all border backdrop-blur-md ${
+            className={`px-3.5 py-1.5 uppercase font-mono text-xs font-black transition-all border-2 border-[#111111] dark:border-[#F5F0E8] shadow-[3px_3px_0px_#111111] ${
               mode === 'play_sandbox'
-                ? 'bg-violet-600/90 text-white border-violet-400/50 shadow-glass-violet'
-                : 'bg-white/[0.06] text-slate-300 border-white/[0.14] hover:bg-white/[0.12] shadow-glass'
+                ? 'bg-[#304FFE] text-white'
+                : 'bg-white dark:bg-[#222222] text-[#111111] dark:text-[#F5F0E8]'
             }`}
           >
             🎮 {mode === 'play_sandbox' ? 'Exit Play Mode' : 'Interactive Play Mode'}
@@ -150,16 +180,41 @@ export const ArraySortingArena: React.FC = () => {
         </div>
       </div>
 
+      {/* Custom Array Input Form */}
+      <form onSubmit={handleApplyCustomArray} className="flex flex-wrap items-center gap-2 p-3 bg-white dark:bg-[#181818] border-2 border-[#111111] dark:border-[#F5F0E8] shadow-[4px_4px_0px_#111111]">
+        <span className="font-mono font-black text-xs uppercase flex items-center gap-1.5">
+          <span>⚡ CUSTOM ARRAY:</span>
+        </span>
+        <input
+          type="text"
+          value={customInput}
+          onChange={(e) => setCustomInput(e.target.value)}
+          placeholder="e.g. 34, 12, 89, 45, 23, 67"
+          className="flex-1 min-w-[200px] px-3 py-1.5 bg-[#F5F0E8] dark:bg-[#222222] text-[#111111] dark:text-[#F5F0E8] font-mono text-xs border-2 border-[#111111] dark:border-[#F5F0E8] focus:outline-none focus:ring-2 focus:ring-[#C6FF00]"
+        />
+        <Button type="submit" size="sm" variant="primary">
+          Set Array
+        </Button>
+        <Button type="button" size="sm" variant="secondary" onClick={handleShuffle}>
+          🎲 Randomize
+        </Button>
+        {inputError && (
+          <span className="w-full text-xs font-mono font-bold text-[#FF2DAA]">
+            ⚠️ {inputError}
+          </span>
+        )}
+      </form>
+
       {/* Arena Canvas */}
-      <div className="relative w-full h-72 sm:h-80 bg-white/[0.04] backdrop-blur-2xl rounded-3xl border border-white/[0.16] p-6 flex items-end justify-center gap-3 sm:gap-4 overflow-hidden shadow-glass">
+      <div className="relative w-full h-72 sm:h-80 bg-white dark:bg-[#141414] border-2 md:border-3 border-[#111111] dark:border-[#F5F0E8] p-6 flex items-end justify-center gap-2 sm:gap-3 overflow-hidden shadow-[6px_6px_0px_#111111]">
         {mode === 'play_sandbox' && (
           <div className="absolute top-4 left-6 z-10 flex items-center gap-3">
-            <Badge variant="violet">Play Mode Active</Badge>
-            <span className="text-xs text-slate-300">
-              Click any two bars to swap them! Moves: <strong className="text-cyan-400">{manualMoveCount}</strong>
+            <Badge variant="pink" size="sm">PLAY MODE</Badge>
+            <span className="text-xs font-mono font-bold">
+              Click two bars to swap! Moves: <strong className="text-[#304FFE] dark:text-[#C6FF00]">{manualMoveCount}</strong>
             </span>
             {isManuallySorted && (
-              <Badge variant="emerald">VICTORY: Sorted in {manualMoveCount} moves!</Badge>
+              <Badge variant="lime" size="sm">VICTORY: Sorted in {manualMoveCount} moves!</Badge>
             )}
           </div>
         )}
@@ -172,24 +227,24 @@ export const ArraySortingArena: React.FC = () => {
           const heightPercent = Math.max(15, Math.round((elem.value / maxVal) * 85));
 
           // Determine color based on state
-          let barBg = 'bg-white/[0.08] border-white/[0.18] backdrop-blur-md';
-          let textColor = 'text-slate-300';
+          let barBg = 'bg-[#F5F0E8] dark:bg-[#222222] border-2 border-[#111111] dark:border-[#F5F0E8]';
+          let textColor = 'text-[#111111] dark:text-[#F5F0E8]';
 
           if (elem.isSelected) {
-            barBg = 'bg-gradient-to-t from-violet-600 to-fuchsia-400 border-white/50 shadow-glass-violet scale-105';
-            textColor = 'text-white font-bold';
+            barBg = 'bg-[#FF2DAA] text-white border-2 border-[#111111] shadow-[3px_3px_0px_#111111] scale-105';
+            textColor = 'text-white font-black';
           } else if (elem.isSorted) {
-            barBg = 'bg-gradient-to-t from-emerald-600 to-teal-400 border-emerald-300/50 shadow-glow-emerald';
-            textColor = 'text-emerald-200';
+            barBg = 'bg-[#C6FF00] text-[#111111] border-2 border-[#111111] shadow-[2px_2px_0px_#111111]';
+            textColor = 'text-[#111111] font-black';
           } else if (elem.isSwapped) {
-            barBg = 'bg-gradient-to-t from-cyan-500 to-sky-300 border-cyan-200 shadow-glass-cyan scale-105';
-            textColor = 'text-cyan-950 font-bold';
+            barBg = 'bg-[#304FFE] text-white border-2 border-[#111111] shadow-[3px_3px_0px_#111111] scale-105';
+            textColor = 'text-white font-black';
           } else if (elem.isCompared) {
-            barBg = 'bg-gradient-to-t from-amber-500 to-yellow-300 border-amber-200 shadow-glow-amber';
-            textColor = 'text-amber-950 font-bold';
+            barBg = 'bg-[#FFF200] text-[#111111] border-2 border-[#111111] shadow-[2px_2px_0px_#111111]';
+            textColor = 'text-[#111111] font-black';
           } else if (elem.isPivot) {
-            barBg = 'bg-gradient-to-t from-rose-600 to-pink-500 border-rose-300 shadow-lg';
-            textColor = 'text-rose-100 font-bold';
+            barBg = 'bg-[#FF5C00] text-white border-2 border-[#111111] shadow-[2px_2px_0px_#111111]';
+            textColor = 'text-white font-black';
           }
 
           return (
@@ -197,14 +252,14 @@ export const ArraySortingArena: React.FC = () => {
               key={elem.id || idx}
               onClick={() => handleManualBarClick(idx)}
               style={{ height: `${heightPercent}%` }}
-              className={`flex-1 max-w-[56px] rounded-t-2xl border-t-2 border-x-2 transition-all duration-300 flex flex-col items-center justify-between p-2 select-none group ${
-                mode === 'play_sandbox' ? 'cursor-pointer hover:brightness-125' : ''
+              className={`flex-1 max-w-[56px] transition-all duration-300 flex flex-col items-center justify-between p-2 select-none group shadow-[2px_2px_0px_#111111] ${
+                mode === 'play_sandbox' ? 'cursor-pointer hover:scale-105' : ''
               } ${barBg}`}
             >
-              <span className={`text-xs sm:text-sm font-mono font-bold ${textColor}`}>
+              <span className={`text-xs sm:text-sm font-mono font-black ${textColor}`}>
                 {elem.value}
               </span>
-              <span className="text-[10px] font-mono text-slate-400/80">
+              <span className="text-[10px] font-mono font-bold opacity-70">
                 [{idx}]
               </span>
             </div>
@@ -213,21 +268,21 @@ export const ArraySortingArena: React.FC = () => {
       </div>
 
       {/* Legend */}
-      <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-mono text-slate-400">
+      <div className="flex flex-wrap items-center justify-center gap-4 text-xs font-mono font-bold text-[#111111] dark:text-[#F5F0E8]">
         <div className="flex items-center gap-1.5">
-          <div className="w-3 h-3 rounded-full bg-amber-400" />
+          <div className="w-3.5 h-3.5 border border-[#111111] bg-[#FFF200]" />
           <span>Comparing</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <div className="w-3 h-3 rounded-full bg-cyan-400" />
+          <div className="w-3.5 h-3.5 border border-[#111111] bg-[#304FFE]" />
           <span>Swapped / Written</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <div className="w-3 h-3 rounded-full bg-emerald-500" />
+          <div className="w-3.5 h-3.5 border border-[#111111] bg-[#C6FF00]" />
           <span>Sorted</span>
         </div>
         <div className="flex items-center gap-1.5">
-          <div className="w-3 h-3 rounded-full bg-rose-500" />
+          <div className="w-3.5 h-3.5 border border-[#111111] bg-[#FF5C00]" />
           <span>Pivot / Current</span>
         </div>
       </div>

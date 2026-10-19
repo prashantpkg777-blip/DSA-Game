@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
@@ -12,7 +12,9 @@ import {
   Activity,
   Award,
   Zap,
-  Swords
+  Swords,
+  Download,
+  Upload
 } from 'lucide-react';
 import { useUserStore } from '../stores/userStore';
 import { WORLD_REGIONS } from '../curriculum/curriculumData';
@@ -22,7 +24,70 @@ import { Button } from '../components/ui/Button';
 import { ProgressBar } from '../components/ui/ProgressBar';
 
 export const DashboardPage: React.FC = () => {
-  const { profile, stats, dailyQuests, achievements, completedLessons, resetProgress } = useUserStore();
+  const { 
+    profile, 
+    stats, 
+    dailyQuests, 
+    achievements, 
+    completedLessons, 
+    completedChallenges, 
+    defeatedBosses, 
+    mistakes, 
+    resetProgress, 
+    importProgress 
+  } = useUserStore();
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [backupMessage, setBackupMessage] = useState<string | null>(null);
+
+  const handleExportSave = () => {
+    const backupData = {
+      version: 1,
+      exportedAt: new Date().toISOString(),
+      profile,
+      stats,
+      completedLessons,
+      completedChallenges,
+      defeatedBosses,
+      achievements,
+      dailyQuests,
+      mistakes,
+    };
+    const jsonStr = JSON.stringify(backupData, null, 2);
+    const blob = new Blob([jsonStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `dsa-chaos-progress-${new Date().toISOString().split('T')[0]}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+    setBackupMessage('✅ Backup JSON exported successfully!');
+    setTimeout(() => setBackupMessage(null), 4000);
+  };
+
+  const handleImportSave = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const text = event.target?.result as string;
+        const parsed = JSON.parse(text);
+        if (!parsed || typeof parsed !== 'object') {
+          throw new Error('Invalid JSON structure');
+        }
+        importProgress(parsed);
+        setBackupMessage('🔥 Progress restored successfully from backup!');
+        setTimeout(() => setBackupMessage(null), 4000);
+      } catch (err: any) {
+        setBackupMessage('❌ Failed to parse backup file. Please ensure it is a valid DSA Chaos JSON.');
+        setTimeout(() => setBackupMessage(null), 5000);
+      }
+    };
+    reader.readAsText(file);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
 
   const xpPercent = Math.min(100, Math.round((profile.xp / profile.xpToNextLevel) * 100));
 
@@ -274,19 +339,57 @@ export const DashboardPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Reset Progress Helper for Testing */}
-        <div className="pt-6 border-t-2 border-[#111111] dark:border-[#333] flex justify-between items-center font-mono text-xs opacity-75">
-          <span>PROGRESS PERSISTED AUTOMATICALLY IN LOCAL STORAGE.</span>
-          <button
-            onClick={() => {
-              if (window.confirm('Reset all user progress, XP, and achievements to zero?')) {
-                resetProgress();
-              }
-            }}
-            className="text-[#FF2DAA] hover:underline flex items-center gap-1 font-bold"
-          >
-            <RotateCcw className="w-3.5 h-3.5" /> RESET DEMO DATA
-          </button>
+        {/* Progress Backup / Export-Import & Reset Helper */}
+        <div className="p-4 sm:p-6 bg-white dark:bg-[#181818] border-3 border-[#111111] dark:border-[#F5F0E8] shadow-[6px_6px_0px_#111111] flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div>
+            <div className="font-mono text-xs font-black uppercase text-[#304FFE] dark:text-[#C6FF00] flex items-center gap-1.5">
+              <span>💾 SAVE DATA & PROGRESS BACKUP</span>
+            </div>
+            <p className="font-mono text-xs opacity-75 mt-1">
+              Export your XP, achievements, and error notebook so you never lose progress across devices or browser clears.
+            </p>
+            {backupMessage && (
+              <div className="font-mono text-xs font-black mt-2 text-[#FF2DAA]">
+                {backupMessage}
+              </div>
+            )}
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2">
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleImportSave}
+              accept=".json,application/json"
+              className="hidden"
+            />
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={handleExportSave}
+              className="border-2 border-[#111111] shadow-[2px_2px_0px_#111111]"
+            >
+              <Download className="w-3.5 h-3.5 mr-1" /> Export Save JSON
+            </Button>
+            <Button
+              variant="lime"
+              size="sm"
+              onClick={() => fileInputRef.current?.click()}
+              className="border-2 border-[#111111] shadow-[2px_2px_0px_#111111]"
+            >
+              <Upload className="w-3.5 h-3.5 mr-1" /> Import Save JSON
+            </Button>
+            <button
+              onClick={() => {
+                if (window.confirm('Reset all user progress, XP, and achievements to zero?')) {
+                  resetProgress();
+                }
+              }}
+              className="px-3 py-1.5 font-mono text-xs font-bold text-[#FF2DAA] hover:underline flex items-center gap-1 border-2 border-transparent"
+            >
+              <RotateCcw className="w-3.5 h-3.5" /> RESET DEMO DATA
+            </button>
+          </div>
         </div>
       </div>
     </div>

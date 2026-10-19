@@ -54,9 +54,9 @@ export const TreeKingdomVisualizer: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 text-[#111111] dark:text-[#F5F0E8]">
       {/* Controls Header */}
-      <div className="flex flex-wrap items-center justify-between gap-3 p-3 bg-slate-900/60 rounded-2xl border border-slate-800">
+      <div className="flex flex-wrap items-center justify-between gap-3 p-3 bg-white dark:bg-[#181818] border-2 border-[#111111] dark:border-[#F5F0E8] shadow-[4px_4px_0px_#111111]">
         <div className="flex items-center gap-2">
           <Button
             variant={mode === 'search' ? 'primary' : 'secondary'}
@@ -76,13 +76,13 @@ export const TreeKingdomVisualizer: React.FC = () => {
 
         {mode === 'search' ? (
           <div className="flex items-center gap-1.5 text-xs">
-            <span className="text-slate-400 font-mono">Target:</span>
+            <span className="font-mono font-bold opacity-70">Target:</span>
             {[2, 7, 12, 15, 20, 99].map((t) => (
               <button
                 key={t}
                 onClick={() => setSearchTarget(t)}
-                className={`px-2 py-0.5 rounded font-mono transition-colors ${
-                  searchTarget === t ? 'bg-cyan-500 text-slate-950 font-bold' : 'bg-slate-800 text-slate-300'
+                className={`px-2 py-0.5 rounded font-mono font-bold border-2 border-[#111111] dark:border-[#F5F0E8] transition-all shadow-[2px_2px_0px_#111111] ${
+                  searchTarget === t ? 'bg-[#C6FF00] text-[#111111]' : 'bg-white dark:bg-[#222222] text-[#111111] dark:text-[#F5F0E8]'
                 }`}
               >
                 {t}
@@ -95,10 +95,10 @@ export const TreeKingdomVisualizer: React.FC = () => {
               <button
                 key={trav}
                 onClick={() => setTraversalType(trav)}
-                className={`px-2.5 py-1 rounded-lg uppercase text-[11px] font-bold font-mono transition-all ${
+                className={`px-2.5 py-1 uppercase text-[11px] font-black font-mono transition-all border-2 border-[#111111] dark:border-[#F5F0E8] shadow-[2px_2px_0px_#111111] ${
                   traversalType === trav
-                    ? 'bg-violet-600 text-white shadow-glow-violet'
-                    : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                    ? 'bg-[#304FFE] text-white'
+                    : 'bg-white dark:bg-[#222222] text-[#111111] dark:text-[#F5F0E8]'
                 }`}
               >
                 {trav}
@@ -109,9 +109,7 @@ export const TreeKingdomVisualizer: React.FC = () => {
       </div>
 
       {/* Interactive Tree SVG Canvas */}
-      <div className="relative w-full h-[320px] bg-slate-950 rounded-3xl border border-slate-800 p-4 flex items-center justify-center overflow-hidden shadow-2xl">
-        <div className="absolute inset-0 bg-radial-glow pointer-events-none" />
-
+      <div className="relative w-full h-[320px] bg-white dark:bg-[#141414] border-2 md:border-3 border-[#111111] dark:border-[#F5F0E8] p-4 flex items-center justify-center overflow-hidden shadow-[6px_6px_0px_#111111]">
         <svg className="w-full h-full max-w-[500px]" viewBox="0 0 500 260">
           {/* Edges */}
           {Object.values(currentStep.nodes).map((node) => {
@@ -126,8 +124,9 @@ export const TreeKingdomVisualizer: React.FC = () => {
                     y1={node.y}
                     x2={left.x}
                     y2={left.y}
-                    stroke="#334155"
+                    stroke="currentColor"
                     strokeWidth="3"
+                    className="text-[#111111] dark:text-[#555]"
                   />
                 )}
                 {right && (
@@ -136,8 +135,9 @@ export const TreeKingdomVisualizer: React.FC = () => {
                     y1={node.y}
                     x2={right.x}
                     y2={right.y}
-                    stroke="#334155"
+                    stroke="currentColor"
                     strokeWidth="3"
+                    className="text-[#111111] dark:text-[#555]"
                   />
                 )}
               </g>
@@ -150,21 +150,21 @@ export const TreeKingdomVisualizer: React.FC = () => {
             const isVisited = currentStep.visitedNodeIds.includes(node.id);
             const isTarget = node.isTarget;
 
-            let fill = '#0F172A';
-            let stroke = '#475569';
-            let textFill = '#E2E8F0';
+            let fill = '#F5F0E8';
+            let stroke = '#111111';
+            let textFill = '#111111';
 
             if (isTarget) {
-              fill = '#059669';
-              stroke = '#34D399';
-              textFill = '#FFFFFF';
+              fill = '#C6FF00';
+              stroke = '#111111';
+              textFill = '#111111';
             } else if (isCurr) {
-              fill = '#0284C7';
-              stroke = '#38BDF8';
+              fill = '#FF2DAA';
+              stroke = '#111111';
               textFill = '#FFFFFF';
             } else if (isVisited) {
-              fill = '#7C3AED';
-              stroke = '#A78BFA';
+              fill = '#304FFE';
+              stroke = '#111111';
               textFill = '#FFFFFF';
             }
 
@@ -197,9 +197,9 @@ export const TreeKingdomVisualizer: React.FC = () => {
 
         {/* Level order queue display if BFS */}
         {currentStep.queueState && (
-          <div className="absolute bottom-4 left-6 flex items-center gap-2 bg-slate-900/90 border border-slate-700 px-3 py-1.5 rounded-xl text-xs font-mono">
-            <span className="text-slate-400">BFS Queue:</span>
-            <span className="text-cyan-400 font-bold">[{currentStep.queueState.join(', ') || 'empty'}]</span>
+          <div className="absolute bottom-4 left-6 flex items-center gap-2 bg-white dark:bg-[#181818] border-2 border-[#111111] dark:border-[#F5F0E8] px-3 py-1.5 text-xs font-mono font-bold shadow-[2px_2px_0px_#111111]">
+            <span className="opacity-70">BFS Queue:</span>
+            <span className="text-[#304FFE] dark:text-[#C6FF00] font-black">[{currentStep.queueState.join(', ') || 'empty'}]</span>
           </div>
         )}
       </div>

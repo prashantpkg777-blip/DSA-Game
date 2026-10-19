@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import Editor from '@monaco-editor/react';
-import { Play, CheckCircle2, XCircle, Lightbulb, Terminal, Clock, Zap } from 'lucide-react';
-import { CodeProblem, TestCase } from '../../types/curriculum';
+import { Play, CheckCircle2, XCircle, Lightbulb, Clock, RotateCcw, AlertCircle } from 'lucide-react';
+import { CodeProblem } from '../../types/curriculum';
 import { SupportedLanguage, ExecutionResult } from '../../types/codeEditor';
 import { executeCodeChallenge } from '../../services/codeRunner';
+import { useUserStore } from '../../stores/userStore';
 import { Button } from '../ui/Button';
 import { Badge } from '../ui/Badge';
 import confetti from 'canvas-confetti';
@@ -14,6 +15,7 @@ export interface CodeEditorPanelProps {
 }
 
 export const CodeEditorPanel: React.FC<CodeEditorPanelProps> = ({ problem, onSuccess }) => {
+  const theme = useUserStore((s) => s.theme);
   const [language, setLanguage] = useState<SupportedLanguage>('javascript');
   const [code, setCode] = useState<string>(problem.starterCode.javascript);
   const [isRunning, setIsRunning] = useState<boolean>(false);
@@ -25,6 +27,13 @@ export const CodeEditorPanel: React.FC<CodeEditorPanelProps> = ({ problem, onSuc
     setLanguage(lang);
     setCode(problem.starterCode[lang] || '');
     setResult(null);
+  };
+
+  const handleResetCode = () => {
+    if (window.confirm('Reset code to starter template?')) {
+      setCode(problem.starterCode[language] || '');
+      setResult(null);
+    }
   };
 
   const handleRun = async () => {
@@ -136,7 +145,7 @@ export const CodeEditorPanel: React.FC<CodeEditorPanelProps> = ({ problem, onSuc
       {/* Right Column: Code Editor & Test Results */}
       <div className="w-full lg:w-7/12 flex flex-col h-full bg-[#111111]">
         {/* Editor Toolbar */}
-        <div className="flex items-center justify-between p-3 border-b-2 border-[#333] bg-[#181818]">
+        <div className="flex items-center justify-between p-3 border-b-2 border-[#333] bg-[#181818] flex-wrap gap-2">
           {/* Language selector */}
           <div className="flex items-center gap-1.5">
             {(['javascript', 'python', 'java', 'cpp'] as const).map((lang) => (
@@ -155,6 +164,15 @@ export const CodeEditorPanel: React.FC<CodeEditorPanelProps> = ({ problem, onSuc
           </div>
 
           <div className="flex items-center gap-2">
+            <button
+              onClick={handleResetCode}
+              className="px-2.5 py-1.5 bg-[#222222] hover:bg-[#333333] text-[#F5F0E8] border border-[#555] font-mono text-xs flex items-center gap-1 transition-all"
+              title="Reset code to starter template"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+              <span>Reset</span>
+            </button>
+
             <Button
               variant="lime"
               size="sm"
@@ -167,12 +185,20 @@ export const CodeEditorPanel: React.FC<CodeEditorPanelProps> = ({ problem, onSuc
           </div>
         </div>
 
+        {/* Informative notification if non-JS selected */}
+        {language !== 'javascript' && (
+          <div className="px-3 py-1.5 bg-[#FF5C00]/20 border-b border-[#FF5C00]/40 text-[#FF5C00] font-mono text-[11px] flex items-center gap-1.5">
+            <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+            <span>Note: In-browser live test runner evaluates JavaScript. {language.toUpperCase()} is available for syntax drafting & editorial review.</span>
+          </div>
+        )}
+
         {/* Monaco Code Editor */}
         <div className="flex-1 min-h-[280px] w-full">
           <Editor
             height="100%"
             language={language === 'cpp' ? 'cpp' : language}
-            theme="vs-dark"
+            theme={theme === 'dark' ? 'vs-dark' : 'vs'}
             value={code}
             onChange={(val) => setCode(val || '')}
             options={{
@@ -240,6 +266,12 @@ export const CodeEditorPanel: React.FC<CodeEditorPanelProps> = ({ problem, onSuc
           <div className="flex-1 p-4 overflow-y-auto font-mono text-xs">
             {activeTab === 'tests' && (
               <div className="flex flex-col gap-2">
+                {result?.compileError && (
+                  <div className="p-3 bg-[#FF2DAA]/10 border-2 border-[#FF2DAA] text-[#FF2DAA]">
+                    <span className="font-bold block mb-1">EXECUTION ERROR:</span>
+                    <span>{result.compileError}</span>
+                  </div>
+                )}
                 {result ? (
                   result.testResults.map((tRes, idx) => (
                     <div
@@ -252,9 +284,9 @@ export const CodeEditorPanel: React.FC<CodeEditorPanelProps> = ({ problem, onSuc
                     >
                       <div className="flex items-center gap-2">
                         {tRes.passed ? <CheckCircle2 className="w-4 h-4 text-[#C6FF00]" /> : <XCircle className="w-4 h-4 text-[#FF2DAA]" />}
-                        <span>Case {idx + 1}: Expected {JSON.stringify(tRes.expected)}</span>
+                        <span>Case {idx + 1}: Expected {JSON.stringify(tRes.expectedOutput)}</span>
                       </div>
-                      <span>Actual: {JSON.stringify(tRes.actual)}</span>
+                      <span>Actual: {JSON.stringify(tRes.actualOutput)}</span>
                     </div>
                   ))
                 ) : (

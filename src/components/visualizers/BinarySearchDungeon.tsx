@@ -87,11 +87,11 @@ export const BinarySearchDungeon: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 text-[#111111] dark:text-[#F5F0E8]">
       {/* Header & Target Selector */}
-      <div className="flex flex-wrap items-center justify-between gap-4 p-4 bg-slate-900/60 rounded-2xl border border-slate-800">
+      <div className="flex flex-wrap items-center justify-between gap-4 p-4 bg-white dark:bg-[#181818] border-2 border-[#111111] dark:border-[#F5F0E8] shadow-[4px_4px_0px_#111111]">
         <div className="flex items-center gap-3">
-          <Badge variant="amber">Dungeon Target</Badge>
+          <Badge variant="yellow" size="sm">DUNGEON TARGET</Badge>
           <div className="flex items-center gap-1.5">
             {[14, 35, 59, 88, 99].map((t) => (
               <button
@@ -100,10 +100,10 @@ export const BinarySearchDungeon: React.FC = () => {
                   setTarget(t);
                   resetDungeonQuest();
                 }}
-                className={`px-2.5 py-1 rounded-lg text-xs font-mono font-bold transition-all ${
+                className={`px-2.5 py-1 text-xs font-mono font-black border-2 border-[#111111] dark:border-[#F5F0E8] shadow-[2px_2px_0px_#111111] transition-all ${
                   target === t
-                    ? 'bg-amber-500 text-slate-950 shadow-glow-amber'
-                    : 'bg-slate-800 text-slate-300 hover:bg-slate-700'
+                    ? 'bg-[#FFF200] text-[#111111]'
+                    : 'bg-white dark:bg-[#222222] text-[#111111] dark:text-[#F5F0E8]'
                 }`}
               >
                 {t}
@@ -117,10 +117,10 @@ export const BinarySearchDungeon: React.FC = () => {
             setGameMode(gameMode === 'simulator' ? 'dungeon_quest' : 'simulator');
             resetDungeonQuest();
           }}
-          className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all ${
+          className={`px-3 py-1.5 text-xs font-black uppercase border-2 border-[#111111] dark:border-[#F5F0E8] shadow-[3px_3px_0px_#111111] transition-all ${
             gameMode === 'dungeon_quest'
-              ? 'bg-violet-600 text-white border-violet-400 shadow-glow-violet'
-              : 'bg-slate-800 text-slate-300 border-slate-700 hover:border-slate-600'
+              ? 'bg-[#304FFE] text-white'
+              : 'bg-white dark:bg-[#222222] text-[#111111] dark:text-[#F5F0E8]'
           }`}
         >
           🏰 {gameMode === 'dungeon_quest' ? 'Exit Dungeon Quest' : 'Enter Dungeon Quest Mode'}
@@ -128,11 +128,9 @@ export const BinarySearchDungeon: React.FC = () => {
       </div>
 
       {/* Dungeon Rooms Grid */}
-      <div className="relative w-full p-8 bg-slate-950 rounded-3xl border border-slate-800 overflow-hidden shadow-2xl">
-        <div className="absolute inset-0 bg-radial-glow pointer-events-none" />
-
+      <div className="relative w-full p-6 sm:p-8 bg-white dark:bg-[#141414] border-2 md:border-3 border-[#111111] dark:border-[#F5F0E8] overflow-hidden shadow-[6px_6px_0px_#111111]">
         {gameMode === 'dungeon_quest' && (
-          <div className="mb-6 p-3 bg-violet-950/40 border border-violet-800/60 rounded-xl text-xs text-violet-200">
+          <div className="mb-6 p-3 bg-[#B9A0FF]/20 border-2 border-[#111111] dark:border-[#B9A0FF] text-xs font-mono font-bold shadow-[2px_2px_0px_#111111]">
             {dungeonMessage}
           </div>
         )}
@@ -163,23 +161,23 @@ export const BinarySearchDungeon: React.FC = () => {
               <div
                 key={idx}
                 onClick={() => handleDoorClick(idx)}
-                className={`relative rounded-2xl border-2 p-3 flex flex-col items-center justify-between min-h-[110px] transition-all duration-300 select-none ${
+                className={`relative border-2 border-[#111111] dark:border-[#F5F0E8] p-3 flex flex-col items-center justify-between min-h-[110px] transition-all duration-200 select-none ${
                   gameMode === 'dungeon_quest' && !isEliminated ? 'cursor-pointer hover:scale-105' : ''
                 } ${
                   isTarget
-                    ? 'bg-emerald-600/30 border-emerald-400 shadow-glow-emerald text-emerald-300'
+                    ? 'bg-[#C6FF00] text-[#111111] shadow-[3px_3px_0px_#111111]'
                     : isMid
-                    ? 'bg-amber-500/30 border-amber-400 shadow-glow-amber text-amber-300'
+                    ? 'bg-[#FFF200] text-[#111111] shadow-[3px_3px_0px_#111111]'
                     : isEliminated
-                    ? 'bg-slate-900/30 border-slate-800/40 text-slate-600 opacity-40'
-                    : 'bg-slate-900/90 border-slate-700 text-slate-200 hover:border-slate-500'
+                    ? 'bg-slate-200 dark:bg-[#1a1a1a] opacity-30 shadow-none'
+                    : 'bg-[#F5F0E8] dark:bg-[#222222] shadow-[2px_2px_0px_#111111]'
                 }`}
               >
                 {/* Pointer Tag */}
-                <div className="h-5 flex items-center gap-1 font-mono text-[10px] font-bold">
-                  {isLow && <span className="px-1 rounded bg-blue-500/20 text-blue-400">LOW</span>}
-                  {isMid && <span className="px-1 rounded bg-amber-500/30 text-amber-300">MID</span>}
-                  {isHigh && <span className="px-1 rounded bg-violet-500/20 text-violet-400">HIGH</span>}
+                <div className="h-5 flex items-center gap-1 font-mono text-[9px] font-black uppercase">
+                  {isLow && <span className="px-1 border border-[#111111] bg-[#304FFE] text-white">LOW</span>}
+                  {isMid && <span className="px-1 border border-[#111111] bg-[#FF5C00] text-white">MID</span>}
+                  {isHigh && <span className="px-1 border border-[#111111] bg-[#FF2DAA] text-white">HIGH</span>}
                 </div>
 
                 {/* Door Icon & Room Value */}
@@ -187,11 +185,11 @@ export const BinarySearchDungeon: React.FC = () => {
                   {isTarget ? '🏆' : isEliminated ? '🧱' : isMid ? '🔑' : '🚪'}
                 </div>
 
-                <div className="font-mono font-bold text-sm">
+                <div className="font-mono font-black text-sm">
                   {val}
                 </div>
 
-                <div className="text-[10px] text-slate-400 font-mono">
+                <div className="text-[10px] opacity-60 font-mono font-bold">
                   Room {idx}
                 </div>
               </div>

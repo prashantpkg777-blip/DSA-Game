@@ -72,9 +72,9 @@ export const LinkedListBuilder: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 text-[#111111] dark:text-[#F5F0E8]">
       {/* Control Actions */}
-      <div className="flex flex-wrap items-center justify-between gap-3 p-3 bg-slate-900/60 rounded-2xl border border-slate-800">
+      <div className="flex flex-wrap items-center justify-between gap-3 p-3 bg-white dark:bg-[#181818] border-2 border-[#111111] dark:border-[#F5F0E8] shadow-[4px_4px_0px_#111111]">
         <div className="flex items-center gap-2">
           <Button
             variant={algorithm === 'floyd_cycle' ? 'primary' : 'secondary'}
@@ -99,7 +99,7 @@ export const LinkedListBuilder: React.FC = () => {
             onClick={handleAddHead}
             disabled={values.length >= 8}
           >
-            <PlusCircle className="w-3.5 h-3.5 mr-1 text-cyan-400" /> +Head
+            <PlusCircle className="w-3.5 h-3.5 mr-1 text-[#304FFE] dark:text-[#C6FF00]" /> +Head
           </Button>
           <Button
             variant="ghost"
@@ -107,7 +107,7 @@ export const LinkedListBuilder: React.FC = () => {
             onClick={handleAddTail}
             disabled={values.length >= 8}
           >
-            <PlusCircle className="w-3.5 h-3.5 mr-1 text-cyan-400" /> +Tail
+            <PlusCircle className="w-3.5 h-3.5 mr-1 text-[#304FFE] dark:text-[#C6FF00]" /> +Tail
           </Button>
           <Button
             variant={cycleTarget >= 0 ? 'danger' : 'secondary'}
@@ -121,7 +121,7 @@ export const LinkedListBuilder: React.FC = () => {
       </div>
 
       {/* Nodes Canvas */}
-      <div className="relative w-full min-h-[220px] bg-slate-950 rounded-3xl border border-slate-800 p-8 flex items-center justify-start overflow-x-auto shadow-2xl">
+      <div className="relative w-full min-h-[220px] bg-white dark:bg-[#141414] border-2 md:border-3 border-[#111111] dark:border-[#F5F0E8] p-8 flex items-center justify-start overflow-x-auto shadow-[6px_6px_0px_#111111]">
         <div className="flex items-center gap-4 min-w-max mx-auto">
           {currentStep.nodes.map((node, idx) => {
             const isSlow = currentStep.slowPointerId === node.id;
@@ -133,19 +133,19 @@ export const LinkedListBuilder: React.FC = () => {
                 {/* Node Box */}
                 <div className="flex flex-col items-center">
                   {/* Pointers Row Above */}
-                  <div className="h-7 flex items-center gap-1 font-mono text-[10px] font-bold">
+                  <div className="h-7 flex items-center gap-1 font-mono text-[10px] font-black uppercase">
                     {isSlow && (
-                      <span className="px-1.5 py-0.5 rounded bg-amber-500 text-slate-950 shadow-glow-amber">
+                      <span className="px-1.5 py-0.5 border border-[#111111] bg-[#FFF200] text-[#111111] shadow-[1px_1px_0px_#111111]">
                         🐢 SLOW
                       </span>
                     )}
                     {isFast && (
-                      <span className="px-1.5 py-0.5 rounded bg-cyan-400 text-slate-950 shadow-glow-cyan">
+                      <span className="px-1.5 py-0.5 border border-[#111111] bg-[#304FFE] text-white shadow-[1px_1px_0px_#111111]">
                         🐰 FAST
                       </span>
                     )}
                     {isCurr && !isSlow && !isFast && (
-                      <span className="px-1.5 py-0.5 rounded bg-violet-500 text-white shadow-glow-violet">
+                      <span className="px-1.5 py-0.5 border border-[#111111] bg-[#FF2DAA] text-white shadow-[1px_1px_0px_#111111]">
                         CURR
                       </span>
                     )}
@@ -153,35 +153,35 @@ export const LinkedListBuilder: React.FC = () => {
 
                   {/* Node Card */}
                   <div
-                    className={`w-16 h-16 rounded-2xl border-2 flex flex-col items-center justify-center font-mono font-bold text-base transition-all duration-300 shadow-lg ${
+                    className={`w-16 h-16 border-2 border-[#111111] dark:border-[#F5F0E8] flex flex-col items-center justify-center font-mono font-black text-base transition-all duration-300 shadow-[3px_3px_0px_#111111] ${
                       node.isHighlighted
-                        ? 'bg-rose-500/20 border-rose-400 text-rose-300 shadow-rose-900/50 scale-110'
+                        ? 'bg-[#FF2DAA] text-white scale-110'
                         : isSlow && isFast
-                        ? 'bg-emerald-500/20 border-emerald-400 text-emerald-300 shadow-glow-emerald scale-110'
+                        ? 'bg-[#C6FF00] text-[#111111] scale-110'
                         : isSlow
-                        ? 'bg-amber-500/10 border-amber-400 text-amber-300'
+                        ? 'bg-[#FFF200] text-[#111111]'
                         : isFast
-                        ? 'bg-cyan-500/10 border-cyan-400 text-cyan-300'
-                        : 'bg-slate-900 border-slate-700 text-slate-200'
+                        ? 'bg-[#304FFE] text-white'
+                        : 'bg-[#F5F0E8] dark:bg-[#222222] text-[#111111] dark:text-[#F5F0E8]'
                     }`}
                   >
                     <span>{node.value}</span>
-                    <span className="text-[10px] text-slate-500 font-normal">
+                    <span className="text-[10px] opacity-70 font-normal">
                       {node.isHead ? 'HEAD' : node.isTail ? 'TAIL' : `[${idx}]`}
                     </span>
                   </div>
 
                   {/* Memory Address Below */}
-                  <div className="text-[10px] text-slate-500 font-mono mt-1">
+                  <div className="text-[10px] opacity-60 font-mono font-bold mt-1">
                     0x{(idx * 16 + 100).toString(16)}
                   </div>
                 </div>
 
                 {/* Arrow to next */}
                 {idx < currentStep.nodes.length - 1 && (
-                  <div className="flex flex-col items-center justify-center text-slate-500 px-1">
-                    <ArrowRight className="w-5 h-5 text-cyan-400" />
-                    <span className="text-[9px] font-mono text-slate-500">.next</span>
+                  <div className="flex flex-col items-center justify-center text-[#111111] dark:text-[#F5F0E8] px-1">
+                    <ArrowRight className="w-5 h-5 text-[#304FFE] dark:text-[#C6FF00]" />
+                    <span className="text-[9px] font-mono font-bold">.next</span>
                   </div>
                 )}
 
@@ -189,12 +189,12 @@ export const LinkedListBuilder: React.FC = () => {
                 {idx === currentStep.nodes.length - 1 && (
                   <div className="flex flex-col items-center justify-center pl-1 font-mono text-xs">
                     {node.nextId ? (
-                      <div className="flex items-center gap-1 text-rose-400 border border-rose-500/30 px-2 py-1 rounded-lg bg-rose-500/10">
+                      <div className="flex items-center gap-1 text-[#FF2DAA] border-2 border-[#111111] dark:border-[#FF2DAA] px-2 py-1 bg-[#FF2DAA]/10 font-black shadow-[2px_2px_0px_#111111]">
                         <Repeat className="w-3.5 h-3.5" />
                         <span>↺ {node.nextId}</span>
                       </div>
                     ) : (
-                      <span className="text-slate-600 font-bold px-2 py-1 bg-slate-900 rounded border border-slate-800">
+                      <span className="text-[#111111] dark:text-[#F5F0E8] font-black px-2 py-1 bg-white dark:bg-[#222222] border-2 border-[#111111] dark:border-[#F5F0E8] shadow-[2px_2px_0px_#111111]">
                         NULL
                       </span>
                     )}
