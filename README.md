@@ -88,13 +88,13 @@ Unlike static problem lists or passive video tutorials, **DSA Gamly** computes e
 
 - **Frontend:** React 18 + TypeScript
 - **Build Tool:** Vite 6
-- **Styling:** Tailwind CSS (custom gaming theme tokens, glow effects, and dark mode)
 - **Code Editor:** Monaco Editor (`@monaco-editor/react`)
-- **State & Persistence:** Zustand with `persist` middleware (local guest storage + Supabase sync)
+- **Code Execution Engine:** Secure isolated Web Worker sandbox with strict 2500ms watchdog timer (TLE protection), active abort cancellation support, neutralization of sensitive worker APIs (`fetch`, `XMLHttpRequest`, `WebSocket`, `importScripts`, `indexedDB`), and honest performance telemetry.
+- **State & Persistence:** Zustand with `persist` middleware (local guest storage + optional Supabase sync)
 - **Backend / Cloud:** Supabase (optional cloud sync with seamless local guest fallback)
 - **Animations & Effects:** Framer Motion & Canvas Confetti
 - **Icons:** Lucide React
-- **Testing:** Automated verification suite covering 100% of core algorithm steps
+- **Testing:** Automated verification suite covering 100% of core algorithm steps (23/23 tests passing)
 
 ---
 

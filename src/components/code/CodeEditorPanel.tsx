@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Editor from '@monaco-editor/react';
-import { Play, CheckCircle2, XCircle, Lightbulb, Clock, RotateCcw, AlertCircle } from 'lucide-react';
+import { Play, CheckCircle2, XCircle, Lightbulb, Clock, RotateCcw, AlertCircle, Square, Eye } from 'lucide-react';
 import { CodeProblem } from '../../types/curriculum';
 import { SupportedLanguage, ExecutionResult } from '../../types/codeEditor';
-import { executeCodeChallenge } from '../../services/codeRunner';
+import { executeCodeChallenge, cancelCurrentExecution } from '../../services/codeRunner';
 import { useUserStore } from '../../stores/userStore';
 import { Button } from '../ui/Button';
 import { Badge } from '../ui/Badge';
@@ -22,6 +22,16 @@ export const CodeEditorPanel: React.FC<CodeEditorPanelProps> = ({ problem, onSuc
   const [result, setResult] = useState<ExecutionResult | null>(null);
   const [activeTab, setActiveTab] = useState<'tests' | 'console' | 'editorial'>('tests');
   const [unlockedHintIndex, setUnlockedHintIndex] = useState<number>(-1);
+  const [showSolution, setShowSolution] = useState<boolean>(false);
+  const abortControllerRef = useRef<AbortController | null>(null);
+
+  useEffect(() => {
+    return () => {
+      // Cleanup any running worker on unmount
+      abortControllerRef.current?.abort();
+      cancelCurrentExecution();
+    };
+  }, []);
 
   const handleLanguageChange = (lang: SupportedLanguage) => {
     setLanguage(lang);
@@ -36,9 +46,30 @@ export const CodeEditorPanel: React.FC<CodeEditorPanelProps> = ({ problem, onSuc
     }
   };
 
+  const handleCancel = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    cancelCurrentExecution();
+    setIsRunning(false);
+  };
+
   const handleRun = async () => {
+    // Abort any prior in-flight execution
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
     setIsRunning(true);
-    const execResult = await executeCodeChallenge(language, code, problem.functionName, problem.testCases);
+    const execResult = await executeCodeChallenge(
+      language,
+      code,
+      problem.functionName,
+      problem.testCases,
+      { abortSignal: controller.signal }
+    );
     setResult(execResult);
     setIsRunning(false);
 
@@ -166,22 +197,33 @@ export const CodeEditorPanel: React.FC<CodeEditorPanelProps> = ({ problem, onSuc
           <div className="flex items-center gap-2">
             <button
               onClick={handleResetCode}
-              className="px-2.5 py-1.5 bg-[#222222] hover:bg-[#333333] text-[#F5F0E8] border border-[#555] font-mono text-xs flex items-center gap-1 transition-all"
+              disabled={isRunning}
+              className="px-2.5 py-1.5 bg-[#222222] hover:bg-[#333333] text-[#F5F0E8] border border-[#555] font-mono text-xs flex items-center gap-1 transition-all disabled:opacity-50"
               title="Reset code to starter template"
             >
               <RotateCcw className="w-3.5 h-3.5" />
               <span>Reset</span>
             </button>
 
-            <Button
-              variant="lime"
-              size="sm"
-              onClick={handleRun}
-              disabled={isRunning}
-              icon={<Play className="w-3.5 h-3.5 fill-current" />}
-            >
-              {isRunning ? 'EXECUTING...' : 'RUN CODE ⚡'}
-            </Button>
+            {isRunning ? (
+              <Button
+                variant="danger"
+                size="sm"
+                onClick={handleCancel}
+                icon={<Square className="w-3 h-3 fill-current" />}
+              >
+                CANCEL ⏹️
+              </Button>
+            ) : (
+              <Button
+                variant="lime"
+                size="sm"
+                onClick={handleRun}
+                icon={<Play className="w-3.5 h-3.5 fill-current" />}
+              >
+                RUN CODE ⚡
+              </Button>
+            )}
           </div>
         </div>
 
@@ -256,6 +298,9 @@ export const CodeEditorPanel: React.FC<CodeEditorPanelProps> = ({ problem, onSuc
                 <span className="flex items-center gap-1 text-slate-400">
                   <Clock className="w-3 h-3 text-[#FF5C00]" /> {result.executionTimeMs.toFixed(1)}ms
                 </span>
+                <span className="text-slate-400">
+                  {result.memoryKb ? `${result.memoryKb} KB` : 'Memory: Not measured'}
+                </span>
                 <span className={`font-bold ${result.success ? 'text-[#C6FF00]' : 'text-[#FF2DAA]'}`}>
                   {result.success ? 'ALL TESTS PASSED' : 'TESTS FAILED'}
                 </span>
@@ -308,9 +353,41 @@ export const CodeEditorPanel: React.FC<CodeEditorPanelProps> = ({ problem, onSuc
             )}
 
             {activeTab === 'editorial' && (
-              <div className="prose prose-invert prose-xs text-[#F5F0E8] opacity-90">
-                <p className="font-bold text-[#FFF200]">Time Complexity Target: {problem.timeComplexity}</p>
-                <p className="font-bold text-[#FF2DAA]">Space Complexity Target: {problem.spaceComplexity}</p>
+              <div className="prose prose-invert prose-xs text-[#F5F0E8] opacity-90 flex flex-col gap-3">
+                <div>
+                  <p className="font-bold text-[#FFF200] m-0">Time Complexity Target: {problem.timeComplexity}</p>
+                  <p className="font-bold text-[#FF2DAA] m-0">Space Complexity Target: {problem.spaceComplexity}</p>
+                </div>
+
+                {problem.optimalSolution && (
+                  <div className="pt-3 border-t border-[#333]">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-mono text-xs font-bold text-[#C6FF00]">
+                        Official Reference Solution ({language.toUpperCase()})
+                      </span>
+                      <button
+                        onClick={() => setShowSolution(!showSolution)}
+                        className="px-2.5 py-1 text-xs font-mono font-bold bg-[#222222] border border-[#555] hover:bg-[#333] text-[#F5F0E8] flex items-center gap-1 transition-all"
+                      >
+                        <Eye className="w-3.5 h-3.5" />
+                        <span>{showSolution ? 'Hide Solution' : 'Reveal Solution'}</span>
+                      </button>
+                    </div>
+
+                    {showSolution && (
+                      <div className="space-y-2">
+                        <pre className="p-3 bg-[#0d0d0d] border border-[#444] text-[#C6FF00] font-mono text-xs overflow-x-auto rounded">
+                          <code>{problem.optimalSolution[language] || problem.optimalSolution.javascript}</code>
+                        </pre>
+                        {problem.optimalSolution.explanation && (
+                          <p className="text-xs font-sans text-slate-300 italic">
+                            {problem.optimalSolution.explanation}
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             )}
           </div>

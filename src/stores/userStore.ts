@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { UserProfile, UserStats, Achievement, DailyQuest, MistakeRecord } from '../types/gamification';
+import { UserProfile, UserStats, Achievement, DailyQuest, MistakeRecord, ActivityEventType } from '../types/gamification';
 import { syncProgressToCloud } from '../services/supabase';
 
 const INITIAL_ACHIEVEMENTS: Achievement[] = [
@@ -60,7 +60,7 @@ const INITIAL_ACHIEVEMENTS: Achievement[] = [
     icon: 'Flame',
     xpReward: 100,
     unlockedAt: null,
-    progress: 1,
+    progress: 0,
     maxProgress: 3,
     isUnlocked: false,
   },
@@ -78,7 +78,25 @@ const INITIAL_ACHIEVEMENTS: Achievement[] = [
   },
 ];
 
-function getDailyQuestsForToday(dateStr: string): DailyQuest[] {
+// Timezone-safe local calendar date (YYYY-MM-DD)
+export function getLocalDateString(): string {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+export function getYesterdayDateString(): string {
+  const d = new Date();
+  d.setDate(d.getDate() - 1);
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+export function getDailyQuestsForToday(dateStr: string): DailyQuest[] {
   return [
     {
       id: `quest-sim-${dateStr}`,
@@ -96,7 +114,7 @@ function getDailyQuestsForToday(dateStr: string): DailyQuest[] {
       title: 'Knowledge Check',
       description: 'Pass any topic quiz with 100% score.',
       xpReward: 50,
-      category: 'solve',
+      category: 'quiz',
       targetCount: 1,
       currentCount: 0,
       isCompleted: false,
@@ -133,12 +151,14 @@ interface UserState {
 
   // Actions
   addXP: (amount: number, reason?: string) => void;
-  completeLesson: (lessonId: string, xpReward: number) => void;
-  solveChallenge: (challengeId: string, xpReward: number) => void;
+  completeLesson: (lessonId: string, xpReward: number, topicCategory?: string) => void;
+  solveChallenge: (challengeId: string, xpReward: number, topicCategory?: string) => void;
   defeatBoss: (bossId: string, xpReward: number) => void;
   recordMistake: (mistake: Omit<MistakeRecord, 'id' | 'timestamp' | 'reviewed'>) => void;
   markMistakeReviewed: (id: string) => void;
+  progressActivity: (eventType: ActivityEventType) => void;
   progressDailyQuest: (category: DailyQuest['category']) => void;
+  checkDateRollover: () => void;
   toggleTheme: () => void;
   toggleSound: () => void;
   toggleVoice: () => void;
@@ -147,8 +167,6 @@ interface UserState {
   resetProgress: () => void;
   importProgress: (imported: Partial<UserState>) => void;
 }
-
-const getTodayString = () => new Date().toISOString().split('T')[0];
 
 export const useUserStore = create<UserState>()(
   persist(
@@ -162,29 +180,29 @@ export const useUserStore = create<UserState>()(
         level: 1,
         xp: 0,
         xpToNextLevel: 200,
-        streakDays: 1,
-        lastActiveDate: getTodayString(),
-        joinedDate: getTodayString(),
+        streakDays: 0, // Starts at 0 until first recorded activity
+        lastActiveDate: '',
+        joinedDate: getLocalDateString(),
         isGuest: true,
       },
       stats: {
         problemsSolved: 0,
         lessonsCompleted: 0,
         bossesDefeated: 0,
-        accuracy: 100,
+        accuracy: 0, // Accurate zero state
         totalSubmissions: 0,
         correctSubmissions: 0,
-        currentStreak: 1,
-        longestStreak: 1,
-        weeklyActivity: [40, 60, 20, 80, 50, 100, 30],
+        currentStreak: 0,
+        longestStreak: 0,
+        weeklyActivity: [0, 0, 0, 0, 0, 0, 0], // Sun-Sat zero activity
         topicsMastered: 0,
-        totalTimeSpentMinutes: 15,
+        totalTimeSpentMinutes: 0,
       },
       completedLessons: [],
       completedChallenges: [],
       defeatedBosses: [],
       achievements: INITIAL_ACHIEVEMENTS,
-      dailyQuests: getDailyQuestsForToday(getTodayString()),
+      dailyQuests: getDailyQuestsForToday(getLocalDateString()),
       mistakes: [],
       soundEnabled: true,
       voiceEnabled: true,
@@ -192,7 +210,17 @@ export const useUserStore = create<UserState>()(
       speechRate: 1.0,
       theme: 'dark',
 
+      checkDateRollover: () => {
+        const today = getLocalDateString();
+        const currentQuests = get().dailyQuests;
+        if (currentQuests.length === 0 || currentQuests[0]?.dateAssigned !== today) {
+          set({ dailyQuests: getDailyQuestsForToday(today) });
+        }
+      },
+
       addXP: (amount: number) => {
+        get().checkDateRollover();
+
         set((state) => {
           let newXP = state.profile.xp + amount;
           let newLevel = state.profile.level;
@@ -204,16 +232,50 @@ export const useUserStore = create<UserState>()(
             newXpToNext = Math.round(newXpToNext * 1.35);
           }
 
-          // Update weekly activity (today index)
+          // Local date calculations for streak and activity
+          const today = getLocalDateString();
+          const yesterday = getYesterdayDateString();
           const dayOfWeek = new Date().getDay();
+
+          let newStreak = state.profile.streakDays;
+          if (!state.profile.lastActiveDate) {
+            newStreak = 1;
+          } else if (state.profile.lastActiveDate === today) {
+            newStreak = state.profile.streakDays > 0 ? state.profile.streakDays : 1;
+          } else if (state.profile.lastActiveDate === yesterday) {
+            newStreak = state.profile.streakDays + 1;
+          } else {
+            newStreak = 1;
+          }
+
+          const newLongestStreak = Math.max(state.stats.longestStreak, newStreak);
+
+          // Update weekly activity for local day index
           const newWeekly = [...state.stats.weeklyActivity];
           newWeekly[dayOfWeek] = (newWeekly[dayOfWeek] || 0) + amount;
+
+          // Check consistency-champion achievement
+          const updatedAchievements = state.achievements.map((ach) => {
+            if (ach.id === 'consistency-champion') {
+              const currentProg = Math.min(3, newStreak);
+              const isUnlocked = currentProg >= 3;
+              return {
+                ...ach,
+                progress: currentProg,
+                isUnlocked,
+                unlockedAt: isUnlocked && !ach.isUnlocked ? new Date().toISOString() : ach.unlockedAt,
+              };
+            }
+            return ach;
+          });
 
           const updatedProfile = {
             ...state.profile,
             xp: newXP,
             level: newLevel,
             xpToNextLevel: newXpToNext,
+            streakDays: newStreak,
+            lastActiveDate: today,
           };
 
           // Background sync to Supabase if configured
@@ -221,37 +283,50 @@ export const useUserStore = create<UserState>()(
             userId: state.profile.id,
             xp: newXP,
             level: newLevel,
-            streak: state.profile.streakDays,
+            streak: newStreak,
             completedLessons: state.completedLessons,
-            achievements: state.achievements.filter((a) => a.isUnlocked).map((a) => a.id),
+            achievements: updatedAchievements.filter((a) => a.isUnlocked).map((a) => a.id),
           });
 
           return {
             profile: updatedProfile,
+            achievements: updatedAchievements,
             stats: {
               ...state.stats,
+              currentStreak: newStreak,
+              longestStreak: newLongestStreak,
               weeklyActivity: newWeekly,
             },
           };
         });
       },
 
-      completeLesson: (lessonId: string, xpReward: number) => {
+      completeLesson: (lessonId: string, xpReward: number, topicCategory?: string) => {
         const state = get();
         if (state.completedLessons.includes(lessonId)) return; // Prevent duplicate rewards
 
         const newCompleted = [...state.completedLessons, lessonId];
         state.addXP(xpReward);
 
-        // Update achievements
+        // Update achievements accurately
+        const isSorting = topicCategory === 'sorting' || lessonId.toLowerCase().includes('sort');
         const updatedAchievements = state.achievements.map((ach) => {
           if (ach.id === 'first-steps' && !ach.isUnlocked) {
             return { ...ach, progress: 1, isUnlocked: true, unlockedAt: new Date().toISOString() };
           }
+          if (ach.id === 'sorting-samurai' && isSorting && !ach.isUnlocked) {
+            const nextProg = ach.progress + 1;
+            return {
+              ...ach,
+              progress: nextProg,
+              isUnlocked: nextProg >= ach.maxProgress,
+              unlockedAt: nextProg >= ach.maxProgress ? new Date().toISOString() : null,
+            };
+          }
           return ach;
         });
 
-        state.progressDailyQuest('visualize');
+        state.progressActivity('lesson_completed');
 
         set({
           completedLessons: newCompleted,
@@ -264,7 +339,7 @@ export const useUserStore = create<UserState>()(
         });
       },
 
-      solveChallenge: (challengeId: string, xpReward: number) => {
+      solveChallenge: (challengeId: string, xpReward: number, topicCategory?: string) => {
         const state = get();
         const alreadySolved = state.completedChallenges.includes(challengeId);
         const newChallenges = alreadySolved ? state.completedChallenges : [...state.completedChallenges, challengeId];
@@ -277,9 +352,30 @@ export const useUserStore = create<UserState>()(
         const correctSubs = state.stats.correctSubmissions + 1;
         const accuracy = Math.round((correctSubs / totalSubs) * 100);
 
-        // Update achievements
+        // Update achievements strictly by topic/category
+        const isPointerOrLinked = 
+          topicCategory === 'linked-lists' || 
+          topicCategory === 'two-pointers' ||
+          challengeId.toLowerCase().includes('pointer') ||
+          challengeId.toLowerCase().includes('linked') ||
+          challengeId.toLowerCase().includes('floyd') ||
+          challengeId.toLowerCase().includes('reverse');
+
+        const isSorting = 
+          topicCategory === 'sorting' || 
+          challengeId.toLowerCase().includes('sort');
+
         const updatedAchievements = state.achievements.map((ach) => {
-          if (ach.id === 'pointer-ninja' && !ach.isUnlocked) {
+          if (ach.id === 'pointer-ninja' && isPointerOrLinked && !ach.isUnlocked) {
+            const nextProg = ach.progress + 1;
+            return {
+              ...ach,
+              progress: nextProg,
+              isUnlocked: nextProg >= ach.maxProgress,
+              unlockedAt: nextProg >= ach.maxProgress ? new Date().toISOString() : null,
+            };
+          }
+          if (ach.id === 'sorting-samurai' && isSorting && !ach.isUnlocked) {
             const nextProg = ach.progress + 1;
             return {
               ...ach,
@@ -291,7 +387,7 @@ export const useUserStore = create<UserState>()(
           return ach;
         });
 
-        state.progressDailyQuest('solve');
+        state.progressActivity('challenge_solved');
 
         set({
           completedChallenges: newChallenges,
@@ -320,6 +416,8 @@ export const useUserStore = create<UserState>()(
           return ach;
         });
 
+        state.progressActivity('boss_defeated');
+
         set({
           defeatedBosses: newBosses,
           achievements: updatedAchievements,
@@ -331,34 +429,45 @@ export const useUserStore = create<UserState>()(
       },
 
       recordMistake: (mistake) => {
-        set((state) => ({
-          mistakes: [
-            {
-              ...mistake,
-              id: 'err-' + Date.now() + '-' + Math.random().toString(36).substring(2, 6),
-              timestamp: new Date().toISOString(),
-              reviewed: false,
+        set((state) => {
+          const totalSubs = state.stats.totalSubmissions + 1;
+          const accuracy = Math.round((state.stats.correctSubmissions / totalSubs) * 100);
+
+          return {
+            mistakes: [
+              {
+                ...mistake,
+                id: 'err-' + Date.now() + '-' + Math.random().toString(36).substring(2, 6),
+                timestamp: new Date().toISOString(),
+                reviewed: false,
+              },
+              ...state.mistakes,
+            ],
+            stats: {
+              ...state.stats,
+              totalSubmissions: totalSubs,
+              accuracy,
             },
-            ...state.mistakes,
-          ],
-          stats: {
-            ...state.stats,
-            totalSubmissions: state.stats.totalSubmissions + 1,
-            accuracy: Math.round(
-              (state.stats.correctSubmissions / (state.stats.totalSubmissions + 1)) * 100
-            ),
-          },
-        }));
+          };
+        });
       },
 
       markMistakeReviewed: (id: string) => {
-        set((state) => {
-          const updated = state.mistakes.map((m) =>
+        const state = get();
+        const targetMistake = state.mistakes.find((m) => m.id === id);
+
+        // Security / Fraud prevention: mistake must exist and must not have been reviewed before
+        if (!targetMistake || targetMistake.reviewed) {
+          return;
+        }
+
+        set((s) => {
+          const updated = s.mistakes.map((m) =>
             m.id === id ? { ...m, reviewed: true } : m
           );
 
-          // Unlock Bug Hunter achievement
-          const updatedAchievements = state.achievements.map((ach) => {
+          // Unlock Bug Hunter achievement on first genuine review
+          const updatedAchievements = s.achievements.map((ach) => {
             if (ach.id === 'bug-hunter' && !ach.isUnlocked) {
               return { ...ach, progress: 1, isUnlocked: true, unlockedAt: new Date().toISOString() };
             }
@@ -370,23 +479,47 @@ export const useUserStore = create<UserState>()(
             achievements: updatedAchievements,
           };
         });
-        get().addXP(30);
+
+        // Award XP only for legitimate first review
+        get().addXP(30, 'Reviewed mistake in Error Notebook');
+        get().progressActivity('mistake_reviewed');
+      },
+
+      progressActivity: (eventType: ActivityEventType) => {
+        get().checkDateRollover();
+
+        // Map explicit event type to quest category
+        let questCategory: DailyQuest['category'] | null = null;
+        if (eventType === 'visualization_completed') questCategory = 'visualize';
+        else if (eventType === 'quiz_passed') questCategory = 'quiz';
+        else if (eventType === 'challenge_solved') questCategory = 'solve';
+        else if (eventType === 'lesson_completed') questCategory = 'lesson';
+        else if (eventType === 'mistake_reviewed') questCategory = 'review';
+        else if (eventType === 'boss_defeated') questCategory = 'boss';
+
+        if (!questCategory) return;
+        get().progressDailyQuest(questCategory);
       },
 
       progressDailyQuest: (category) => {
         set((state) => {
+          let xpToAward = 0;
           const updated = state.dailyQuests.map((q) => {
             if (q.category === category && !q.isCompleted) {
               const count = q.currentCount + 1;
               const isCompleted = count >= q.targetCount;
               if (isCompleted && !q.isCompleted) {
-                // Award XP
-                setTimeout(() => get().addXP(q.xpReward), 0);
+                xpToAward += q.xpReward;
               }
               return { ...q, currentCount: count, isCompleted };
             }
             return q;
           });
+
+          if (xpToAward > 0) {
+            setTimeout(() => get().addXP(xpToAward, 'Completed daily quest'), 0);
+          }
+
           return { dailyQuests: updated };
         });
       },
@@ -430,20 +563,20 @@ export const useUserStore = create<UserState>()(
             level: 1,
             xp: 0,
             xpToNextLevel: 200,
-            streakDays: 1,
-            lastActiveDate: getTodayString(),
-            joinedDate: getTodayString(),
+            streakDays: 0,
+            lastActiveDate: '',
+            joinedDate: getLocalDateString(),
             isGuest: true,
           },
           stats: {
             problemsSolved: 0,
             lessonsCompleted: 0,
             bossesDefeated: 0,
-            accuracy: 100,
+            accuracy: 0,
             totalSubmissions: 0,
             correctSubmissions: 0,
-            currentStreak: 1,
-            longestStreak: 1,
+            currentStreak: 0,
+            longestStreak: 0,
             weeklyActivity: [0, 0, 0, 0, 0, 0, 0],
             topicsMastered: 0,
             totalTimeSpentMinutes: 0,
@@ -452,7 +585,7 @@ export const useUserStore = create<UserState>()(
           completedChallenges: [],
           defeatedBosses: [],
           achievements: INITIAL_ACHIEVEMENTS,
-          dailyQuests: getDailyQuestsForToday(getTodayString()),
+          dailyQuests: getDailyQuestsForToday(getLocalDateString()),
           mistakes: [],
         });
       },

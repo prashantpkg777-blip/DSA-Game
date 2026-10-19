@@ -40,12 +40,20 @@ export interface Achievement {
   isUnlocked: boolean;
 }
 
+export type ActivityEventType = 
+  | 'lesson_completed' 
+  | 'visualization_completed' 
+  | 'quiz_passed' 
+  | 'challenge_solved' 
+  | 'mistake_reviewed' 
+  | 'boss_defeated';
+
 export interface DailyQuest {
   id: string;
   title: string;
   description: string;
   xpReward: number;
-  category: 'solve' | 'visualize' | 'review' | 'streak' | 'complexity';
+  category: 'solve' | 'visualize' | 'quiz' | 'lesson' | 'review' | 'streak' | 'boss';
   targetCount: number;
   currentCount: number;
   isCompleted: boolean;

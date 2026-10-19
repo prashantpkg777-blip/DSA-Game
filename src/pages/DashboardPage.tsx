@@ -122,7 +122,7 @@ export const DashboardPage: React.FC = () => {
                   YO, {profile.username}! READY TO COOK?
                 </h1>
                 <p className="font-mono text-xs font-bold text-[#111111] opacity-90 mt-1">
-                  {profile.title} • {profile.streakDays} DAY STREAK 🔥 • {completedLessons.length} TOPICS MASTERED
+                  {profile.title} • {profile.streakDays > 0 ? `${profile.streakDays} DAY STREAK 🔥` : 'START YOUR STREAK TODAY 🔥'} • {completedLessons.length} TOPICS MASTERED
                 </p>
               </div>
             </div>
@@ -180,10 +180,10 @@ export const DashboardPage: React.FC = () => {
               <CheckCircle2 className="w-4 h-4 text-[#C6FF00]" />
             </div>
             <div className="text-3xl font-display font-black text-[#111111] dark:text-[#C6FF00]">
-              {stats.accuracy}%
+              {stats.totalSubmissions > 0 ? `${stats.accuracy}%` : 'N/A'}
             </div>
             <div className="font-mono text-[11px] opacity-70">
-              {stats.totalSubmissions} attempts
+              {stats.totalSubmissions > 0 ? `${stats.totalSubmissions} attempts` : 'No attempts yet'}
             </div>
           </Card>
 
