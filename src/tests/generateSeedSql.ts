@@ -15,8 +15,8 @@ function escapeJson(obj: any): string {
 
 function escapeTextArray(arr: string[] | undefined): string {
   if (!arr || arr.length === 0) return "'{}'::text[]";
-  const escaped = arr.map(s => `"${s.replace(/"/g, '\\"')}"`).join(',');
-  return `'${escaped}'::text[]`;
+  const escaped = arr.map(s => escapeSql(s)).join(', ');
+  return `ARRAY[${escaped}]::text[]`;
 }
 
 export function generateSeed(): string {
